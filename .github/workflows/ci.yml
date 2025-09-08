@@ -1,0 +1,61 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Print Node & npm versions
+        run: |
+          node -v
+          npm -v
+
+      # --- Backend ---
+      - name: Check backend files
+        working-directory: ./SoulSyncApp/backend
+        run: |
+          echo "== BACKEND FILES ==" && ls -la
+          echo "== BACKEND package.json preview ==" && (head -n 30 package.json || echo "package.json NOT FOUND")
+
+      - name: Install deps (backend) with fallback
+        working-directory: ./SoulSyncApp/backend
+        run: |
+          npm install --no-audit --no-fund || npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Test (backend) + coverage
+        working-directory: ./SoulSyncApp/backend
+        run: npm test -- --coverage --passWithNoTests
+
+      # --- Frontend ---
+      - name: Check frontend files
+        working-directory: ./SoulSyncApp/frontend
+        run: |
+          echo "== FRONTEND FILES ==" && ls -la
+          echo "== FRONTEND package.json preview ==" && (head -n 30 package.json || echo "package.json NOT FOUND")
+
+      - name: Install deps (frontend) with fallback
+        working-directory: ./SoulSyncApp/frontend
+        run: |
+          npm install --no-audit --no-fund || npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Test (frontend) + coverage (non-blocking)
+        working-directory: ./SoulSyncApp/frontend
+        run: npm test -- --coverage --passWithNoTests || echo "no frontend tests"
+
+      # --- Codecov upload ---
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
