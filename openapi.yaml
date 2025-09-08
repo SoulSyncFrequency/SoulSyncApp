@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: SoulSync API
+  version: 1.0.0
+  description: Therapeutic engine API (health, auth, therapy)
+servers:
+  - url: /api
+paths:
+  /health:
+    get:
+      summary: Health status
+      responses:
+        '200':
+          description: OK
+  /livez:
+    get:
+      summary: Liveness probe
+      responses:
+        '200': { description: Alive }
+  /readyz:
+    get:
+      summary: Readiness probe
+      responses:
+        '200': { description: Ready }
+        '503': { description: Not ready }
+  /auth/register:
+    post:
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 6 }
+      responses:
+        '200': { description: Registered }
+        '409': { description: Email exists }
+  /auth/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200': { description: Logged in }
+        '401': { description: Invalid credentials }
+  /therapy:
+    post:
+      summary: Generate therapy plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [disease]
+              properties:
+                disease: { type: string }
+                chakra: { type: string }
+                symptoms: { type: array, items: { type: string } }
+                language: { type: string, enum: [en, hr] }
+      responses:
+        '200': { description: Plan generated }
+        '400': { description: Invalid input }
+components: {}
