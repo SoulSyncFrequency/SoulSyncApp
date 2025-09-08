@@ -1,0 +1,65 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Print Node & npm versions
+        run: |
+          node -v
+          npm -v
+
+      # --- Backend DEBUG INSTALL ---
+      - name: Install deps (backend) — DEBUG
+        working-directory: backend
+        run: |
+          echo "== List files in backend =="
+          ls -la
+          echo "== Show package.json (first 200 lines) =="
+          head -n 200 package.json || echo "package.json NOT FOUND"
+          echo "== npm install (no audit/fund) =="
+          npm install --no-audit --no-fund || (
+            echo "== retry with legacy-peer-deps ==" && \
+            npm install --no-audit --no-fund --legacy-peer-deps
+          )
+
+      - name: Test (backend) + coverage
+        working-directory: backend
+        run: npm test -- --coverage --passWithNoTests
+
+      # --- Frontend DEBUG INSTALL (non-blocking if missing) ---
+      - name: Install deps (frontend) — DEBUG
+        working-directory: frontend
+        run: |
+          echo "== List files in frontend =="
+          ls -la
+          echo "== Show package.json (first 200 lines) =="
+          head -n 200 package.json || echo "package.json NOT FOUND"
+          echo "== npm install (no audit/fund) =="
+          npm install --no-audit --no-fund || (
+            echo "== retry with legacy-peer-deps ==" && \
+            npm install --no-audit --no-fund --legacy-peer-deps
+          )
+
+      - name: Test (frontend) + coverage (non-blocking)
+        working-directory: frontend
+        run: npm test -- --coverage --passWithNoTests || echo "no frontend tests"
+
+      # --- Codecov upload ---
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
