@@ -1,0 +1,93 @@
+name: Quality Gate
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Print Node & npm versions
+        run: |
+          node -v
+          npm -v
+
+      # ---- Auto-detect backend/frontend dirs ----
+      - name: Detect project directories
+        id: detect
+        shell: bash
+        run: |
+          echo "🔎 Detecting backend dir..."
+          BACK=$(git ls-files | grep -E '.*/backend/package.json$' | sed 's|/package.json$||' | head -n1)
+          if [ -z "$BACK" ]; then
+            BACK=$(find . -type f -name package.json -path '*/backend/package.json' -print -quit | xargs -r dirname)
+          fi
+          [ -z "$BACK" ] && echo "❌ backend/package.json not found" && exit 1
+          echo "BACKEND_DIR=$BACK" | tee -a $GITHUB_ENV
+          echo "  -> $BACK"
+
+          echo "🔎 Detecting frontend dir..."
+          FRONT=$(git ls-files | grep -E '.*/frontend/package.json$' | sed 's|/package.json$||' | head -n1)
+          if [ -z "$FRONT" ]; then
+            FRONT=$(find . -type f -name package.json -path '*/frontend/package.json' -print -quit | xargs -r dirname)
+          fi
+          [ -z "$FRONT" ] && echo "❌ frontend/package.json not found" && exit 1
+          echo "FRONTEND_DIR=$FRONT" | tee -a $GITHUB_ENV
+          echo "  -> $FRONT"
+
+      # ---- Backend checks ----
+      - name: Install deps (backend)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          npm install --no-audit --no-fund           || npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Lint backend (auto-fix)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npx eslint . --ext .ts --fix || true
+
+      - name: Typecheck backend
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npx tsc -p tsconfig.json --noEmit
+
+      - name: Test backend + coverage
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npm test -- --coverage --passWithNoTests
+
+      # ---- Frontend checks ----
+      - name: Install deps (frontend)
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: |
+          npm install --no-audit --no-fund           || npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Lint frontend (auto-fix)
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npx eslint src --ext .ts,.tsx --fix || true
+
+      - name: Typecheck frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npx tsc -p tsconfig.json --noEmit
+
+      - name: Build frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
+
+      - name: Lighthouse CI (soft-fail)
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: |
+          npx lhci autorun --collect.staticDistDir=dist --upload.target=temporary-public-storage           || echo "LHCI soft-fail (see report link above)"
+
+      # ---- Codecov ----
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
