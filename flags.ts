@@ -1,9 +1,9 @@
-export function parseFlags(){
-  const raw = process.env.FEATURE_FLAGS || ''
-  const flags = new Set<string>((raw||'').split(',').map(s=>s.trim()).filter(Boolean))
-  return flags
+export async function fetchFlags(): Promise<Set<string>>{
+  try {
+    const res = await fetch('/api/flags')
+    const data = await res.json()
+    return new Set<string>(data?.flags || [])
+  } catch { return new Set() }
 }
 
-export function isEnabled(name: string){
-  return parseFlags().has(name)
-}
+export function hasFlag(flags: Set<string>, name: string){ return flags.has(name) }

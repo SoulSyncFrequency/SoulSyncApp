@@ -1,2 +1,3 @@
-json_key_file("./play-api.json")
-package_name("com.soulsync.app")
+apple_id("you@example.com")
+itc_team_id("YOUR_ITC_TEAM_ID")
+team_id("YOUR_DEV_TEAM_ID")

@@ -1,11 +1,13 @@
-default_platform(:android)
-platform :android do
-  desc "Build AAB for release"
-  lane :build do
-    gradle(task: "bundle", build_type: "Release")
+default_platform(:ios)
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    build_app(scheme: "App", export_method: "app-store")
+    upload_to_testflight
   end
-  desc "Upload to Play (requires supply config)"
-  lane :publish do
-    supply(track: "production", aab: "app/build/outputs/bundle/release/app-release.aab")
+  desc "Build for App Store"
+  lane :release do
+    build_app(scheme: "App", export_method: "app-store")
+    upload_to_app_store
   end
 end
