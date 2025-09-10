@@ -1,13 +1,26 @@
 {
-  "name": "soulsync-fullstack",
-  "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "license": "MIT",
   "scripts": {
-    "build": "npm -w backend run build && npm -w frontend run build",
-    "test": "npm -w backend test && npm -w frontend test",
-    "lint": "npm -w backend run lint || true && npm -w frontend run lint || true"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "migrate:secure": "tsx backend/scripts/migrate-secure.ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.0.0",
+    "express-rate-limit": "^7.1.5",
+    "nodemailer": "^6.9.11"
+  },
+  "devDependencies": {
+    "tsx": "^3.12.7",
+    "typescript": "^5.0.0"
   }
 }
