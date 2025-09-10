@@ -1,60 +1,13 @@
 {
-  "name": "soulsync-frontend",
-  "version": "1.0.0",
+  "name": "soulsync-fullstack",
   "private": true,
-  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "postbuild": "cp -r public/legal dist/legal || true",
-    "cap:copy": "cap copy",
-    "cap:sync": "cap sync",
-    "cap:android": "npx cap open android",
-    "cap:ios": "npx cap open ios",
-    "test": "vitest run",
-    "e2e": "cypress run",
-    "pact:consumer": "vitest run pact/consumer.test.ts",
-    "sdk:generate": "openapi --input ../backend/openapi.yaml --output src/sdk --client fetch",
-    "cap:init": "cap init SoulSync com.soulsync.app -y",
-    "cap:add:android": "cap add android",
-    "cap:add:ios": "cap add ios",
-    "cap:open:android": "cap open android",
-    "cap:open:ios": "cap open ios",
-    "build:mobile": "npm run build && npm run cap:copy"
-  },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
-    "lucide-react": "^0.441.0",
-    "@sentry/react": "^8.0.0",
-    "@tanstack/react-query": "^5.51.0",
-    "@capacitor/core": "^6.1.0",
-    "@capacitor/android": "^6.1.0",
-    "@capacitor/ios": "^6.1.0",
-    "@capacitor/push-notifications": "^6.1.0",
-    "@capacitor/preferences": "^6.1.0",
-    "@capacitor/device": "^6.1.0",
-    "@aparajita/capacitor-biometric-auth": "^6.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.41",
-    "tailwindcss": "^3.4.10",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.1",
-    "vitest": "^1.6.0",
-    "@testing-library/react": "^14.3.1",
-    "@testing-library/jest-dom": "^6.4.2",
-    "rollup-plugin-visualizer": "^5.12.0",
-    "cypress": "^13.12.0",
-    "@pact-foundation/pact": "^12.5.0",
-    "node-fetch": "^3.3.2",
-    "openapi-typescript-codegen": "^0.27.0",
-    "@capacitor/cli": "^6.1.0"
+    "build": "npm -w backend run build && npm -w frontend run build",
+    "test": "npm -w backend test && npm -w frontend test",
+    "lint": "npm -w backend run lint || true && npm -w frontend run lint || true"
   }
 }
