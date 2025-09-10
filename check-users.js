@@ -6,7 +6,6 @@ async function checkUsers() {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
   });
-
   try {
     await client.connect();
     console.log("✅ Connected to database");
@@ -14,7 +13,6 @@ async function checkUsers() {
     const result = await client.query(
       "SELECT id, email, role, created_at FROM users ORDER BY created_at DESC"
     );
-
     if (result.rows.length > 0) {
       console.log(`ℹ️ Found ${result.rows.length} user(s):`);
       result.rows.forEach((user, i) => {
@@ -27,7 +25,6 @@ async function checkUsers() {
     } else {
       console.log("❌ No users found in the database!");
     }
-
   } catch (err) {
     console.error("❌ Failed to fetch users:", err);
     process.exit(1);

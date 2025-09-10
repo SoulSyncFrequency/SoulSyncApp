@@ -6,7 +6,6 @@ async function checkAdmin() {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
   });
-
   try {
     await client.connect();
     console.log("✅ Connected to database");
@@ -15,7 +14,6 @@ async function checkAdmin() {
       "SELECT id, email, role, created_at FROM users WHERE email = $1",
       ["admin@example.com"]
     );
-
     if (result.rows.length > 0) {
       const user = result.rows[0];
       console.log("✅ Admin user found:");
@@ -26,7 +24,6 @@ async function checkAdmin() {
     } else {
       console.log("❌ Admin user not found!");
     }
-
   } catch (err) {
     console.error("❌ Failed to check admin user:", err);
     process.exit(1);

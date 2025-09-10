@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+dist
+build
+.cache
+coverage
+cypress/screenshots
+cypress/videos
+*.tgz
+*.log
+.DS_Store
+.env

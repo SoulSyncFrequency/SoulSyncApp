@@ -1,0 +1,173 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install (workspaces)
+        run: npm install --workspaces
+
+      - name: Backend tests (jest + coverage)
+        working-directory: backend
+        run: npx jest --coverage
+
+      - name: Frontend tests (vitest + coverage)
+        working-directory: frontend
+        run: npx vitest run --coverage
+
+      - name: Build frontend (with analyzer artifact)
+        working-directory: frontend
+        env:
+          ANALYZE: "1"
+        run: npm run build || true
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-bundled
+          path: |
+            backend/coverage/**
+            frontend/coverage/**
+            frontend/stats.html
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: |
+            backend/coverage/lcov.info
+            frontend/coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: true
+
+
+  sentry-release:
+    runs-on: ubuntu-latest
+    if: env.SENTRY_AUTH_TOKEN != null
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+      - name: Build with sourcemaps
+        working-directory: frontend
+        run: npm run build -- --sourcemap
+      - name: Upload sourcemaps to Sentry
+        uses: getsentry/action-release@v1
+        with:
+          environment: production
+          sourcemaps: frontend/dist/assets
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_RELEASE: ${{ github.sha }}
+
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build images and start services
+        run: docker compose up -d --build
+
+      - name: Wait for backend readiness
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:5000/api/readyz >/dev/null; then
+              echo "Backend ready"; exit 0;
+            fi
+            echo "Waiting backend..."; sleep 2;
+          done
+          echo "Backend not ready"; docker logs $(docker ps -q); exit 1
+
+      - name: Install Cypress
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run Cypress (headless)
+        working-directory: frontend
+        run: npm run e2e || true
+
+      - name: Upload Cypress artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            frontend/cypress/screenshots/**
+            frontend/cypress/videos/**
+
+
+  pact-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+      - name: Generate consumer pact
+        working-directory: frontend
+        run: npm run pact:consumer
+      - name: Start backend
+        run: docker compose up -d --build backend
+      - name: Wait for backend
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:5000/api/readyz >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Verify provider
+        working-directory: backend
+        run: npm ci && npm run pact:provider
+
+
+  deploy-and-verify:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy (example placeholder)
+        run: |
+          echo "Deploy current image tag ${{ github.sha }} to target environment"
+          # your real deploy command here (e.g., helm upgrade or compose pull/up)
+      - name: Post-deploy health check
+        run: |
+          for i in {1..60}; do
+            if curl -fsS ${{ secrets.HEALTHCHECK_URL }} >/dev/null; then exit 0; fi
+            echo "Waiting for healthy..."; sleep 2
+          done
+          exit 1
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Health failed. Rolling back to previous image..."
+          # example: helm rollback release 1 || docker compose pull app:${{ github.event.before }} && docker compose up -d
