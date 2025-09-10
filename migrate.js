@@ -1,25 +1,59 @@
-// Simple migration runner for Postgres using node-postgres
-import fs from 'fs'
-import path from 'path'
-import { Client } from 'pg'
+// backend/scripts/migrate.js
+const { Client } = require("pg");
 
-async function run(){
-  const url = process.env.PG_CONNECTION_STRING || process.env.DATABASE_URL
-  if(!url){ 
-    console.log('[migrate] PG connection string not set. Skipping migrations.')
-    process.exit(0)
+const sql = `
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    name TEXT,
+    role TEXT DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Sessions table
+CREATE TABLE IF NOT EXISTS sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    refresh_token TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    expires_at TIMESTAMP NOT NULL
+);
+
+-- Logs table
+CREATE TABLE IF NOT EXISTS logs (
+    id BIGSERIAL PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    action TEXT NOT NULL,
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_logs_user_id ON logs(user_id);
+`;
+
+async function migrate() {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+
+  try {
+    await client.connect();
+    console.log("✅ Connected to database");
+    await client.query(sql);
+    console.log("✅ Migration completed successfully");
+  } catch (err) {
+    console.error("❌ Migration failed:", err);
+    process.exit(1);
+  } finally {
+    await client.end();
   }
-  const client = new Client({ connectionString: url })
-  await client.connect()
-  const dir = path.join(process.cwd(), 'migrations')
-  const files = fs.readdirSync(dir).filter(f=>f.endsWith('.sql')).sort()
-  for(const f of files){
-    const sql = fs.readFileSync(path.join(dir,f),'utf-8')
-    console.log('[migrate] applying', f)
-    await client.query(sql)
-  }
-  await client.end()
-  console.log('[migrate] done')
 }
 
-run().catch(e=>{ console.error(e); process.exit(1) })
+migrate();
