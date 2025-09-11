@@ -1,9 +1,17 @@
-import { pool } from "../src/db";
+import { pool } from "../db";
 
 async function run() {
   try {
     console.log("🔧 Running secure migrations...");
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+
       CREATE TABLE IF NOT EXISTS refresh_tokens (
         id BIGSERIAL PRIMARY KEY,
         user_id UUID REFERENCES users(id) ON DELETE CASCADE,

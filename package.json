@@ -1,26 +1,38 @@
 {
-  "name": "backend",
+  "name": "soulsync-backend",
   "version": "1.0.0",
   "main": "dist/server.js",
-  "license": "MIT",
+  "type": "commonjs",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "migrate:secure": "tsx backend/scripts/migrate-secure.ts"
+    "migrate:secure": "tsx scripts/migrate-secure.ts",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier . --write",
+    "prepare": "husky install"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "pg": "^8.11.3",
     "bcrypt": "^5.1.1",
-    "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
-    "helmet": "^7.0.0",
+    "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
-    "nodemailer": "^6.9.11"
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.11",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.10.5",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "husky": "^9.0.10",
+    "prettier": "^3.3.3",
     "tsx": "^3.12.7",
-    "typescript": "^5.0.0"
+    "typescript": "^5.4.5"
   }
 }

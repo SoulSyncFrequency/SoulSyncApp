@@ -1,9 +1,4 @@
-node_modules/
-dist/
-build/
-coverage/
+node_modules
+dist
 .env
 .DS_Store
-*.tgz
-cypress/screenshots/
-cypress/videos/
