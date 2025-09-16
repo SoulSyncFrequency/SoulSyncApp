@@ -1,3 +1,0 @@
-git add tsconfig.json
-git commit -m "Fix tsconfig.json for root-level project"
-git push
