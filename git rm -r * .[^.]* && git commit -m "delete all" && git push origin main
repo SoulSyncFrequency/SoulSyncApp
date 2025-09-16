@@ -1,1 +1,0 @@
-git rm -r * .[^.]* && git commit -m "delete all" && git push origin main
