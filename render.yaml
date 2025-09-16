@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: soulsync-backend
-    env: docker
-    plan: free
-    autoDeploy: true
-    healthCheckPath: /api/health
-    region: frankfurt
