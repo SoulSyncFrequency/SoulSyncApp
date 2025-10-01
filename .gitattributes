@@ -1,0 +1,14 @@
+# Handle line endings automatically for cross-platform
+* text=auto
+
+# Lock files
+*.lock binary
+
+# Ensure consistent EOL in scripts
+*.sh text eol=lf
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
