@@ -1,0 +1,15 @@
+
+# Node 20 slim with non-root user, PNPM
+FROM node:20-slim AS base
+ENV NODE_ENV=production
+RUN corepack enable && apt-get update && apt-get install -y --no-install-recommends dumb-init && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY backend/package.json backend/pnpm-lock.yaml ./
+RUN pnpm i --frozen-lockfile --prod
+COPY backend .
+RUN pnpm run build
+
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD node -e "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok) process.exit(1)}).catch(()=>process.exit(1))"
+CMD ["dumb-init","node","dist/server.js"]

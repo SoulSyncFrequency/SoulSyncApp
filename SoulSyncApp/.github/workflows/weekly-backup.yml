@@ -1,0 +1,75 @@
+name: weekly-backup
+on:
+  schedule:
+    - cron: '45 2 * * 1'  # Mondays 02:45 UTC
+  workflow_dispatch: {}
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: DB Backup
+        run: bash ops/db_backup.sh || true
+      - name: Redis Backup
+        run: bash ops/redis_backup.sh || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backups
+          path: backups/
+
+
+      - name: Send notification (Slack)
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            STATUS="${{ job.status }}"
+            MSG="[$GITHUB_WORKFLOW] status: $STATUS (run $GITHUB_RUN_NUMBER)"
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{text:$t}')" "$SLACK_WEBHOOK_URL" || true
+          fi
+
+      - name: Send notification (Discord)
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            STATUS="${{ job.status }}"
+            MSG="[$GITHUB_WORKFLOW] status: $STATUS (run $GITHUB_RUN_NUMBER)"
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{content:$t}')" "$DISCORD_WEBHOOK_URL" || true
+          fi
+
+
+      - name: Backup summary
+        if: always()
+        run: |
+          echo "RUN_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
+          if [ -d backups ]; then
+            du -sh backups/* || true
+          else
+            echo "no backups dir"
+          fi
+
+      - name: Send notification (Slack detailed)
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            STATUS="${{ job.status }}"
+            DURATION=$(( ($(date +%s) - $(date -d "${{ github.event.head_commit.timestamp || github.run_started_at }}" +%s) ) ))
+            MSG="✅ Weekly backup: $STATUS | run $GITHUB_RUN_NUMBER | $RUN_URL"
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{text:$t}')" "$SLACK_WEBHOOK_URL" || true
+          fi
+
+      - name: Send notification (Discord detailed)
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            STATUS="${{ job.status }}"
+            MSG="✅ Weekly backup: $STATUS | run $GITHUB_RUN_NUMBER | $RUN_URL"
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{content:$t}')" "$DISCORD_WEBHOOK_URL" || true
+          fi

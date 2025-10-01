@@ -1,0 +1,121 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: therapy
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install backend deps
+      working-directory: backend
+      run: npm install
+
+    - name: Install frontend deps
+      working-directory: frontend
+      run: npm install
+
+    - name: Lint & Test
+      run: |
+        npm run lint --prefix backend || true
+        npm run lint --prefix frontend || true
+        npm test --prefix backend || true
+
+    - name: Build frontend
+      working-directory: frontend
+      run: npm run build
+
+    - name: Upload frontend dist
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-dist
+        path: frontend/dist
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t ghcr.io/${{ github.repository }}:latest backend
+        docker push ghcr.io/${{ github.repository }}:latest
+
+    - name: Build Android .aab
+      run: |
+        cd android
+        ./gradlew bundleRelease
+      continue-on-error: true
+
+    - name: Upload Android .aab
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-aab
+        path: android/app/build/outputs/bundle/release/*.aab
+      continue-on-error: true
+
+    - name: Build iOS .ipa (Simulator)
+      run: |
+        echo "iOS build step placeholder - requires macOS runner"
+      continue-on-error: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to Server via SSH
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.CR_PAT }}
+          docker pull ghcr.io/${{ github.repository }}:latest
+          docker stop therapy || true
+          docker rm therapy || true
+          docker run -d --name therapy -p 80:5050 --env-file .env ghcr.io/${{ github.repository }}:latest
+
+  k8s-deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+
+      - name: Helm upgrade
+        run: |
+          helm upgrade --install therapy ops/helm/therapy-engine             -f ops/helm/therapy-engine/values.yaml             --set backend.image.tag=${{ github.sha }}

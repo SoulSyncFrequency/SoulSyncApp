@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soulsync-app
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: app
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+          env:
+            - name: APP_ENV
+              value: "staging"

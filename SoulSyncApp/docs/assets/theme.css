@@ -1,0 +1,17 @@
+:root {
+  --brand-primary: #6a4bff;
+  --brand-accent: #ff4bd6;
+  --bg: #ffffff;
+  --text: #222222;
+  --sidebar-bg: #f7f7f7;
+  --sidebar-text: #333333;
+  --header-bg: #ffffff;
+  --brand-font: 'Inter', sans-serif;
+}
+[data-theme='dark'] {
+  --bg: #1e1e1e;
+  --text: #dddddd;
+  --sidebar-bg: #2a2a2a;
+  --sidebar-text: #eeeeee;
+  --header-bg: #2c2c2c;
+}

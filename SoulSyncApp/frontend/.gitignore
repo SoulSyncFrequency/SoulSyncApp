@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Builds
+dist/
+build/
+.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage
+coverage/
+
+# Cypress artifacts
+cypress/screenshots/
+cypress/videos/
+
+# Env files
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# Misc
+*.tgz
+.env.development.local
+.env.production.local
+.env.test.local
+.env.*

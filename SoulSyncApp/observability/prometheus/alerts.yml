@@ -1,0 +1,30 @@
+groups:
+  - name: soulsync.alerts
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{status=~"5.."}[5m])) /
+          sum(rate(http_server_request_duration_seconds_count[5m])) > 0.05
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "High 5xx error rate (>5%)"
+          description: "5xx responses exceed 5% over the last 5 minutes."
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket[5m])) by (le)) > 1
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "High latency p95 (>1s)"
+          description: "p95 request duration above 1s over 5 minutes."
+
+
+- alert: QueueBacklogHigh
+  expr: sum(bull_queue_waiting_jobs) by (queue) > 100
+  for: 10m
+  labels: { severity: warning }
+  annotations:
+    summary: "BullMQ queue backlog high"
+    description: "Waiting jobs per queue exceed 100 for 10m. Investigate worker capacity or stuck jobs."

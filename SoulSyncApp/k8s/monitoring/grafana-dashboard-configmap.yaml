@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-soulsync
+  labels:
+    grafana_dashboard: "1"
+data:
+  soulsync-dashboard.json: |
+    {
+      "title": "SoulSync App Overview",
+      "schemaVersion": 36,
+      "panels": [
+        {
+          "type": "graph",
+          "title": "HTTP Requests (rate)",
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total{job=\"soulsync-app\"}[5m]))",
+              "legendFormat": "req/s"
+            }
+          ],
+          "id": 1
+        },
+        {
+          "type": "graph",
+          "title": "HTTP 5xx (rate)",
+          "targets": [
+            {
+              "expr": "sum(rate(http_requests_total{job=\"soulsync-app\",status=~\"5..\"}[5m]))",
+              "legendFormat": "5xx/s"
+            }
+          ],
+          "id": 2
+        },
+        {
+          "type": "graph",
+          "title": "CPU usage (cores)",
+          "targets": [
+            {
+              "expr": "avg(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace=\"soulsync\",container=\"app\"})",
+              "legendFormat": "cpu"
+            }
+          ],
+          "id": 3
+        },
+        {
+          "type": "graph",
+          "title": "Memory usage (bytes)",
+          "targets": [
+            {
+              "expr": "avg(container_memory_working_set_bytes{namespace=\"soulsync\",container=\"app\"})",
+              "legendFormat": "mem"
+            }
+          ],
+          "id": 4
+        }
+      ],
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timezone": "browser"
+    }

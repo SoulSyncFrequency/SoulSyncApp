@@ -1,0 +1,34 @@
+name: Sentry Release (Sourcemaps)
+
+on:
+  push:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install deps
+        run: |
+          cd frontend && npm ci && npm run build
+      - name: Upload sourcemaps (frontend example)
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+          SENTRY_RELEASE: ${{ github.ref_name }}
+        run: |
+          npm i -g @sentry/cli
+          sentry-cli releases new "$SENTRY_RELEASE"
+          sentry-cli releases files "$SENTRY_RELEASE" upload-sourcemaps frontend/dist --rewrite --validate --url-prefix '~/'
+          sentry-cli releases finalize "$SENTRY_RELEASE"

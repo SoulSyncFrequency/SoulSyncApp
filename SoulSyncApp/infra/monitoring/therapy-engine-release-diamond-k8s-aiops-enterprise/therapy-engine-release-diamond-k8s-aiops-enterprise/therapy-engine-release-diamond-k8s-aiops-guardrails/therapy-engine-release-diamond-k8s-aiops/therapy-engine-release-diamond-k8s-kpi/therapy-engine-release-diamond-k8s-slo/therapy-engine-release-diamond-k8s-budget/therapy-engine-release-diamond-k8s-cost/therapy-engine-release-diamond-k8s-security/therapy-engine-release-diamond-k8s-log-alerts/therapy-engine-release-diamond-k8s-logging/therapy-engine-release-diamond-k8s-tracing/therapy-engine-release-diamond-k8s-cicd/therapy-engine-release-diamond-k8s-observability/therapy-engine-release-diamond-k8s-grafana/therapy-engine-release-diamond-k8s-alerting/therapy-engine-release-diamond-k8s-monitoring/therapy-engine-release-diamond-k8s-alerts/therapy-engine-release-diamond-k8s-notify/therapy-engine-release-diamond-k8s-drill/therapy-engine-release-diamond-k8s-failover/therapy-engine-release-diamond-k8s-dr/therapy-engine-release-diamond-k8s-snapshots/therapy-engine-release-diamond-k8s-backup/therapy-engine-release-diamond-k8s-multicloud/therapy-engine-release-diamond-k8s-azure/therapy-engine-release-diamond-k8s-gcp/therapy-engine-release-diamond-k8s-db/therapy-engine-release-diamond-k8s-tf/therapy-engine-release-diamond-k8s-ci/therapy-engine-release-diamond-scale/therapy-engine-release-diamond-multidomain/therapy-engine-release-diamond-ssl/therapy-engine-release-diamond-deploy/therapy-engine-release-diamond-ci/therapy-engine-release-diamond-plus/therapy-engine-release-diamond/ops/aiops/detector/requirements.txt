@@ -1,0 +1,6 @@
+requests
+numpy
+prometheus_client
+scikit-learn==1.5.1
+
+psycopg2-binary==2.9.9

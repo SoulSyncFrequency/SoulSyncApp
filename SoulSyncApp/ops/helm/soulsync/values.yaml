@@ -1,0 +1,18 @@
+image:
+  repository: ghcr.io/your-org/soulsync-backend
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  SENTRY_DSN: ""
+  SENTRY_ENVIRONMENT: "production"
+  ENABLE_HTTPS_REDIRECT: "true"
+  CSP_ENFORCE: "true"
+  ENABLE_API_DOCS: "false"
+  ALLOWED_HOSTS: "app.example.com"

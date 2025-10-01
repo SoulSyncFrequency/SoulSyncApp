@@ -1,0 +1,11 @@
+appId: com.soulsync.app
+---
+- launchApp
+- tapOn: "Login"
+- inputText: "test@example.com"
+- inputText: "password123"
+- tapOn: "Submit"
+- tapOn: "Start Questionnaire"
+- tapOn: "Finish"
+- tapOn: "Generate PDF"
+- assertVisible: "Your therapy PDF"

@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Admin Diagnostics</title>
+<style>body{font-family:system-ui,Arial;padding:20px}.card{border:1px solid #ddd;border-radius:12px;padding:16px;margin-bottom:16px}button{padding:10px 14px;border-radius:10px;border:1px solid #ccc;cursor:pointer}input[type=text]{padding:10px;border-radius:10px;border:1px solid #ccc;width:100%}pre{background:#f7f7f7;padding:12px;border-radius:10px;overflow:auto}</style>
+</head><body>
+<h1>🩺 Admin Diagnostics</h1>
+<div class="card"><p>JWT Token:</p><input id="jwt" type="text" placeholder="Bearer token"/><p><button onclick="saveToken()">Save Token</button></p></div>
+<div class="card"><h3>Status</h3><button onclick="loadDiag()">Load Diagnostics</button><pre id="out"></pre></div>
+<div class="card"><h3>Restart service</h3><button onclick="restart()">Trigger Restart</button><pre id="restartOut"></pre></div>
+<script>
+const key="ADMIN_JWT_TOKEN"; const jwtInput=document.getElementById('jwt'); const saved=localStorage.getItem(key); if(saved) jwtInput.value=saved;
+function saveToken(){ localStorage.setItem(key, jwtInput.value.trim()); alert("Saved!"); }
+async function loadDiag(){ const t=localStorage.getItem(key)||""; const r=await fetch('/admin/diagnostics',{headers:{Authorization:'Bearer '+t}}); document.getElementById('out').textContent=await r.text(); }
+async function restart(){ const t=localStorage.getItem(key)||""; const r=await fetch('/admin/restart',{method:'POST',headers:{Authorization:'Bearer '+t}}); document.getElementById('restartOut').textContent=await r.text(); }
+</script>
+</body></html>

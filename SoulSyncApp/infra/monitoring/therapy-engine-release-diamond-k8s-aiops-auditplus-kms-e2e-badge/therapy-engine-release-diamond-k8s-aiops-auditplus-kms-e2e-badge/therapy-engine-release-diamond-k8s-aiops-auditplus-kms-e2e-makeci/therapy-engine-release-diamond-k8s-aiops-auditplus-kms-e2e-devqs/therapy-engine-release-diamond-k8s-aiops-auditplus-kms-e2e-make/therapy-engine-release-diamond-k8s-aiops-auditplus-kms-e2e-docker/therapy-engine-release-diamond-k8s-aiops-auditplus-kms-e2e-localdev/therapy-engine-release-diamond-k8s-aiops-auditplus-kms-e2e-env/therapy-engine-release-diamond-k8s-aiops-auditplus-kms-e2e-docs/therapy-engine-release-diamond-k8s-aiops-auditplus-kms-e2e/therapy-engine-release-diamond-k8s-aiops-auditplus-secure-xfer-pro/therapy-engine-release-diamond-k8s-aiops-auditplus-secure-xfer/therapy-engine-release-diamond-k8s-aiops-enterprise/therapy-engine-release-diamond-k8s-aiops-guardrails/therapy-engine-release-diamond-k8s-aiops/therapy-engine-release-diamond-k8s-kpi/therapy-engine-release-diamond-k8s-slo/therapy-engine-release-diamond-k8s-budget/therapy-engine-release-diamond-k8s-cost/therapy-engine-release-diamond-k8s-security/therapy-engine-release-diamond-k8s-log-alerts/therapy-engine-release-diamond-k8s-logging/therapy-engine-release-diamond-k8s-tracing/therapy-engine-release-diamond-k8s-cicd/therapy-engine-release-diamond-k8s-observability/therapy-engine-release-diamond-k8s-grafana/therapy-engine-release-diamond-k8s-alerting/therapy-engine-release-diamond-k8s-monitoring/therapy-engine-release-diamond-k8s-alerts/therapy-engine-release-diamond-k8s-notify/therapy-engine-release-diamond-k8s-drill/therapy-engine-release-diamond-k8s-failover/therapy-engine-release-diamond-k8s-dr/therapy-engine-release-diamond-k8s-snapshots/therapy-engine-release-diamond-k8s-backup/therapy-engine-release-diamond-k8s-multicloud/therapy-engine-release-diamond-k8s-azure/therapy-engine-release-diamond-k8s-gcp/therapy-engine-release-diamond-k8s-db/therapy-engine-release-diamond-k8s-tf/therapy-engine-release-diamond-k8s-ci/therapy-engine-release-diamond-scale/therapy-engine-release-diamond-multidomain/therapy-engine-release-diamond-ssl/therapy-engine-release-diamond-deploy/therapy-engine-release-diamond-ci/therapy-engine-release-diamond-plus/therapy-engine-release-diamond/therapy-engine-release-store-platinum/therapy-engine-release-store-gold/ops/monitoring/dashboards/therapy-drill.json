@@ -1,0 +1,23 @@
+{
+  "title": "Therapy Engine - DR & Backups",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Backend Up",
+      "targets": [
+        {
+          "expr": "sum(up{service=~\".*-backend\"})"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Minutes since last successful DR drill",
+      "targets": [
+        {
+          "expr": "(time() - last_successful_drill_timestamp_seconds) / 60"
+        }
+      ]
+    }
+  ]
+}

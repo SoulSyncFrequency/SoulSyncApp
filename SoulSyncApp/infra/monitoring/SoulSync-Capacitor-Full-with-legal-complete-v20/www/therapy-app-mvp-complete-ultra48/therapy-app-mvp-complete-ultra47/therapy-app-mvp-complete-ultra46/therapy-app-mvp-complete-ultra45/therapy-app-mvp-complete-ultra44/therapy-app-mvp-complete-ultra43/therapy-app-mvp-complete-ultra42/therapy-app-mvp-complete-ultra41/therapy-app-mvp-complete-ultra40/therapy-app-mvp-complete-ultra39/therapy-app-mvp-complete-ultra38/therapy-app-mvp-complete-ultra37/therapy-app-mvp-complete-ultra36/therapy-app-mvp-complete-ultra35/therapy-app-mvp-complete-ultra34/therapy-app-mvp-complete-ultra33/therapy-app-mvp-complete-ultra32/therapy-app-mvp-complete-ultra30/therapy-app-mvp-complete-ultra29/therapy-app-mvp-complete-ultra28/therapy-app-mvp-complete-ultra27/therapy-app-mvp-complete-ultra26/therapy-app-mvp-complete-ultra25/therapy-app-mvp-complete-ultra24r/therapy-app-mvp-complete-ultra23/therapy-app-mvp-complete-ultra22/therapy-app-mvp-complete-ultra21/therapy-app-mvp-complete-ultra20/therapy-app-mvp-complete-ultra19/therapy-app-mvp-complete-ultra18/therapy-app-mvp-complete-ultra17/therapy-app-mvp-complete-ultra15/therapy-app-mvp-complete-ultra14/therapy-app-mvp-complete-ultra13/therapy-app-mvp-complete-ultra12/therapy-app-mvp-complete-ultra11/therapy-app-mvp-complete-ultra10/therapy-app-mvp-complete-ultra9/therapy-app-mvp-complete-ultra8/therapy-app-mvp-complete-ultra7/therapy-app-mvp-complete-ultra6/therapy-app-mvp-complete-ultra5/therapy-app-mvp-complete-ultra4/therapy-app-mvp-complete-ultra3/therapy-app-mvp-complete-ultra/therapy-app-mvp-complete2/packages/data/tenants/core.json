@@ -1,0 +1,7 @@
+{
+  "key": "core",
+  "brand": "Therapy App",
+  "primary": "#4F46E5",
+  "pdfBrand": "Therapy App",
+  "logoSvg": "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='40' viewBox='0 0 160 40'><rect width='160' height='40' rx='8' fill='#4F46E5'/><text x='20' y='26' font-family='Arial' font-size='16' fill='#fff'>Therapy Core</text></svg>"
+}

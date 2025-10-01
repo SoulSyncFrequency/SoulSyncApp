@@ -1,0 +1,11 @@
+{
+  "name": "brand-assets",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "sharp": "^0.33.4"
+  },
+  "scripts": {
+    "build:png": "node render_png_from_svg.js"
+  }
+}

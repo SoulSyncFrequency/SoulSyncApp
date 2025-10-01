@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: SoulSync API
+  version: 1.0.0
+paths:
+  /api/healthz:
+    get:
+      summary: Liveness probe
+      responses:
+        '200':
+          description: OK
+  /api/readiness:
+    get:
+      summary: Readiness probe
+      responses:
+        '200':
+          description: Ready
+  /api/metrics:
+    get:
+      summary: Prometheus metrics
+      responses:
+        '200':
+          description: Metrics text
+  /api/version:
+    get:
+      summary: Build version info
+      responses:
+        '200':
+          description: Version
+  /api/logs:
+    get:
+      summary: Query logs
+      parameters:
+        - in: query
+          name: level
+          schema: { type: string, enum: [INFO, WARN, ERROR] }
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: since
+          schema: { type: string, format: date-time }
+        - in: query
+          name: until
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: List of log rows
+  /api/logs/export.csv:
+    get:
+      summary: Export logs as CSV
+      responses:
+        '200':
+          description: CSV file
+  /api/csp-report:
+    post:
+      summary: CSP violation reports
+      responses:
+        '204':
+          description: No content

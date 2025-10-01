@@ -1,0 +1,6 @@
+route:
+  receiver: 'slack'
+receivers:
+- name: 'slack'
+  webhook_configs:
+  - url: '${ALERT_WEBHOOK_URL}'

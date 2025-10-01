@@ -1,0 +1,934 @@
+{
+  "zinc_oxide_non_nano": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "mineral_uv"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "protective",
+      "soothing"
+    ]
+  },
+  "zinc_oxide": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "mineral_uv"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "protective",
+      "soothing"
+    ]
+  },
+  "titanium_dioxide_non_nano": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "mineral_uv"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "protective",
+      "soothing"
+    ]
+  },
+  "titanium_dioxide": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "mineral_uv"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "protective",
+      "soothing"
+    ]
+  },
+  "oxybenzone": {
+    "f0": 0.3,
+    "grade": "E",
+    "flags": [
+      "endocrine_disruptor"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "octinoxate": {
+    "f0": 0.3,
+    "grade": "E",
+    "flags": [
+      "endocrine_disruptor"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "octocrylene": {
+    "f0": 0.3,
+    "grade": "E",
+    "flags": [
+      "endocrine_disruptor"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "homosalate": {
+    "f0": 0.3,
+    "grade": "E",
+    "flags": [
+      "endocrine_disruptor"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "avobenzone": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "uv_filter"
+    ],
+    "purpose_tags": [
+      "uv_filter"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "squalane": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier",
+      "texture"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "sensual"
+    ]
+  },
+  "shea_butter": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier",
+      "texture"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "sensual"
+    ]
+  },
+  "jojoba_oil": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier",
+      "texture"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "sensual"
+    ]
+  },
+  "cetearyl_alcohol": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier",
+      "texture"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "sensual"
+    ]
+  },
+  "caprylic_capric_triglyceride": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier",
+      "texture"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "sensual"
+    ]
+  },
+  "dimethicone": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier",
+      "texture"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "sensual"
+    ]
+  },
+  "glycerin": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "humectant"
+    ],
+    "purpose_tags": [
+      "hydration",
+      "texture",
+      "emollient"
+    ],
+    "emotional_tags": [
+      "soothing",
+      "protective"
+    ]
+  },
+  "hyaluronic_acid": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "humectant"
+    ],
+    "purpose_tags": [
+      "hydration",
+      "texture",
+      "emollient"
+    ],
+    "emotional_tags": [
+      "soothing",
+      "protective"
+    ]
+  },
+  "propylene_glycol": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "humectant"
+    ],
+    "purpose_tags": [
+      "hydration",
+      "texture",
+      "emollient"
+    ],
+    "emotional_tags": [
+      "soothing",
+      "protective"
+    ]
+  },
+  "butylene_glycol": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [
+      "humectant"
+    ],
+    "purpose_tags": [
+      "hydration",
+      "texture",
+      "emollient"
+    ],
+    "emotional_tags": [
+      "soothing",
+      "protective"
+    ]
+  },
+  "tocopherol": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "antioxidant"
+    ],
+    "purpose_tags": [
+      "antioxidant",
+      "active"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "focus",
+      "cleansing"
+    ]
+  },
+  "ascorbic_acid": {
+    "f0": 0.78,
+    "grade": "B",
+    "flags": [
+      "antioxidant"
+    ],
+    "purpose_tags": [
+      "antioxidant",
+      "active"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "focus",
+      "cleansing"
+    ]
+  },
+  "niacinamide": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "antioxidant"
+    ],
+    "purpose_tags": [
+      "antioxidant",
+      "active"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "focus",
+      "cleansing"
+    ]
+  },
+  "coenzyme_q10": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "antioxidant"
+    ],
+    "purpose_tags": [
+      "antioxidant",
+      "active"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "focus",
+      "cleansing"
+    ]
+  },
+  "resveratrol": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "antioxidant"
+    ],
+    "purpose_tags": [
+      "antioxidant",
+      "active"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "focus",
+      "cleansing"
+    ]
+  },
+  "parabens": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "preservative_or_risk"
+    ],
+    "purpose_tags": [
+      "preservative_or_risk"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "phenoxyethanol": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "preservative_or_risk"
+    ],
+    "purpose_tags": [
+      "preservative_or_risk"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "triclosan": {
+    "f0": 0.2,
+    "grade": "E",
+    "flags": [
+      "preservative_or_risk"
+    ],
+    "purpose_tags": [
+      "preservative_or_risk"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "formaldehyde_donors": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "preservative_or_risk"
+    ],
+    "purpose_tags": [
+      "preservative_or_risk"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "methylisothiazolinone": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "preservative_or_risk"
+    ],
+    "purpose_tags": [
+      "preservative_or_risk"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "benzalkonium_chloride": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "preservative_or_risk"
+    ],
+    "purpose_tags": [
+      "preservative_or_risk"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "parfum": {
+    "f0": 0.45,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "limonene": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "linalool": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "citral": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "coumarin": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "eugenol": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "benzyl_alcohol": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "benzyl_benzoate": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "benzyl_salicylate": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "fragrance"
+    ],
+    "purpose_tags": [
+      "fragrance"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "uplifting"
+    ]
+  },
+  "ci_19140": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "colorant"
+    ],
+    "purpose_tags": [
+      "colorant"
+    ],
+    "emotional_tags": [
+      "creative",
+      "uplifting"
+    ]
+  },
+  "ci_42090": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "colorant"
+    ],
+    "purpose_tags": [
+      "colorant"
+    ],
+    "emotional_tags": [
+      "creative",
+      "uplifting"
+    ]
+  },
+  "ci_15985": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "colorant"
+    ],
+    "purpose_tags": [
+      "colorant"
+    ],
+    "emotional_tags": [
+      "creative",
+      "uplifting"
+    ]
+  },
+  "ci_77491": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "colorant"
+    ],
+    "purpose_tags": [
+      "colorant"
+    ],
+    "emotional_tags": [
+      "creative",
+      "uplifting"
+    ]
+  },
+  "ci_77492": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "colorant"
+    ],
+    "purpose_tags": [
+      "colorant"
+    ],
+    "emotional_tags": [
+      "creative",
+      "uplifting"
+    ]
+  },
+  "ci_77499": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "colorant"
+    ],
+    "purpose_tags": [
+      "colorant"
+    ],
+    "emotional_tags": [
+      "creative",
+      "uplifting"
+    ]
+  },
+  "cyclopentasiloxane": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "silicone"
+    ],
+    "purpose_tags": [
+      "texture",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "protective"
+    ]
+  },
+  "cyclohexasiloxane": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "silicone"
+    ],
+    "purpose_tags": [
+      "texture",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "protective"
+    ]
+  },
+  "amodimethicone": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "silicone"
+    ],
+    "purpose_tags": [
+      "texture",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "sensual",
+      "protective"
+    ]
+  },
+  "sodium_lauryl_sulfate": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "surfactant"
+    ],
+    "purpose_tags": [
+      "cleansing"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "sodium_laureth_sulfate": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "surfactant"
+    ],
+    "purpose_tags": [
+      "cleansing"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "cocamidopropyl_betaine": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "surfactant"
+    ],
+    "purpose_tags": [
+      "cleansing"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "disodium_lauryl_sulfosuccinate": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "surfactant"
+    ],
+    "purpose_tags": [
+      "cleansing"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "argan_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "rosehip_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "marula_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "olive_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "coconut_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "sunflower_oil": {
+    "f0": 0.45,
+    "grade": "D",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "almond_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "avocado_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "grape_seed_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "evening_primrose_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "tamanu_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  },
+  "sea_buckthorn_oil": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [
+      "emollient"
+    ],
+    "purpose_tags": [
+      "emollient",
+      "barrier"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "sensual"
+    ]
+  }
+}

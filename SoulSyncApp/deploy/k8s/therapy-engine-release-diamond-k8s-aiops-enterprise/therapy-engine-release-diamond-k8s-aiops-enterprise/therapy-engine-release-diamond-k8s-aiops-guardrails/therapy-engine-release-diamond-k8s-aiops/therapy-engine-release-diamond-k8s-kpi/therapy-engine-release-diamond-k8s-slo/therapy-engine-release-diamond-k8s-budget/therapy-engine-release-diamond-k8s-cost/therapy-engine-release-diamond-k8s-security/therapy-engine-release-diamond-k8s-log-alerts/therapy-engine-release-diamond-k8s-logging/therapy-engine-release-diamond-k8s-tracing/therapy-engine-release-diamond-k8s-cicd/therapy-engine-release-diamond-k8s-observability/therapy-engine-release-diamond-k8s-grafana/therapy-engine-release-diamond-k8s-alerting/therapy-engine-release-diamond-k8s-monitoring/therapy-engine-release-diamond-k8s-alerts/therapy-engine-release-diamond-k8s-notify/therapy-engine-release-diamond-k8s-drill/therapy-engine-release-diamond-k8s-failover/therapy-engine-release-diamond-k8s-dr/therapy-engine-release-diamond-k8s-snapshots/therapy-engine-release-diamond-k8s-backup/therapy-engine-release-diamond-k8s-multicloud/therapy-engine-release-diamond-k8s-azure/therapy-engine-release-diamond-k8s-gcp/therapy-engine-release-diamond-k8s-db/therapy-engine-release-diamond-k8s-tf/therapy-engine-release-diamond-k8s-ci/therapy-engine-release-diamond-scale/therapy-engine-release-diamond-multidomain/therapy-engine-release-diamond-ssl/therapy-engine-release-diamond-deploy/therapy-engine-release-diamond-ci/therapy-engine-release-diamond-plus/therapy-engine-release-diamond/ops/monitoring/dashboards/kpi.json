@@ -1,0 +1,41 @@
+{
+  "title": "Therapy Engine - Business KPIs",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Active Users",
+      "targets": [
+        {
+          "expr": "therapy_active_users"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total Revenue",
+      "targets": [
+        {
+          "expr": "therapy_revenue_total"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Therapy Success Rate",
+      "targets": [
+        {
+          "expr": "therapy:success_rate"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Therapy Sessions Over Time",
+      "targets": [
+        {
+          "expr": "increase(therapy_sessions_total[1h])"
+        }
+      ]
+    }
+  ]
+}

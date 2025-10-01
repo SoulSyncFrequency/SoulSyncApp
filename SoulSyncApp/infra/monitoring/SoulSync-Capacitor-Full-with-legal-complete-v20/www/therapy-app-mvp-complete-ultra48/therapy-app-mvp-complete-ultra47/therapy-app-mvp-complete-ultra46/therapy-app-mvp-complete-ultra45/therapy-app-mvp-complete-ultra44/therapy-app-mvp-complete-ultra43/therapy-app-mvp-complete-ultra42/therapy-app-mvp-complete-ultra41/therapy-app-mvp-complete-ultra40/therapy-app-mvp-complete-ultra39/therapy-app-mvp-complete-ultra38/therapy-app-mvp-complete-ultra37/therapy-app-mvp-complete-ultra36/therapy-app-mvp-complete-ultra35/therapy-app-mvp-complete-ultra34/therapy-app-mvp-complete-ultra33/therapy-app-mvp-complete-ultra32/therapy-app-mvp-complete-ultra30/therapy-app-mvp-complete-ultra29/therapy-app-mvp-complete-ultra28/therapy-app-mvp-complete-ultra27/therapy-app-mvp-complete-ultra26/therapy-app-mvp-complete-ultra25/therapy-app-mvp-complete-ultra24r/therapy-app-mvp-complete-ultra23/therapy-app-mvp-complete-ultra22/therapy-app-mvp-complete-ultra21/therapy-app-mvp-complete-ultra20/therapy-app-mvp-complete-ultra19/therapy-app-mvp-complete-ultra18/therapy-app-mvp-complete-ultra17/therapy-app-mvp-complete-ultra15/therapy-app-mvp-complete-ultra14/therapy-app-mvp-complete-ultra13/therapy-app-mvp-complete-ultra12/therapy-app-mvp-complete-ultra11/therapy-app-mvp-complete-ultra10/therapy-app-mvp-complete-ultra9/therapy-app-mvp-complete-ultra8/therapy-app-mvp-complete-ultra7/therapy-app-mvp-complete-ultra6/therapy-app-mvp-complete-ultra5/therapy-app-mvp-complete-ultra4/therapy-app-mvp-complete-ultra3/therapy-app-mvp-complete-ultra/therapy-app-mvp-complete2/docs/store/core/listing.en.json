@@ -1,0 +1,16 @@
+{
+  "name": "Therapy App \u2013 Wellness Planner",
+  "short_description": "Two modes: Direct input or 140-question chakra questionnaire. Educational wellness plans. Not medical advice.",
+  "full_description": "Describe your condition or complete a guided questionnaire. Get a structured 5-day nutrition plan, lifestyle, mindfulness and psychoeducation.\n\u2022 File uploads (labs, notes)\n\u2022 History & offline cache\n\u2022 PDF export\n\u2022 Reminders\n\u2022 Biometric lock & PIN\n\u2022 Multi-language (HR/EN)\n\nDisclaimer: Educational wellness content, not medical advice.",
+  "keywords": [
+    "wellness",
+    "sleep",
+    "mindfulness",
+    "nutrition",
+    "questionnaire",
+    "chakra",
+    "therapy"
+  ],
+  "privacy_url": "https://example.com/privacy",
+  "support_url": "https://example.com/support"
+}

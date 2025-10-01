@@ -1,0 +1,70 @@
+{
+  "id": null,
+  "title": "SoulSync App Metrics",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP duration histogram (seconds)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(http_server_request_duration_seconds_bucket[1m])) by (le,route))",
+          "legendFormat": "p90 {{route}}"
+        },
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(http_request_duration_seconds_bucket[1m])) by (le,route))",
+          "legendFormat": "p90 (alt) {{route}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP requests per second",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total[1m])) by (route)",
+          "legendFormat": "{{route}}",
+          "interval": ""
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP request duration p95/p99",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,route))",
+          "legendFormat": "p95 {{route}}"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,route))",
+          "legendFormat": "p99 {{route}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Error rate (5xx responses)",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{status_code=~\"5..\"}[1m])) / sum(rate(http_requests_total[1m]))",
+          "legendFormat": "error %",
+          "interval": ""
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Redis FT.SEARCH QPS",
+      "targets": [
+        {
+          "expr": "sum(rate(redis_commands_total{command=\"ft.search\"}[1m]))",
+          "legendFormat": "ft.search QPS"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s"
+}

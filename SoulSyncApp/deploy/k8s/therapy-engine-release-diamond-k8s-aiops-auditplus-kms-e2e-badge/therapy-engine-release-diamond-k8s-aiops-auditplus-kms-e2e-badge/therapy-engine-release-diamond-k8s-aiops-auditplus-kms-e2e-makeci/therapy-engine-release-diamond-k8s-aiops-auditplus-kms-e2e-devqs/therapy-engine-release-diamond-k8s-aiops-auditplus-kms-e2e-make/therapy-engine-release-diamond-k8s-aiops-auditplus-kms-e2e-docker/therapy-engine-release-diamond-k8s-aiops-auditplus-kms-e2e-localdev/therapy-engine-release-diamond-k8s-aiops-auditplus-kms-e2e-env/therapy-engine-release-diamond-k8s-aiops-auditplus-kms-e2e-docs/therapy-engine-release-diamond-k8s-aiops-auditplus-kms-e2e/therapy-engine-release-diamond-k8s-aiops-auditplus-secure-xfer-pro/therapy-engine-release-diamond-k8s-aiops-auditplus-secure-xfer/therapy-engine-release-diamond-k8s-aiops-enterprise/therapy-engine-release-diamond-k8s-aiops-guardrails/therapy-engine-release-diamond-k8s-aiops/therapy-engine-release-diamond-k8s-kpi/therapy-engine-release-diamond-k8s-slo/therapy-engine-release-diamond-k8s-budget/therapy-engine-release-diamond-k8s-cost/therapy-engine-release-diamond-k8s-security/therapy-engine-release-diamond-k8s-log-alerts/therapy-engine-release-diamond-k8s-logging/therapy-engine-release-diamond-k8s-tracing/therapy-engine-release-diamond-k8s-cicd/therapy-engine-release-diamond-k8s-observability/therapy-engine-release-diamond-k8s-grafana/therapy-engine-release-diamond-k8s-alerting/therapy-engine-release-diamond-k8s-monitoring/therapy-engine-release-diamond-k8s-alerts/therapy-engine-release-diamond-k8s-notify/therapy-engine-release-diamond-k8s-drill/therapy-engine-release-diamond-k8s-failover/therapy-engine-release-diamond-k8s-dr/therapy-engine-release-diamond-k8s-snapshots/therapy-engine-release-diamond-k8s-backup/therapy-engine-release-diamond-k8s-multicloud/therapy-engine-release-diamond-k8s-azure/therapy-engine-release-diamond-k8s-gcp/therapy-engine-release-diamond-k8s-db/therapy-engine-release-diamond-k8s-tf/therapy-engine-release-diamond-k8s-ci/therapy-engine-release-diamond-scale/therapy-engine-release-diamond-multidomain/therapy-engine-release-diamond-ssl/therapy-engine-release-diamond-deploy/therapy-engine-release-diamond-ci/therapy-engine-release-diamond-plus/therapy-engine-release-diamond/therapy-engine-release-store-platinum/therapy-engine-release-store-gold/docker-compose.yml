@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5050:5050"
+    env_file:
+      - ./backend/.env.example
+    depends_on:
+      - chem
+  chem:
+    build: ./chem-microservice
+    ports:
+      - "7070:7070"
+    env_file:
+      - ./chem-microservice/.env.example
+  frontend:
+    build: ./frontend
+    ports:
+      - "4173:4173"
+    env_file:
+      - ./frontend/.env.example
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: therapy
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

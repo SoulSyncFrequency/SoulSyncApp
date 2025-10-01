@@ -1,0 +1,6 @@
+gcp_project = "my-gcp-project-id"
+gcp_region  = "europe-west3"
+
+db_name     = "therapy"
+db_user     = "therapy_user"
+db_password = "superSecretPass123"

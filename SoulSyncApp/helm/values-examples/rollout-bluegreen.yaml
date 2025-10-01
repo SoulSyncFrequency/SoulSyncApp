@@ -1,0 +1,34 @@
+# Argo Rollouts Blue/Green example for SoulSync backend
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: soulsync-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: soulsync-backend
+  template:
+    metadata:
+      labels:
+        app: soulsync-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/your-org/soulsync-backend:latest
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet: { path: /readyz, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /livez, port: 3000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+  strategy:
+    blueGreen:
+      activeService: soulsync-backend
+      previewService: soulsync-backend-preview
+      autoPromotionEnabled: false
+      autoPromotionSeconds: 120

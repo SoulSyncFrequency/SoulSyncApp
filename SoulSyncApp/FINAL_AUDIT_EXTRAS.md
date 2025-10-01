@@ -1,0 +1,36 @@
+# Extra Audit – Potential Cleanups
+
+Found possible debug or TODO markers:
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/utils/email.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/scripts/migrate-secure.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/scripts/restore-env.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/scripts/migrate-harden.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/scripts/generate-build-info.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/scripts/set-metadata.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/scripts/migrate.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/frontend/src/state/iap.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/backend/scripts/gen-openapi.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/backend/src/db.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/backend/src/system.routes.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/backend/src/engine/telemetry/logger.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/backend/src/middleware/requestValidator.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/backend/src/middleware/queryValidator.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/backend/src/queue/worker.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/deploy/k8s/therapy-engine-release-diamond-k8s-ci/therapy-engine-release-diamond-k8s-ci/therapy-engine-release-diamond-scale/therapy-engine-release-diamond-multidomain/therapy-engine-release-diamond-ssl/therapy-engine-release-diamond-deploy/therapy-engine-release-diamond-ci/therapy-engine-release-diamond-plus/therapy-engine-release-diamond/therapy-engine-release-store-platinum/therapy-engine-release-store-gold/frontend/src/f0.validator.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/deploy/k8s/therapy-engine-release-diamond-k8s-ci/therapy-engine-release-diamond-k8s-ci/therapy-engine-release-diamond-scale/therapy-engine-release-diamond-multidomain/therapy-engine-release-diamond-ssl/therapy-engine-release-diamond-deploy/therapy-engine-release-diamond-ci/therapy-engine-release-diamond-plus/therapy-engine-release-diamond/therapy-engine-release-store-platinum/therapy-engine-release-store-gold/frontend/src/telemetry/logger.ts
+- [TODO/FIXME] /mnt/data/ss_fullapp_polish26_repatch/deploy/k8s/therapy-engine-release-diamond-k8s-ci/therapy-engine-release-diamond-k8s-ci/therapy-engine-release-diamond-scale/therapy-engine-release-diamond-multidomain/therapy-engine-release-diamond-ssl/therapy-engine-release-diamond-deploy/therapy-engine-release-diamond-ci/therapy-engine-release-diamond-plus/therapy-engine-release-diamond/therapy-engine-release-store-platinum/therapy-engine-release-store-gold/frontend/src/ai/primaryMoleculeAI.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/scripts/migrate-secure.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/scripts/restore-env.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/scripts/migrate-harden.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/scripts/generate-build-info.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/scripts/set-metadata.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/scripts/migrate.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp_Still_Not/backend/scripts/migrate-secure.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/scripts/migrate-secure.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/scripts/restore-env.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/scripts/migrate-harden.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/scripts/generate-build-info.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/scripts/set-metadata.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/scripts/migrate.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/imported/legacy/SoulSync_FullApp (v79.2.2)/backend/scripts/migrate-secure.ts
+- [console.log] /mnt/data/ss_fullapp_polish26_repatch/ops/predeploy-check.ts

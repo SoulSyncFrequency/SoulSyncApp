@@ -1,0 +1,9 @@
+# AWS
+aws_region   = "eu-central-1"
+
+# GCP
+gcp_project  = "my-gcp-project"
+gcp_region   = "europe-west3"
+
+# Azure
+azure_location = "westeurope"

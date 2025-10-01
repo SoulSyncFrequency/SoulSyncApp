@@ -1,0 +1,39 @@
+name: Makefile Smoke Test
+
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'Makefile'
+      - 'docker-compose.yml'
+      - '.github/workflows/make.yml'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose make
+
+      - name: Copy env
+        run: cp .env.example .env
+
+      - name: Build and start services
+        run: make up &
+      
+      - name: Wait for containers
+        run: sleep 30
+
+      - name: Check status
+        run: make ps
+
+      - name: Logs snapshot
+        run: make logs | tail -n 100
+
+      - name: Stop and clean
+        if: always()
+        run: make down

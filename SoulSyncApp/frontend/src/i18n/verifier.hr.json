@@ -1,0 +1,11 @@
+{
+  "title": "Verifier",
+  "subtitle": "Provjeri hranu, INCI ili tekstil prema Nutrition & Lifestyle + F₀ pravilima.",
+  "kind_food": "Hrana",
+  "kind_inci": "INCI",
+  "kind_textile": "Tekstil",
+  "parse": "Parsiraj",
+  "evaluate": "Evaluiraj",
+  "ocr": "OCR (etiketa)",
+  "barcode": "Skeniraj barkod"
+}

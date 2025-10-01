@@ -1,0 +1,21 @@
+{
+  "name": "@therapy/sdk-rest-generated",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "gen": "openapi -i ../../docs/openapi.json -o src/gen --client axios || echo 'Install openapi-typescript-codegen and re-run'"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "openapi-typescript-codegen": "^0.29.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "@capacitor/browser": "latest",
+    "@capacitor/toast": "latest"
+  }
+}

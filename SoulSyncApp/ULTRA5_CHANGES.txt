@@ -1,0 +1,1 @@
+compose: added OCI labels to backend/frontend

@@ -1,0 +1,52 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: soulsync-alerts
+    folder: ''
+    interval: 1m
+    rules:
+      - uid: higherror
+        title: HighErrorRate
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model: { expr: "sum(rate(http_server_request_duration_seconds_count{status=~\"5..\"}[5m])) / sum(rate(http_server_request_duration_seconds_count[5m]))", format: "time_series" }
+          - refId: B
+            datasourceUid: prometheus
+            model: { expr: "0.05", format: "time_series" }
+        execErrState: ALERTING
+        for: 5m
+        annotations: { summary: "High 5xx error rate" }
+        labels: { severity: critical }
+      - uid: highlatency
+        title: HighLatencyP95
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: prometheus
+            model: { expr: "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket[5m])) by (le))", format: "time_series" }
+          - refId: B
+            datasourceUid: prometheus
+            model: { expr: "1", format: "time_series" }
+        execErrState: ALERTING
+        for: 5m
+        annotations: { summary: "High latency p95" }
+        labels: { severity: warning }
+      - uid: backlog
+        title: QueueBacklogHigh
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: prometheus
+            model: { expr: "sum(bull_queue_waiting_jobs) by (queue)", format: "time_series" }
+          - refId: B
+            datasourceUid: prometheus
+            model: { expr: "100", format: "time_series" }
+        execErrState: ALERTING
+        for: 10m
+        annotations: { summary: "Queue backlog high" }
+        labels: { severity: warning }

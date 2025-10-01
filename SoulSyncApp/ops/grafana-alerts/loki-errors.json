@@ -1,0 +1,42 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "name": "loki-errors",
+      "folder": "SoulSync",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "soulsync_errorburst",
+          "title": "Too many ERROR logs",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "datasourceUid": "loki",
+              "queryType": "range",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "model": {
+                "expr": "count_over_time({job=\"soulsync\"} |= \"ERROR\" [10m])"
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "for": "1m",
+          "annotations": {
+            "summary": "More than 10 ERROR logs in 10m"
+          },
+          "thresholds": [
+            {
+              "op": "gt",
+              "value": 10
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

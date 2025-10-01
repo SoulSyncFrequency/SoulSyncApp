@@ -1,0 +1,6 @@
+allInOne:
+  enabled: true
+  ingress:
+    enabled: true
+    hosts:
+      - jaeger.local

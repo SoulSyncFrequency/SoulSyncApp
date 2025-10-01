@@ -1,0 +1,5 @@
+:root{ --brand: #111827; }
+.btn-brand{ background-color: var(--brand); color:#fff; border-radius: 0.75rem; padding: 0.375rem 0.75rem; font-size: .875rem; }
+.btn-brand:hover{ filter: brightness(1.1); }
+.hc *{ outline: 1px solid rgba(0,0,0,.1); }
+.hc .btn-brand{ filter: none; box-shadow: 0 0 0 2px #000 inset; }

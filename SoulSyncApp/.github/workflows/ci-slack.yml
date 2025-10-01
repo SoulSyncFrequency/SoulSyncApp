@@ -1,0 +1,19 @@
+name: CI Slack Notification
+on:
+  workflow_run:
+    workflows: [ "Test Coverage", "Lint", "Build", "Performance Gate (k6)" ]
+    types: [ completed ]
+jobs:
+  notify:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "Workflow ${{ github.workflow }} in ${{ github.repository }} concluded with status: ${{ github.event.workflow_run.conclusion }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

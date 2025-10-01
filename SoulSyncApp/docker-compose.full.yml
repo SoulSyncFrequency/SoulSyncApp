@@ -1,0 +1,83 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: soulsync
+      POSTGRES_PASSWORD: soulsync
+      POSTGRES_DB: soulsync
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  backend:
+    build: .
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://soulsync:soulsync@db:5432/soulsync?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports: ["3000:3000"]
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules.yml:/etc/prometheus/rules.yml:ro
+      - ./prometheus/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3001:3000"]
+  alertmanager:
+    image: prom/alertmanager:latest
+    ports: ["9093:9093"]
+    volumes:
+      - ./observability/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    env_file:
+      - .env.alert
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    environment: [ "REDIS_ADDR=redis:6379" ]
+    ports: ["9121:9121"]
+    depends_on:
+      redis:
+        condition: service_healthy
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter
+    environment: [ "DATA_SOURCE_NAME=postgresql://soulsync:soulsync@db:5432/soulsync?sslmode=disable" ]
+    ports: ["9187:9187"]
+    depends_on:
+      db:
+        condition: service_healthy
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    ports: ["9115:9115"]
+    volumes:
+      - ./prometheus/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+
+
+node-exporter:
+  image: prom/node-exporter:latest
+  ports: ["9100:9100"]
+  command:
+    - '--path.rootfs=/host'
+  pid: host
+  restart: unless-stopped
+  volumes:
+    - '/:/host:ro,rslave'

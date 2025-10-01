@@ -1,0 +1,31 @@
+name: TypeCheck
+
+on:
+  push:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install deps (root)
+        run: npm -v || true
+      - name: Backend typecheck
+        run: |
+          cd backend
+          npm ci
+          npm run typecheck
+      - name: Frontend typecheck
+        run: |
+          cd frontend
+          npm ci
+          npm run typecheck

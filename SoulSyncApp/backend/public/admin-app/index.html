@@ -1,0 +1,420 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://unpkg.com; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>SoulSync Admin</title>
+<style>
+body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0;background:#f7f7f8;color:#111}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0}
+main{max-width:1100px;margin:0 auto;padding:20px}
+.card{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+input,textarea,button,select{font:inherit}
+input,textarea,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:10px}
+button{padding:8px 12px;border:0;border-radius:10px;background:#111;color:#fff;cursor:pointer}
+.tabs{display:flex;gap:8px;margin:10px 0}
+.tab{padding:8px 12px;border:1px solid #ddd;background:#fff;border-radius:999px;cursor:pointer}
+.tab.active{background:#111;color:#fff;border-color:#111}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+pre{white-space:pre-wrap;word-break:break-word;background:#fafafa;padding:10px;border-radius:10px;border:1px dashed #e5e7eb}
+</style>
+<script src="https://unpkg.com/chart.js@4.4.0/dist/chart.umd.js">
+async function drawP95(){
+  const r = await fetch('/api/_stats?top=10')
+  if(r.status!==200){ alert('stats disabled'); return }
+  const j = await r.json()
+  const labels = (j.routes||[]).map(x=> x.method+' '+x.route)
+  const p95 = (j.routes||[]).map(x=> Number(x.p95||0))
+  const ctx = document.getElementById('ops_chart').getContext('2d')
+  if(window.__chart){ window.__chart.destroy() }
+  window.__chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'p95 (s)', data: p95 }] }, options:{ responsive:true, scales:{ y:{ beginAtZero:true } } } })
+}
+
+async function uploadAuditSelected(){
+  // read paths from au_list (same parser kao summarize)
+  const list = Array.from(document.querySelectorAll('#au_list div')).map(d=>{
+    const t = d.textContent||''; return t.split('←')[1]?.trim()
+  }).filter(Boolean).slice(0,100)
+  if(list.length===0){ alert('No items'); return }
+  const r = await fetch('/api/admin/audit/exportSelectedUpload', { method:'POST', headers: authHeaders(), body: JSON.stringify({ paths: list }) })
+  const j = await r.json(); if(j?.s3Url){ alert('Uploaded: '+j.s3Url) } else { alert('Upload failed') }
+}
+
+async function loadLogs(){
+  const lim = Number(S('lg_lim').value || 100)
+  const r = await fetch('/api/admin/logs/tail?limit='+lim, { headers: authHeaders() })
+  const j = await r.json(); S('logs_out').textContent = JSON.stringify(j, null, 2)
+}
+
+async function diagUpload(){
+  const r = await fetch('/api/admin/diagnostics/upload', { method:'POST', headers: authHeaders() })
+  const j = await r.json(); if(j?.s3Url){ alert('Uploaded: '+j.s3Url) } else { alert('Upload failed') }
+}
+
+async function aiReviewAdmin(){
+  const r = await fetch('/api/admin/audit/review', { method:'POST', headers: authHeaders() })
+  const j = await r.json(); S('au_view').textContent = j?.summary || '(AI disabled)'
+}
+
+async function loadPolicy(){
+  const r = await fetch('/api/_policy')
+  if(r.status!==200){ S('policy_panel').textContent='policy: (disabled)'; return }
+  const j = await r.json()
+  const badge = (name, val, thr)=>{
+    let cls='good'; if(val>thr[1]) cls='bad'; else if(val>thr[0]) cls='warn'
+    return `<span class="tag ${cls}">${name}: ${val}%</span>`
+  }
+  S('policy_panel').innerHTML = [
+    badge('4xx', j.pct4xx||0, [2,5]),
+    badge('5xx', j.pct5xx||0, [0.5,1]), `<span class="tag">p95: ${j.p95||0}s</span> ,
+    `<span class="tag">${'429'}: ${j.rateLimited||0}</span>`,
+    `<span class="tag">${'slow'}: ${j.slowTotal||0}</span>`
+  ].join(' ')
+}
+window.addEventListener('load', ()=>{ try{ loadPolicy() }catch{} })
+
+function policyAdvice(j){
+  const lines = []
+  if((j.pct5xx||0) > 1) lines.push('⚠ 5xx visoko — provjeri vanjske ovisnosti/DB.')
+  else if((j.pct5xx||0) > 0.5) lines.push('⚠ 5xx blago povišen — vidi _stats Top-N.')
+  if((j.pct4xx||0) > 5) lines.push('⚠ 4xx visoko — autentic./val. zahtjeva.')
+  if((j.rateLimited||0) > 100) lines.push('ℹ Mnogi 429 — prilagodi limite/cache.')
+  if((j.slowTotal||0) > 100) lines.push('ℹ Mnogi spori — optimiziraj najsporije.')
+  if((j.p95||0) > 0.5) lines.push('⚠ p95 > 500ms — profiliraj top rute.')
+  if(Array.isArray(j.topSlow) && j.topSlow.length){ lines.push('Top spore: ' + j.topSlow.map(x=> (x.route||'').replace(/^GET\s+/,'') + ' (p95 '+x.p95+'s)').join(', ')) }
+  return lines.join(' ');
+}
+  const adv = []
+  if((j.pct5xx||0) > 1) adv.push('5xx visoko — provjeri DB/AI vanjske ovisnosti.')
+  else if((j.pct5xx||0) > 0.5) adv.push('5xx blago povišen — pogledaj /_stats Top-N.')
+  if((j.pct4xx||0) > 5) adv.push('4xx visoko — provjeri autentikaciju i RL.')
+  if((j.rateLimited||0) > 100) adv.push('Puno 429 — razmisli o povišenju limita ili cacheu.')
+  if((j.slowTotal||0) > 100) adv.push('Mnogo sporih zahtjeva — optimiziraj najsporije rute.')
+  return adv.join(' ')
+}
+async function loadPolicy(){
+  const r = await fetch('/api/_policy')
+  if(r.status!==200){ S('policy_panel').textContent='policy: (disabled)'; return }
+  const j = await r.json()
+  const badge = (name, val, thr)=>{
+    let cls='good'; if(val>thr[1]) cls='bad'; else if(val>thr[0]) cls='warn'
+    return `<span class="tag ${cls}">${name}: ${val}%</span>`
+  }
+  S('policy_panel').innerHTML = [
+    badge('4xx', j.pct4xx||0, [2,5]),
+    badge('5xx', j.pct5xx||0, [0.5,1]), `<span class="tag">p95: ${j.p95||0}s</span> ,
+    `<span class="tag">${'429'}: ${j.rateLimited||0}</span>`,
+    `<span class="tag">${'slow'}: ${j.slowTotal||0}</span>`,
+  ].join(' ') + '<div id="policy_hint" class="muted" style="margin-top:4px">'+policyAdvice(j)+'</div>'
+}
+window.addEventListener('load', ()=>{ try{ loadPolicy() }catch{} })
+
+async function signS3(){
+  const k = S('s3_sign_key').value.trim()
+  const ttl = Number(S('s3_sign_ttl').value||900)
+  if(!k){ alert('Key required'); return }
+  const u = '/api/admin/s3/sign?key='+encodeURIComponent(k)+'&ttl='+encodeURIComponent(ttl)
+  const r = await fetch(u, { headers: authHeaders() })
+  const j = await r.json()
+  if(j?.url){ S('s3_sign_out').innerHTML = '<a target="_blank" href="'+j.url+'">Signed URL ('+j.ttl+'s)</a>' } else { S('s3_sign_out').textContent = 'Signing failed' }
+}
+
+async function renderSparklines(series){
+  const panel = S('ops_routes_list'); panel.innerHTML=''
+  const keys = Object.keys(series).slice(0,5) // top 5 serija
+  for(const k of keys){
+    const div = document.createElement('div'); div.style.margin='6px 0'
+    const c = document.createElement('canvas'); c.height=60; c.width=240
+    const lab = document.createElement('div'); lab.textContent = k; lab.className='muted'
+    div.appendChild(lab); div.appendChild(c); panel.appendChild(div)
+    const data = (series[k]||[]).map(x=> x.p95 || 0)
+    new Chart(c.getContext('2d'), { type:'line', data:{ labels: data.map((_,i)=>i+1), datasets:[{ label:'p95 (s)', data, fill:false, tension:0.3 }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } })
+  }
+}
+async function loadSparklines(){
+  const r = await fetch('/api/_stats/history?limit=20'); const j = await r.json()
+  if(j?.series) renderSparklines(j.series)
+}
+window.addEventListener('load', ()=>{ try{ loadSparklines() }catch{} })
+
+async function loadSLO(){
+  const r = await fetch('/api/_slo'); if(r.status!==200) return
+  const j = await r.json()
+  const bad = (j.budgets?.failing||[]).slice(0,5)
+  let html = '<h4>SLO budgets</h4>'
+  if(!bad.length) html += '<div class="tag good">All budgets OK</div>'
+  else html += bad.map(x=> `<div class="tag bad">${x.route} — p95 ${x.p95}s > budget ${x.budget}s</div>`).join(' ')
+  S('slo_panel').innerHTML = html
+}
+window.addEventListener('load', ()=>{ try{ loadSLO() }catch{} })
+</script>
+</head>
+<body>
+<header>
+  <strong>SoulSync Admin <span id="roleBadge" style="font-size:12px;background:#eef;border:1px solid #ccd;border-radius:8px;padding:2px 6px;margin-left:6px">role: ?</span></strong>
+  <div>
+    <input id="apiKey" placeholder="x-api-key" style="width:260px">
+    <button onclick="saveKey()">Save</button>
+  </div>
+</header>
+<main>
+  <div class="tabs">
+    <div class="tab active" data-tab="f0" onclick="openTab('f0', this)">F₀</div>
+    <div class="tab" data-tab="sug" onclick="openTab('sug', this)">Suggestions</div>
+    <div class="tab" data-tab="ds" onclick="openTab('ds', this)">Datasheet</div>
+    <div class="tab" data-tab="exp" onclick="openTab('exp', this)">Export</div>
+    <div class="tab" data-tab="ops" onclick="openTab('ops', this)">Ops</div>
+  </div>
+
+  <section id="f0" class="card">
+    <h3>F₀ Probe</h3>
+    <button onclick="probeF0()">Run</button>
+    <pre id="f0out"></pre>
+  </section>
+
+  <section id="sug" class="card" style="display:none">
+    <h3>Suggestions apply</h3>
+    <div class="row">
+      <div><label>Collection<input id="s_col" value="generic"></label></div>
+      <div><label>ID<input id="s_id" value="temp"></label></div>
+    </div>
+    <label>Document JSON<textarea id="s_doc">{ "title": "A", "notes": { "lang": "en" } }</textarea></label>
+    <label>Suggestions JSON<textarea id="s_sug">[ { "path": "notes.lang", "value": "hr", "score": 0.9 } ]</textarea></label>
+    <div><label><input type="checkbox" id="s_auto" checked> autoTune</label> <label><input type="checkbox" id="s_dry"> dryRun</label></div>
+    <button onclick="applySug()">Apply</button>
+    <pre id="s_out"></pre>
+  </section>
+
+  <section id="ds" class="card" style="display:none">
+    <h3>Datasheet PDF</h3>
+    <label>Rows JSON<textarea id="d_rows">[{"name":"Alice","score":91},{"name":"Bob","score":86}]</textarea></label>
+    <div class="row">
+      <label>Title<input id="d_title" value="My Data Sheet"></label>
+      <label>Columns (comma)<input id="d_cols" value=""></label>
+    </div>
+    <button onclick="makePDF()">Generate</button>
+    <pre id="d_out"></pre>
+  </section>
+
+  <section id="exp" class="card" style="display:none">
+    <h3>Export progress</h3>
+    <label>Job ID<input id="p_id" value="demo"></label>
+    <button onclick="startStream()">Start</button>
+    <pre id="p_log"></pre>
+  </section>
+
+  <section id="ops" class="card" style="display:none">
+    <h3>Ops</h3>
+    <div class="row">
+      <button onclick="getFlags()">Feature flags</button>
+      <button onclick="getVersion()">Version</button>
+      <button onclick="getMetrics()">/metrics (text)</button>
+      <button onclick="drawP95()">Chart p95</button> <button onclick="downloadDiag()">Diagnostics</button> <button onclick="diagUpload()">Diag → S3</button> <button onclick="opsSummary()">AI Ops Summary</button> <label><input type='checkbox' id='q50'> p50</label> <label><input type='checkbox' id='q90'> p90</label> <label><input type='checkbox' id='q99'> p99</label> <button onclick="exportStats('csv')">Export CSV</button> <button onclick="exportStats('jsonl')">Export JSONL</button>
+    </div>
+    <canvas id="ops_chart" height="140"></canvas>
+    <div id="exportLink" style="margin:6px 0;font-size:13px;"></div>
+    <pre id="ops_out"></pre>
+  </section>
+
+  <section id="logs" class="card" style="display:none">
+    <h3>Logs (recent)</h3>
+    <div class="row">
+      <label>Limit<input id="lg_lim" value="100"></label>
+      <button onclick="loadLogs()">Load</button>
+    </div>
+    <pre id="logs_out"></pre>
+  </section>
+</main>
+
+<script>
+const S = (id)=> document.getElementById(id)
+function openTab(id, el){
+  document.querySelectorAll('.tab').forEach(t=> t.classList.remove('active'))
+  el.classList.add('active')
+  document.querySelectorAll('section.card').forEach(s=> s.style.display='none')
+  S(id).style.display='block'
+}
+function saveKey(){
+  localStorage.setItem('ss_api_key', S('apiKey').value)
+}
+(function init(){ S('apiKey').value = localStorage.getItem('ss_api_key')||'' })()
+
+async function probeF0(){
+  const r = await fetch('/api/f0score', { method:'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ Sym:.8, Pol:.7, Bph:.9, Emo:.6, Coh:.7, Frac:.5, Conn:.6, Chak:.7, Info:.8, Safe:.9, disease_type:'psychological' }) })
+  S('f0out').textContent = JSON.stringify(await r.json(), null, 2)
+}
+async function applySug(){
+  const r = await fetch('/api/admin/suggestions/apply', { method:'POST', headers: { 'content-type':'application/json', 'x-api-key': localStorage.getItem('ss_api_key')||'' }, body: JSON.stringify({ collection: S('s_col').value, id: S('s_id').value, document: JSON.parse(S('s_doc').value||'{}'), suggestions: JSON.parse(S('s_sug').value||'[]'), autoTune: S('s_auto').checked, dryRun: S('s_dry').checked }) })
+  S('s_out').textContent = JSON.stringify(await r.json(), null, 2)
+}
+async function makePDF(){
+  const cols = (S('d_cols').value||'').split(',').map(s=>s.trim()).filter(Boolean)
+  const body = { rows: JSON.parse(S('d_rows').value||'[]'), title: S('d_title').value||undefined, columns: cols.length? cols: undefined }
+  const r = await fetch('/api/admin/datasheet/pdf', { method:'POST', headers: { 'content-type':'application/json', 'x-api-key': localStorage.getItem('ss_api_key')||'' }, body: JSON.stringify(body) })
+  const j = await r.json()
+  S('d_out').textContent = JSON.stringify(j, null, 2)
+  if(j?.url){ window.open(j.url, '_blank') }
+}
+function startStream(){
+  const id = S('p_id').value||'demo'
+  const last = localStorage.getItem('ss_last_event')||''
+  const es = new EventSource('/api/admin/export/'+encodeURIComponent(id)+'/stream', last? { headers: { 'Last-Event-ID': last } } : undefined )
+  es.addEventListener('progress', (e)=>{ S('p_log').textContent += e.data + '\n'; localStorage.setItem('ss_last_event', e.lastEventId) })
+}
+async function getFlags(){ const r = await fetch('/api/admin/flags', { headers: { 'x-api-key': localStorage.getItem('ss_api_key')||'' } }); S('ops_out').textContent = JSON.stringify(await r.json(), null, 2) }
+async function getVersion(){ const r = await fetch('/api/version'); S('ops_out').textContent = JSON.stringify(await r.json(), null, 2) }
+async function getMetrics(){ const r = await fetch('/api/metrics'); S('ops_out').textContent = await r.text() }
+
+async function meRole(){
+  const h = authHeaders()
+  const r = await fetch('/api/admin/flags', { headers: h })
+  if(r.status===200){ const j = await r.json(); const role = (j?.ok ? (j?.role || localStorage.getItem('ss_role') || '?') : '?'); document.getElementById('roleBadge').textContent = 'role: ' + role }
+}
+async function refreshTok(){
+  const tok = localStorage.getItem('ss_token')||''
+  if(!tok) return alert('No token')
+  const r = await fetch('/api/admin/refresh', { method:'POST', headers: { 'authorization': 'Bearer '+tok } })
+  const j = await r.json()
+  if(j?.token){ localStorage.setItem('ss_token', j.token); alert('Token refreshed'); } else { alert('Refresh failed') }
+}
+(function initRole(){ setTimeout(meRole, 800) })()
+
+async function auditSummarize(){
+  const list = (S('au_list').innerText||'').split('\n').map(x=> x.split('←')[1]?.trim()).filter(Boolean).slice(0,5)
+  if(list.length===0) return alert('Nothing to summarize')
+  const r = await fetch('/api/admin/audit/summarize', { method:'POST', headers: authHeaders(), body: JSON.stringify({ paths: list }) })
+  const j = await r.json()
+  S('au_view').textContent = j?.summary || '(no summary)'
+}
+
+async function drawP95(){
+  const r = await fetch('/api/_stats?top=10')
+  if(r.status!==200){ alert('stats disabled'); return }
+  const j = await r.json()
+  const labels = (j.routes||[]).map(x=> x.method+' '+x.route)
+  const p95 = (j.routes||[]).map(x=> Number(x.p95||0))
+  const ctx = document.getElementById('ops_chart').getContext('2d')
+  if(window.__chart){ window.__chart.destroy() }
+  window.__chart = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ label:'p95 (s)', data: p95 }] }, options:{ responsive:true, scales:{ y:{ beginAtZero:true } } } })
+}
+
+async function uploadAuditSelected(){
+  // read paths from au_list (same parser kao summarize)
+  const list = Array.from(document.querySelectorAll('#au_list div')).map(d=>{
+    const t = d.textContent||''; return t.split('←')[1]?.trim()
+  }).filter(Boolean).slice(0,100)
+  if(list.length===0){ alert('No items'); return }
+  const r = await fetch('/api/admin/audit/exportSelectedUpload', { method:'POST', headers: authHeaders(), body: JSON.stringify({ paths: list }) })
+  const j = await r.json(); if(j?.s3Url){ alert('Uploaded: '+j.s3Url) } else { alert('Upload failed') }
+}
+
+async function loadLogs(){
+  const lim = Number(S('lg_lim').value || 100)
+  const r = await fetch('/api/admin/logs/tail?limit='+lim, { headers: authHeaders() })
+  const j = await r.json(); S('logs_out').textContent = JSON.stringify(j, null, 2)
+}
+
+async function diagUpload(){
+  const r = await fetch('/api/admin/diagnostics/upload', { method:'POST', headers: authHeaders() })
+  const j = await r.json(); if(j?.s3Url){ alert('Uploaded: '+j.s3Url) } else { alert('Upload failed') }
+}
+
+async function aiReviewAdmin(){
+  const r = await fetch('/api/admin/audit/review', { method:'POST', headers: authHeaders() })
+  const j = await r.json(); S('au_view').textContent = j?.summary || '(AI disabled)'
+}
+
+async function loadPolicy(){
+  const r = await fetch('/api/_policy')
+  if(r.status!==200){ S('policy_panel').textContent='policy: (disabled)'; return }
+  const j = await r.json()
+  const badge = (name, val, thr)=>{
+    let cls='good'; if(val>thr[1]) cls='bad'; else if(val>thr[0]) cls='warn'
+    return `<span class="tag ${cls}">${name}: ${val}%</span>`
+  }
+  S('policy_panel').innerHTML = [
+    badge('4xx', j.pct4xx||0, [2,5]),
+    badge('5xx', j.pct5xx||0, [0.5,1]), `<span class="tag">p95: ${j.p95||0}s</span> ,
+    `<span class="tag">${'429'}: ${j.rateLimited||0}</span>`,
+    `<span class="tag">${'slow'}: ${j.slowTotal||0}</span>`
+  ].join(' ')
+}
+window.addEventListener('load', ()=>{ try{ loadPolicy() }catch{} })
+
+function policyAdvice(j){
+  const lines = []
+  if((j.pct5xx||0) > 1) lines.push('⚠ 5xx visoko — provjeri vanjske ovisnosti/DB.')
+  else if((j.pct5xx||0) > 0.5) lines.push('⚠ 5xx blago povišen — vidi _stats Top-N.')
+  if((j.pct4xx||0) > 5) lines.push('⚠ 4xx visoko — autentic./val. zahtjeva.')
+  if((j.rateLimited||0) > 100) lines.push('ℹ Mnogi 429 — prilagodi limite/cache.')
+  if((j.slowTotal||0) > 100) lines.push('ℹ Mnogi spori — optimiziraj najsporije.')
+  if((j.p95||0) > 0.5) lines.push('⚠ p95 > 500ms — profiliraj top rute.')
+  if(Array.isArray(j.topSlow) && j.topSlow.length){ lines.push('Top spore: ' + j.topSlow.map(x=> (x.route||'').replace(/^GET\s+/,'') + ' (p95 '+x.p95+'s)').join(', ')) }
+  return lines.join(' ');
+}
+  const adv = []
+  if((j.pct5xx||0) > 1) adv.push('5xx visoko — provjeri DB/AI vanjske ovisnosti.')
+  else if((j.pct5xx||0) > 0.5) adv.push('5xx blago povišen — pogledaj /_stats Top-N.')
+  if((j.pct4xx||0) > 5) adv.push('4xx visoko — provjeri autentikaciju i RL.')
+  if((j.rateLimited||0) > 100) adv.push('Puno 429 — razmisli o povišenju limita ili cacheu.')
+  if((j.slowTotal||0) > 100) adv.push('Mnogo sporih zahtjeva — optimiziraj najsporije rute.')
+  return adv.join(' ')
+}
+async function loadPolicy(){
+  const r = await fetch('/api/_policy')
+  if(r.status!==200){ S('policy_panel').textContent='policy: (disabled)'; return }
+  const j = await r.json()
+  const badge = (name, val, thr)=>{
+    let cls='good'; if(val>thr[1]) cls='bad'; else if(val>thr[0]) cls='warn'
+    return `<span class="tag ${cls}">${name}: ${val}%</span>`
+  }
+  S('policy_panel').innerHTML = [
+    badge('4xx', j.pct4xx||0, [2,5]),
+    badge('5xx', j.pct5xx||0, [0.5,1]), `<span class="tag">p95: ${j.p95||0}s</span> ,
+    `<span class="tag">${'429'}: ${j.rateLimited||0}</span>`,
+    `<span class="tag">${'slow'}: ${j.slowTotal||0}</span>`,
+  ].join(' ') + '<div id="policy_hint" class="muted" style="margin-top:4px">'+policyAdvice(j)+'</div>'
+}
+window.addEventListener('load', ()=>{ try{ loadPolicy() }catch{} })
+
+async function signS3(){
+  const k = S('s3_sign_key').value.trim()
+  const ttl = Number(S('s3_sign_ttl').value||900)
+  if(!k){ alert('Key required'); return }
+  const u = '/api/admin/s3/sign?key='+encodeURIComponent(k)+'&ttl='+encodeURIComponent(ttl)
+  const r = await fetch(u, { headers: authHeaders() })
+  const j = await r.json()
+  if(j?.url){ S('s3_sign_out').innerHTML = '<a target="_blank" href="'+j.url+'">Signed URL ('+j.ttl+'s)</a>' } else { S('s3_sign_out').textContent = 'Signing failed' }
+}
+
+async function renderSparklines(series){
+  const panel = S('ops_routes_list'); panel.innerHTML=''
+  const keys = Object.keys(series).slice(0,5) // top 5 serija
+  for(const k of keys){
+    const div = document.createElement('div'); div.style.margin='6px 0'
+    const c = document.createElement('canvas'); c.height=60; c.width=240
+    const lab = document.createElement('div'); lab.textContent = k; lab.className='muted'
+    div.appendChild(lab); div.appendChild(c); panel.appendChild(div)
+    const data = (series[k]||[]).map(x=> x.p95 || 0)
+    new Chart(c.getContext('2d'), { type:'line', data:{ labels: data.map((_,i)=>i+1), datasets:[{ label:'p95 (s)', data, fill:false, tension:0.3 }] }, options:{ plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } } })
+  }
+}
+async function loadSparklines(){
+  const r = await fetch('/api/_stats/history?limit=20'); const j = await r.json()
+  if(j?.series) renderSparklines(j.series)
+}
+window.addEventListener('load', ()=>{ try{ loadSparklines() }catch{} })
+
+async function loadSLO(){
+  const r = await fetch('/api/_slo'); if(r.status!==200) return
+  const j = await r.json()
+  const bad = (j.budgets?.failing||[]).slice(0,5)
+  let html = '<h4>SLO budgets</h4>'
+  if(!bad.length) html += '<div class="tag good">All budgets OK</div>'
+  else html += bad.map(x=> `<div class="tag bad">${x.route} — p95 ${x.p95}s > budget ${x.budget}s</div>`).join(' ')
+  S('slo_panel').innerHTML = html
+}
+window.addEventListener('load', ()=>{ try{ loadSLO() }catch{} })
+</script>
+</body>
+</html>

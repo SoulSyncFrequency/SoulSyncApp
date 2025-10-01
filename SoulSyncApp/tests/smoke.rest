@@ -1,0 +1,17 @@
+// @baseUrl = http://localhost:8080
+GET {{baseUrl}}/healthz
+
+POST {{baseUrl}}/auth/mfa/step-up/initiate
+POST {{baseUrl}}/auth/mfa/step-up/verify
+Content-Type: application/json
+
+{ "code": "123456" }
+
+GET {{baseUrl}}/billing/secure/portal/some-user-id
+POST {{baseUrl}}/ai/consent/summary
+Content-Type: application/json
+
+{ "text": "Ovo je primjer teksta..." }
+
+GET {{baseUrl}}/gdpr/export
+GET {{baseUrl}}/history/export.csv

@@ -1,0 +1,13 @@
+# Canary release values example
+backend:
+  image:
+    tag: canary
+  replicas: 1
+  labels:
+    track: canary
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "10"   # route 10% traffic to canary

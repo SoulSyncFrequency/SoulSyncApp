@@ -1,0 +1,13 @@
+{
+  "name": "soulsync-fullstack",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "build": "npm -w backend run build && npm -w frontend run build",
+    "test": "npm -w backend test && npm -w frontend test",
+    "lint": "npm -w backend run lint || true && npm -w frontend run lint || true"
+  }
+}

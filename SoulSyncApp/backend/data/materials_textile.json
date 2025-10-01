@@ -1,0 +1,336 @@
+{
+  "cotton": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "underwear_possible",
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "organic_cotton": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "underwear_possible",
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "linen": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [],
+    "purpose_tags": [
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "hemp": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "silk": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [],
+    "purpose_tags": [
+      "tops",
+      "outer"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "wool": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "soothing",
+      "protective"
+    ]
+  },
+  "cashmere": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [],
+    "purpose_tags": [
+      "outer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "soothing",
+      "protective"
+    ]
+  },
+  "bamboo_viscose": {
+    "f0": 0.65,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "tencel_lyocell": {
+    "f0": 0.7,
+    "grade": "B",
+    "flags": [],
+    "purpose_tags": [
+      "base_layer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "polyester": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "microplastics"
+    ],
+    "purpose_tags": [
+      "sportswear",
+      "outer",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "recycled_polyester": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "microplastics"
+    ],
+    "purpose_tags": [
+      "sportswear",
+      "outer",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "nylon": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "sportswear",
+      "outer",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "elastane": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "sportswear",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "acrylic": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "microplastics"
+    ],
+    "purpose_tags": [
+      "outer",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "rayon": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "tops",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "modal": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "tops",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "spandex": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "sportswear",
+      "synthetic"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "protective"
+    ]
+  },
+  "cotton_non_iron": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "formaldehyde_resin_possible"
+    ],
+    "purpose_tags": [
+      "tops",
+      "base_layer"
+    ],
+    "emotional_tags": [
+      "protective",
+      "grounding"
+    ]
+  },
+  "flame_retardant_treated": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "chemical_finish"
+    ],
+    "purpose_tags": [
+      "outer"
+    ],
+    "emotional_tags": [
+      "protective"
+    ]
+  },
+  "cotton_polyester_blend_60_40": {
+    "f0": 0.5,
+    "grade": "D",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "tops"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "cleansing"
+    ]
+  },
+  "cotton_elastane_blend_95_5": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "synthetic"
+    ],
+    "purpose_tags": [
+      "tops",
+      "underwear_possible"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "cleansing"
+    ]
+  },
+  "wool_silk_blend": {
+    "f0": 0.68,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "outer",
+      "tops"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "soothing"
+    ]
+  },
+  "linen_cotton_blend": {
+    "f0": 0.68,
+    "grade": "C",
+    "flags": [],
+    "purpose_tags": [
+      "tops",
+      "base_layer"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "cleansing"
+    ]
+  }
+}

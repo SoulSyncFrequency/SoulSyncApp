@@ -1,0 +1,8 @@
+groups:
+  - name: slo-rules
+    interval: 30s
+    rules:
+      - record: http_requests:success_rate
+        expr: sum(rate(http_requests_total{code=~"2.."}[5m])) / sum(rate(http_requests_total[5m]))
+      - record: http_requests:latency_p99
+        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))

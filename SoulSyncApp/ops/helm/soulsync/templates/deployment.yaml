@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "soulsync.fullname" . }}-backend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "soulsync.name" . }}
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: {{ include "soulsync.name" . }}
+        tier: backend
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SENTRY_DSN
+              value: "{{ .Values.env.SENTRY_DSN }}"
+            - name: SENTRY_ENVIRONMENT
+              value: "{{ .Values.env.SENTRY_ENVIRONMENT }}"
+            - name: ENABLE_HTTPS_REDIRECT
+              value: "{{ .Values.env.ENABLE_HTTPS_REDIRECT }}"
+            - name: CSP_ENFORCE
+              value: "{{ .Values.env.CSP_ENFORCE }}"
+            - name: ENABLE_API_DOCS
+              value: "{{ .Values.env.ENABLE_API_DOCS }}"
+            - name: ALLOWED_HOSTS
+              value: "{{ .Values.env.ALLOWED_HOSTS }}"
+          readinessProbe:
+            httpGet: { path: /api/readiness, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/healthz, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10

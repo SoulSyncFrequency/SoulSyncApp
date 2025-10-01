@@ -1,0 +1,9 @@
+TherapyEngine — Personalized wellness plans from a 140‑question chakra assessment or direct prompt. Generate a 5‑day nutrition plan, frequency guidance, and exportable reports (PDF/DOCX).
+
+• Two modes: Quick Prompt or 140Q Assessment + 10 follow‑ups
+• Nutrition & Lifestyle without seed oils, nuts, oats, leafy/stem veg; seafood instead of fish oil
+• Secure login (Email/Google/Apple), optional Biometric Lock
+• Offline access + reminders + push notifications
+• Exports: Therapy PDF, PCT‑style technical report (DOCX/PDF)
+
+Disclaimer: Educational only. Not medical advice.

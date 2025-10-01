@@ -1,0 +1,46 @@
+{
+  "mode": "prompt",
+  "guessedDisease": "anxiety",
+  "primaryChakras": [
+    "solar",
+    "heart"
+  ],
+  "f0": 0.61,
+  "hz": [
+    {
+      "chakra": "solar",
+      "hz": 528
+    },
+    {
+      "chakra": "heart",
+      "hz": 639
+    }
+  ],
+  "modules": [
+    "Nutrition",
+    "F0",
+    "Breath"
+  ],
+  "diet": [
+    {
+      "title": "Day 1",
+      "focus": "Stabilize",
+      "meals": [
+        {
+          "name": "Breakfast",
+          "items": [
+            "Eggs",
+            "OJ"
+          ]
+        }
+      ]
+    }
+  ],
+  "supps": [
+    "Magnesium",
+    "Creatine"
+  ],
+  "notes": [
+    "Educational only"
+  ]
+}

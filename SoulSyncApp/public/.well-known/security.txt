@@ -1,0 +1,3 @@
+Contact: mailto:security@example.com
+Policy: https://example.com/security
+Preferred-Languages: en, hr

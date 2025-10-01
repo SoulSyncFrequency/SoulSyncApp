@@ -1,0 +1,21 @@
+groups:
+  - name: therapy-drill-rules
+    interval: 1m
+    rules:
+      - alert: DrillNotRunRecently
+        expr: (time() - last_successful_drill_timestamp_seconds) > 172800
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "DR drill nije pokrenut zadnjih 48h"
+          description: "Zadnji uspješni DR drill bio prije više od 48h. Provjeriti backup & restore pipeline."
+
+      - alert: BackendDown
+        expr: up{service=~".*-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Therapy backend nedostupan"
+          description: "Prometheus nije uspio dohvatiti metrike s backend-a zadnje 2 minute."

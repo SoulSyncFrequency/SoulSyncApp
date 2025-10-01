@@ -1,0 +1,34 @@
+name: sdk-rest-generate
+on:
+  push:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+    paths:
+      - 'backend/openapi.yaml'
+      - '.github/workflows/sdk-rest.yml'
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install generator
+        run: npm ci --workspaces
+      - name: Generate SDK
+        working-directory: ./packages/sdk-rest
+        run: npm run gen
+      - name: Build SDK
+        working-directory: ./packages/sdk-rest
+        run: npm run build
+      - name: Publish to GitHub Packages
+        if: github.ref == 'refs/heads/main'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_PACKAGES_TOKEN }}
+        working-directory: ./packages/sdk-rest
+        run: |
+          npm config set //npm.pkg.github.com/:_authToken ${NODE_AUTH_TOKEN}
+          npm publish || true

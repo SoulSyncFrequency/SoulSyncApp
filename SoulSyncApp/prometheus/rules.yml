@@ -1,0 +1,59 @@
+groups:
+  - name: soulsync-basics
+    rules:
+      - alert: ErrorBudgetBurnFast
+        expr: ((sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) / 0.001) > 2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fast error budget burn (>2x over 5m)"
+          description: "Fast burn indicates acute incident. Investigate immediately."
+
+      - alert: ErrorBudgetBurnSlow
+        expr: ((sum(rate(http_requests_total{status_code=~"5.."}[1h])) / sum(rate(http_requests_total[1h]))) / 0.001) > 1
+        for: 2h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow error budget burn (>1x over 1h)"
+          description: "Slow burn suggests persistent degradation. Plan mitigations."
+
+      - alert: BackendDown
+        expr: up{job="soulsync-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend metrics endpoint is DOWN"
+          description: "Prometheus cannot scrape /metrics for more than 2 minutes."
+
+      - alert: BlackboxProbeFail
+        expr: probe_success == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HTTP probe failed"
+          description: "Blackbox exporter probe to a target failed >2m."
+
+      - alert: RedisExporterDown
+        expr: up{job="redis-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis exporter down"
+          description: "Prometheus cannot scrape redis-exporter."
+
+      - alert: PostgresExporterDown
+        expr: up{job="postgres-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Postgres exporter down"
+          description: "Prometheus cannot scrape postgres-exporter."
+
+- record: slo:request_latency:99p
+  expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job="soulsync-backend"}[5m])) by (le))

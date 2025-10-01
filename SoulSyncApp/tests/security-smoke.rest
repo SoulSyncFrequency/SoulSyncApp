@@ -1,0 +1,9 @@
+// @baseUrl = http://localhost:8080
+# CSP report endpoint
+POST {{baseUrl}}/csp/report
+Content-Type: application/json
+
+{ "csp-report": { "violated-directive": "script-src" } }
+
+# GDPR delete requires step-up
+POST {{baseUrl}}/gdpr/delete

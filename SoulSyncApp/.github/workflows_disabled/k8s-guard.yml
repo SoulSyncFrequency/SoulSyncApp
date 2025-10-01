@@ -1,0 +1,45 @@
+name: k8s-guard
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  validate_manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+- name: Install kubectl
+  run: |
+    curl -fsSLo kubectl https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+    chmod +x kubectl
+    sudo mv kubectl /usr/local/bin/kubectl
+
+      - name: Ensure probes and resource limits are present
+        run: |
+          set -euo pipefail
+          fails=0
+          for f in $(git ls-files 'k8s/**/*.yaml' | grep -E 'deployment|rollout|kustomization' -v); do
+            if grep -q 'kind: Deployment' "$f"; then
+              grep -q 'readinessProbe:' "$f" || { echo "Missing readinessProbe in $f"; fails=$((fails+1)); }
+              grep -q 'livenessProbe:' "$f"  || { echo "Missing livenessProbe in $f";  fails=$((fails+1)); }
+              grep -q 'resources:' "$f"      || { echo "Missing resources in $f";      fails=$((fails+1)); }
+              grep -q 'limits:' "$f"         || { echo "Missing resource limits in $f";fails=$((fails+1)); }
+            fi
+            if grep -q 'kind: Rollout' "$f"; then
+              grep -q 'readinessProbe:' "$f" || { echo "Missing readinessProbe in $f"; fails=$((fails+1)); }
+              grep -q 'livenessProbe:' "$f"  || { echo "Missing livenessProbe in $f";  fails=$((fails+1)); }
+              grep -q 'resources:' "$f"      || { echo "Missing resources in $f";      fails=$((fails+1)); }
+              grep -q 'limits:' "$f"         || { echo "Missing resource limits in $f";fails=$((fails+1)); }
+            fi
+          done
+          if [ "$fails" -gt 0 ]; then
+            echo "K8s guard found $fails issues"; exit 1
+          fi
+      - name: Basic yaml lint (kustomize builds)
+        run: |
+          for d in k8s/base k8s/overlays/prod k8s/overlays/staging k8s/rollouts k8s/rollouts-canary k8s/monitoring; do
+            [ -d "$d" ] || continue
+            echo "Validating $d ..."
+            kubectl kustomize "$d" >/dev/null || (echo "kustomize failed for $d" && exit 1)
+          done

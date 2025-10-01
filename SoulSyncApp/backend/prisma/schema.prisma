@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  sessions  Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model AuditLog {
+  @@index([createdAt])
+  @@index([userId])
+  @@index([path])
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  path      String
+  ip        String?
+  userAgent String?
+  meta      Json?
+  createdAt DateTime @default(now())
+}
+
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  jti       String   @unique
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model FailedLogin {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  count          Int      @default(0)
+  firstAttemptAt DateTime @default(now())
+  blockedUntil   DateTime?
+  updatedAt      DateTime @updatedAt
+}
+
+
+enum ApiKeyTier {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+model ApiKey {
+  disabled   Boolean  @default(false)
+  id         String   @id @default(cuid())
+  name       String
+  keyHash    String   @unique
+  role       String   @default("admin")
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime?
+  // New fields for pricing/quotas
+  tier       ApiKeyTier @default(FREE)
+  rpm        Int        @default(60)   // requests per minute
+  dailyCap   Int?                     // optional daily quota
+  expiresAt  DateTime?                 // optional key expiry
+  scopes     String[]   @default([])   // e.g., ["admin","reports:read"]
+}
+
+
+model F0Audit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  inputHash String
+  profile   String
+  params    Json
+  score     Float
+  safeGate  Float
+  @@index([createdAt])
+}
+
+
+enum SupplementType {
+  PROGEST_E
+
+  PREGNENOLONE
+}
+
+model SupplementPlan {
+  id          String         @id @default(cuid())
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  userId      String
+  type        SupplementType
+  name        String         @default("Progest-E Plan")
+  params      Json
+  startAt     DateTime?
+  endAt       DateTime?
+  status      String         @default("draft")
+  consentAt   DateTime?
+  clinicianOk Boolean        @default(false)
+  notes       String?
+  doses       SupplementDose[]
+  @@index([userId, type, status])
+}
+
+model SupplementDose {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  planId    String
+  userId    String
+  ts        DateTime
+  amount    Decimal  @db.Decimal(10,3)
+  unit      String
+  route     String
+  note      String?
+  symptoms  Json?
+  plan      SupplementPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  @@index([userId, ts])
+}

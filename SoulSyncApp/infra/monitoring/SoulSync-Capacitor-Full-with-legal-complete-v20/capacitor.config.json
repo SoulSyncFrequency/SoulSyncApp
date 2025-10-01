@@ -1,0 +1,11 @@
+{
+  "appId": "com.soulsync.app",
+  "appName": "SoulSync",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

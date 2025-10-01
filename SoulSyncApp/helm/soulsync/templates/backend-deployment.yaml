@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "soulsync.fullname" . }}-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: {{ include "soulsync.name" . }}, tier: backend }
+  template:
+    metadata:
+      labels: { app: {{ include "soulsync.name" . }}, tier: backend }
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag }}"
+          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
+          ports: [{ containerPort: 5000 }]
+          env:
+            - name: NODE_ENV
+              value: "{{ .Values.env.backend.NODE_ENV }}"
+          livenessProbe:
+            httpGet: { path: /api/livez, port: 5000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /api/readyz, port: 5000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: {{ .Values.resources.backend.requests.cpu }}
+              memory: {{ .Values.resources.backend.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.backend.limits.cpu }}
+              memory: {{ .Values.resources.backend.limits.memory }}

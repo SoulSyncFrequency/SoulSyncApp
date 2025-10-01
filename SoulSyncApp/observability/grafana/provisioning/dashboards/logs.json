@@ -1,0 +1,1 @@
+{"panels": [{"type": "logs", "title": "Backend Logs", "targets": [{"expr": "{job='backend'}"}]}, {"type": "logs", "title": "Frontend Logs", "targets": [{"expr": "{job='frontend'}"}]}], "title": "Logs Explorer", "schemaVersion": 27, "version": 1}

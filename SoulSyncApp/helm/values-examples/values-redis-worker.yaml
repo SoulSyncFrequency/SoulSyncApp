@@ -1,0 +1,91 @@
+# Example Helm values for production-like setup
+backend:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  image:
+    repository: your-registry/soulsync-backend
+    tag: v60
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  env:
+    - name: NODE_ENV
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 4
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 6
+
+      value: production
+    - name: PORT
+      value: "3000"
+    - name: POSTGRES_URL
+      valueFrom:
+        secretKeyRef: { name: db-secrets, key: url }
+    - name: REDIS_URL
+      valueFrom:
+        secretKeyRef: { name: redis-secrets, key: url }
+    - name: JWT_SECRET
+      valueFrom:
+        secretKeyRef: { name: app-secrets, key: jwt }
+    - name: REFRESH_SECRET
+      valueFrom:
+        secretKeyRef: { name: app-secrets, key: refresh }
+
+worker:
+  enabled: true
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  image:
+    repository: your-registry/soulsync-backend
+    tag: v60
+  command: ["node", "dist/jobs/worker.js"]
+  replicaCount: 2
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+  envFromBackend: true  # reuse backend env including REDIS_URL
+
+redis:
+  enabled: true
+  image: redis:7
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { cpu: 500m, memory: 512Mi }
+  persistence:
+    enabled: true
+    size: 5Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: api.soulsync.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts: [ api.soulsync.yourdomain.com ]
+      secretName: soulsync-tls

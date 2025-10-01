@@ -1,0 +1,8 @@
+{{ define "slack.my.default.text" }}
+*{{ .Status | toUpper }}* ({{ .CommonLabels.severity }}) for *{{ .CommonLabels.job }}*
+{{ range .Alerts }}
+• *Alert:* {{ .Annotations.summary }}
+• *Starts:* {{ .StartsAt }}
+• *Details:* <{{ .GeneratorURL }}|Graph>
+{{ end }}
+{{ end }}

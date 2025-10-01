@@ -1,0 +1,141 @@
+{
+  "get:/ops/status": {},
+  "get:/api/supplements/summary": {
+    "200": {
+      "description": "OK"
+    },
+    "400": {
+      "description": "400",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error400"
+          }
+        }
+      }
+    },
+    "401": {
+      "description": "401",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error401"
+          }
+        }
+      }
+    },
+    "403": {
+      "description": "403",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error403"
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "404",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error404"
+          }
+        }
+      }
+    },
+    "429": {
+      "description": "429",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error429"
+          }
+        }
+      }
+    },
+    "503": {
+      "description": "503",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error503"
+          }
+        }
+      }
+    }
+  },
+  "get:/api/supplements/plans": {
+    "200": {
+      "description": "OK"
+    },
+    "400": {
+      "description": "400",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error400"
+          }
+        }
+      }
+    },
+    "401": {
+      "description": "401",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error401"
+          }
+        }
+      }
+    },
+    "403": {
+      "description": "403",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error403"
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "404",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error404"
+          }
+        }
+      }
+    },
+    "429": {
+      "description": "429",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error429"
+          }
+        }
+      }
+    },
+    "503": {
+      "description": "503",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error503"
+          }
+        }
+      }
+    }
+  },
+  "get:/admin/audit/admin-actions": {},
+  "get:/ops/flags": {},
+  "get:/ops/config-diff": {},
+  "get:/ops/ping-db": {},
+  "get:/ops/ping-redis": {},
+  "get:/ops/ping-smtp": {},
+  "get:/ops/ping-s3": {},
+  "get:/ops/backup-status": {}
+}

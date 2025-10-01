@@ -1,0 +1,27 @@
+{
+  "data_collected": {
+    "Personal info": [
+      "Email address"
+    ],
+    "App activity": [
+      "App interactions"
+    ],
+    "Device or other IDs": [
+      "Instance ID (push token)"
+    ]
+  },
+  "data_encrypted_in_transit": true,
+  "data_encrypted_at_rest": true,
+  "data_deletion": true,
+  "shared_with_third_parties": [
+    "Sentry (telemetry)",
+    "Stripe/RevenueCat (billing)"
+  ],
+  "optional_data_collection": [
+    "Crash logs/Performance telemetry (opt-in)"
+  ],
+  "safety_practices": [
+    "Independent security review recommended",
+    "Data minimization"
+  ]
+}

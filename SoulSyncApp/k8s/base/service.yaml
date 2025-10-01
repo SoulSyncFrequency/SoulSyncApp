@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: soulsync-app
+  labels:
+    app: soulsync
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+  selector:
+    app: soulsync
+    tier: app

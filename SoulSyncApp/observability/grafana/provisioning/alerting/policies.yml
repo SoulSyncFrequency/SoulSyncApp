@@ -1,0 +1,11 @@
+apiVersion: 1
+
+policies:
+  - receiver: "Slack Warnings"
+    matchers:
+      - severity=warning
+  - receiver: "Slack Critical"
+    matchers:
+      - severity=critical
+  - receiver: "Email Team"
+    matchers: []

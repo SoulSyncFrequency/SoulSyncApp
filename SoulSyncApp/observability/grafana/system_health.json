@@ -1,0 +1,32 @@
+{
+  "title": "System Health",
+  "panels": [
+    {
+      "title": "Backend up",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "up{job='soulsync-backend'}"
+        }
+      ]
+    },
+    {
+      "title": "Redis up",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "up{job='redis-exporter'}"
+        }
+      ]
+    },
+    {
+      "title": "Postgres up",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "up{job='postgres-exporter'}"
+        }
+      ]
+    }
+  ]
+}

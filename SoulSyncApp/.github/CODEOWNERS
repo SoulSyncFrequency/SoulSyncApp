@@ -1,0 +1,6 @@
+# Granular ownership
+/backend/ @SoulSyncFrequency
+/grafana/ @SoulSyncFrequency
+/prometheus/ @SoulSyncFrequency
+/docs/ @SoulSyncFrequency
+* @SoulSyncFrequency

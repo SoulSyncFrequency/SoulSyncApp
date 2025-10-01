@@ -1,0 +1,57 @@
+name: Deploy to Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build front (for any config baked assets) [optional]
+        run: |
+          cd frontend
+          npm ci --omit=dev
+          npm run build
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
+            export COMPOSE_FILE=docker-compose.prod.ssl.yml
+            if [ ! -d "${{ secrets.REMOTE_PATH }}" ]; then
+              mkdir -p ${{ secrets.REMOTE_PATH }}
+            fi
+            cd ${{ secrets.REMOTE_PATH }}
+            # First deployment: clone if empty, else pull latest
+            if [ ! -d ".git" ]; then
+              git init
+              git remote add origin ${{ secrets.REPO_SSH }}
+              git fetch origin main
+              git checkout -b main FETCH_HEAD
+            else
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+            # Create/refresh env files if present in secrets (optional)
+            if [ -n "${{ secrets.BACKEND_ENV }}" ]; then
+              echo "${{ secrets.BACKEND_ENV }}" > backend/.env
+            fi
+            if [ -n "${{ secrets.FRONTEND_ENV }}" ]; then
+              echo "${{ secrets.FRONTEND_ENV }}" > frontend/.env
+            fi
+            # Build frontend image locally (or pull prebuilt from GHCR if preferred)
+            docker compose -f docker-compose.prod.ssl.yml build web
+            # Run stack
+            docker compose -f docker-compose.prod.ssl.yml up -d --build
+            docker system prune -f

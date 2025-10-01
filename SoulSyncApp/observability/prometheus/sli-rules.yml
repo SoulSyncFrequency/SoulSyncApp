@@ -1,0 +1,16 @@
+groups:
+- name: sli-rules
+  interval: 5m
+  rules:
+  - record: sli:availability_30d
+    expr: (1 - (sum_over_time(http_requests_total{job="soulsync-backend",status=~"5.."}[30d]))
+      / sum_over_time(http_requests_total{job="soulsync-backend"}[30d])) * 100
+  - record: sli:latency_p95_30d
+    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="soulsync-backend"}[5m]))
+      by (le))
+  - record: sli:availability_1h
+    expr: (1 - (sum_over_time(http_requests_total{job="soulsync-backend",status=~"5.."}[1h]))
+      / sum_over_time(http_requests_total{job="soulsync-backend"}[1h])) * 100
+  - record: sli:availability_6h
+    expr: (1 - (sum_over_time(http_requests_total{job="soulsync-backend",status=~"5.."}[6h]))
+      / sum_over_time(http_requests_total{job="soulsync-backend"}[6h])) * 100

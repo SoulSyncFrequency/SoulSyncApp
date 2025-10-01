@@ -1,0 +1,12 @@
+groups:
+  - name: loki-logs
+    rules:
+      - alert: TooManyErrors
+        expr: |
+          sum(rate({app="therapy-backend"} |= "ERROR" [5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Previše error logova u backendu"
+          description: "Detektirano više od 10 ERROR logova u zadnjih 5 minuta."

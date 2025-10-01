@@ -1,0 +1,23 @@
+{
+  "title": "Therapy Engine - AIOps",
+  "panels": [
+    {
+      "type": "table",
+      "title": "Current Anomalies",
+      "targets": [
+        {
+          "expr": "aiops_anomaly_current"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Anomaly Score Over Time",
+      "targets": [
+        {
+          "expr": "aiops_anomaly_score"
+        }
+      ]
+    }
+  ]
+}

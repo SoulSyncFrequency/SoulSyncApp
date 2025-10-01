@@ -1,0 +1,6 @@
+azure_resource_group = "therapy-rg"
+azure_location       = "westeurope"
+
+db_name     = "therapydb"
+db_user     = "therapy_user"
+db_password = "superSecretPass123"

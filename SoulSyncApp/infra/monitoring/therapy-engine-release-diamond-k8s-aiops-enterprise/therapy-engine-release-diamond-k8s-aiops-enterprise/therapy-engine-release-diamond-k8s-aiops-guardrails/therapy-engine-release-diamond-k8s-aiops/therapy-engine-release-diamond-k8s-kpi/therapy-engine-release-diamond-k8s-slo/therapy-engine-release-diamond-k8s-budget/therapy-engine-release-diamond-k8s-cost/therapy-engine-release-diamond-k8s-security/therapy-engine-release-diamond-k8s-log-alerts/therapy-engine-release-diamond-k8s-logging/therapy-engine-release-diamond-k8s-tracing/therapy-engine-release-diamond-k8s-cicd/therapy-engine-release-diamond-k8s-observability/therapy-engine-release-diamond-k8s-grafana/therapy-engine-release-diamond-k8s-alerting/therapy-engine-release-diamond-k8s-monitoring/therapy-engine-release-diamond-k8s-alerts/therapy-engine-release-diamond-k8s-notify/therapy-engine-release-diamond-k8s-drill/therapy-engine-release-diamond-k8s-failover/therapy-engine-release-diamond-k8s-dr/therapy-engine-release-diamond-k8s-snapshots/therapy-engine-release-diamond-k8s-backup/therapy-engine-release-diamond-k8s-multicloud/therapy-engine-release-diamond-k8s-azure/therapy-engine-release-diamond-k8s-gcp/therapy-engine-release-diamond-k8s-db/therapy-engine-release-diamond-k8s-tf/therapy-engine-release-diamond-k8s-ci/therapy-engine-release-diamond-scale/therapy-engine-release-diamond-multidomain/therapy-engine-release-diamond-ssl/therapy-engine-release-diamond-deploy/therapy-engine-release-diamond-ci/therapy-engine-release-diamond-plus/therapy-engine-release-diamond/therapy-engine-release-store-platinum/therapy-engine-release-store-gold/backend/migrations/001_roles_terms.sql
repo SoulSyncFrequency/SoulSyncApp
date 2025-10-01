@@ -1,0 +1,1 @@
+-- Ensure role and accepted_terms_at columns; no-op if exist (handled in code).

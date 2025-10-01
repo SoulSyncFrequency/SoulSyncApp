@@ -1,0 +1,48 @@
+{
+  "info": {
+    "name": "SoulSync Minimal",
+    "_postman_id": "temp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{API}}/health"
+      }
+    },
+    {
+      "name": "Therapy Generate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{KEY}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"text\":\"hi\"}"
+        },
+        "url": "{{API}}/api/therapy/generate"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "API",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "KEY",
+      "value": "public"
+    }
+  ]
+}

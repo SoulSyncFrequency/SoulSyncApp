@@ -1,0 +1,222 @@
+{
+  "tags": [
+    {
+      "name": "supplements/progeste",
+      "description": "Progest-E supplement endpoints"
+    }
+  ],
+  "paths": {
+    "/api/supplements/progeste/plan": {
+      "post": {
+        "tags": [
+          "supplements/progeste"
+        ],
+        "summary": "Create Progest-E plan (draft)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgestEPlanCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/progeste/consent/{planId}": {
+      "post": {
+        "tags": [
+          "supplements/progeste"
+        ],
+        "summary": "Accept consent and activate plan",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/progeste/dose": {
+      "post": {
+        "tags": [
+          "supplements/progeste"
+        ],
+        "summary": "Log a Progest-E dose",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgestEDoseLog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/progeste/doses/{planId}": {
+      "get": {
+        "tags": [
+          "supplements/progeste"
+        ],
+        "summary": "List doses for a plan",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/progeste/summary/{planId}": {
+      "get": {
+        "tags": [
+          "supplements/progeste"
+        ],
+        "summary": "Deterministic summary (+optional AI text)",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProgestEPlanCreate": {
+        "type": "object",
+        "properties": {
+          "doseUnit": {
+            "type": "string",
+            "enum": [
+              "drop",
+              "mg"
+            ]
+          },
+          "mgPerDrop": {
+            "type": "number",
+            "nullable": true
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "topical",
+              "oral"
+            ]
+          },
+          "schedule": {},
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "doseUnit",
+          "route"
+        ]
+      },
+      "ProgestEDoseLog": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "drop",
+              "mg"
+            ]
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "topical",
+              "oral"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "symptoms": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "planId",
+          "ts",
+          "amount",
+          "unit",
+          "route"
+        ]
+      }
+    }
+  }
+}

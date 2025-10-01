@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"><meta charset="utf-8"><title>SoulSync — Export Progress</title>
+<style>body{font-family:sans-serif;padding:20px} .bar{height:18px;background:#ddd;border-radius:9px;overflow:hidden} .fill{height:100%;width:0;background:#4caf50;transition:width .2s}</style>
+</head><body>
+<h2>Export progress</h2>
+<label>ID: <input id="jobId" placeholder="abc123"></label>
+<button id="start">Start stream</button>
+<div class="bar"><div class="fill" id="fill"></div></div>
+<pre id="log"></pre>
+<script>
+document.getElementById('start').onclick = function(){
+  const id = document.getElementById('jobId').value || 'demo'
+  const src = new EventSource('/api/admin/export/'+encodeURIComponent(id)+'/stream')
+  const fill = document.getElementById('fill')
+  const log = document.getElementById('log')
+  src.onmessage = (e)=>{ log.textContent += e.data + "\n" }
+  src.addEventListener('progress', (e)=>{
+    try{
+      const d = JSON.parse(e.data); fill.style.width = Math.max(0, Math.min(100, d.progress))+'%'
+      log.textContent += 'progress: '+d.progress+'\n'
+    }catch{}
+  })
+}
+</script>
+</body></html>

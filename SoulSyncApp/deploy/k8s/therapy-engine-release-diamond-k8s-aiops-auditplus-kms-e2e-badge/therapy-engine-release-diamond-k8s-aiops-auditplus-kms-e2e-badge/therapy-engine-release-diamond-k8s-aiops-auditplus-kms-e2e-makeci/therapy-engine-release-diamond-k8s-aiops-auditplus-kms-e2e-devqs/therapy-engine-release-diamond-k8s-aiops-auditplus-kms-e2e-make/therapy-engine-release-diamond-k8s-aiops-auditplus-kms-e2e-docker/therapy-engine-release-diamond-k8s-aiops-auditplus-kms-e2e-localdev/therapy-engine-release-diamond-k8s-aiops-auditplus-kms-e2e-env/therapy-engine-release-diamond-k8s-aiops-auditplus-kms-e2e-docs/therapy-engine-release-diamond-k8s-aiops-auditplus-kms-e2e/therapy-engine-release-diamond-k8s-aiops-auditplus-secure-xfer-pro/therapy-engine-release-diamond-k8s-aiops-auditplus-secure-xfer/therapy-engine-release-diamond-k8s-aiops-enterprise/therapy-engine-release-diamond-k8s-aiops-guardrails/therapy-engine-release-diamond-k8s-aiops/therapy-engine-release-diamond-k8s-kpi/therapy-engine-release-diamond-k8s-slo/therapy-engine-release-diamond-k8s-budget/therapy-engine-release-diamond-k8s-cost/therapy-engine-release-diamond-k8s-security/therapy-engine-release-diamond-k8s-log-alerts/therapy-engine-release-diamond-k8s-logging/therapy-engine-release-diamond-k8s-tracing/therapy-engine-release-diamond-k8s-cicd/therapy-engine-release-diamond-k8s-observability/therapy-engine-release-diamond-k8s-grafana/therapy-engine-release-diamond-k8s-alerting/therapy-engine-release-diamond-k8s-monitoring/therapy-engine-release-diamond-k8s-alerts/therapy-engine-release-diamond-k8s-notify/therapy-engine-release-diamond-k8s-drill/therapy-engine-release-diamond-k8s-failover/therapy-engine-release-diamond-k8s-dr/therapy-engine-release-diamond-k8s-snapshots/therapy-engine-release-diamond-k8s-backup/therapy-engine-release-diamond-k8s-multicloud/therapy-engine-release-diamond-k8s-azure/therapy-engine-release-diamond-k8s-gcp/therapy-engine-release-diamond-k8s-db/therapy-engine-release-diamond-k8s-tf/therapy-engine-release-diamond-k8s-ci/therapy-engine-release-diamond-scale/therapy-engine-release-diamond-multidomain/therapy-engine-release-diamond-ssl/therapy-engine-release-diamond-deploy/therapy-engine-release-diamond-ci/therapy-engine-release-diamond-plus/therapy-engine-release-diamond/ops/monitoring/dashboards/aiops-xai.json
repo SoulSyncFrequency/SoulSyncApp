@@ -1,0 +1,32 @@
+{
+  "title": "Therapy Engine - AIOps Explainability",
+  "panels": [
+    {
+      "type": "table",
+      "title": "Current Anomaly Reasons",
+      "targets": [
+        {
+          "expr": "aiops_anomaly_info"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Z-Score (24h)",
+      "targets": [
+        {
+          "expr": "aiops_anomaly_zscore{window=\"24h\"}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Delta vs Mean 24h",
+      "targets": [
+        {
+          "expr": "aiops_anomaly_delta"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Therapy Engine - Alerts",
+  "panels": [
+    {
+      "type": "table",
+      "title": "Active Alerts",
+      "targets": [
+        {
+          "expr": "ALERTS{alertstate=\"firing\"}"
+        }
+      ]
+    }
+  ]
+}

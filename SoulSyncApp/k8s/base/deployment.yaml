@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soulsync-app
+  labels:
+    app: soulsync
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: soulsync
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: soulsync
+        tier: app
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: app
+          image: ghcr.io/<your-org>/<your-repo>:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: FRONTEND_ORIGIN
+              value: "https://app.<your-domain>"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: DATABASE_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: JWT_SECRET
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: REFRESH_TOKEN_SECRET
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_HOST
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_USER
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_PASS
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_FROM
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

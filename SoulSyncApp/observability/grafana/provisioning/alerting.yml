@@ -1,0 +1,73 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: Backend Alerts
+    folder: General
+    interval: 1m
+    rules:
+      - uid: backend-latency
+        title: Backend high latency (p95 > 1.5s)
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="soulsync-backend"}[5m])) by (le))
+              refId: A
+          - refId: B
+            datasourceUid: prometheus
+            model:
+              expr: 1.5
+              refId: B
+        annotations: {}
+      - uid: backend-errors
+        title: Backend error rate > 5%
+        condition: A
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            model:
+              expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+              refId: A
+        annotations: {}
+      - uid: container-down
+        title: Container down (up == 0)
+        condition: A
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            model:
+              expr: up == 0
+              refId: A
+        annotations: {}
+
+- uid: cpu-usage
+  title: High CPU usage > 80%
+  condition: A
+  data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        refId: A
+- uid: mem-usage
+  title: High Memory usage > 85%
+  condition: A
+  data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        refId: A
+- uid: disk-usage
+  title: High Disk usage > 90%
+  condition: A
+  data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: (node_filesystem_size_bytes{fstype!="tmpfs"} - node_filesystem_free_bytes{fstype!="tmpfs"}) / node_filesystem_size_bytes{fstype!="tmpfs"} * 100 > 90
+        refId: A

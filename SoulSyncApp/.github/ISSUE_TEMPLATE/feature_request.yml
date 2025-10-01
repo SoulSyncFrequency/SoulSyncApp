@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: [enhancement]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: What problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      placeholder: Proposed solution or approach

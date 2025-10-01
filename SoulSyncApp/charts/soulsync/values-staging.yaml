@@ -1,0 +1,26 @@
+image:
+  repository: ghcr.io/your-org/soulsync-backend
+  tag: "1.0.0-rc"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+env:
+  NODE_ENV: production
+  ADMIN_PURGE_ENABLED: "true"
+  ADMIN_UI_ENABLED: "true"
+
+secrets:
+  REDIS_URL: "redis://redis:6379"
+  ADMIN_TOKENS: "staging:REDACTED"
+  METRICS_TOKEN: "REDACTED"
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi

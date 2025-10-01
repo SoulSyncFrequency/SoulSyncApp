@@ -1,0 +1,35 @@
+name: AI PR Title Helper
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize]
+jobs:
+  suggest-title:
+    if: ${{ secrets.OPENAI_API_KEY != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = context.payload.pull_request.title || ''
+            if (/^(feat|fix|chore|docs|test|refactor|ci|perf)(\(.*\))?:\s/.test(title)) {
+              core.info('Title already semantic. Skipping.')
+              return
+            }
+            const body = context.payload.pull_request.body || ''
+            const prompt = `Suggest a concise Conventional Commit style title for this PR. PR body follows:\n\n${body}`
+            const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.2, messages: [{ role:"user", content: prompt }] })
+            })
+            let suggestion = "Could not generate suggestion."
+            if (resp.ok) {
+              const data = await resp.json()
+              suggestion = data.choices?.[0]?.message?.content?.trim() || suggestion
+            } else {
+              suggestion = `AI error: ${resp.status} ${resp.statusText}`
+            }
+            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.payload.pull_request.number, body: `🤖 Suggested semantic title:\n\n> ${suggestion}` })
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

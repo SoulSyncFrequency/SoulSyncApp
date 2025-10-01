@@ -1,0 +1,124 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: soulsync/backend:local
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-soulsync}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PGUSER:-soulsync}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-soulsync}
+      POSTGRES_DB: ${PGDATABASE:-soulsync}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "100", "--loglevel", "warning"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- "http://localhost:9090/-/ready" || curl -fsS "http://localhost:9090/-/ready" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    volumes:
+      - ./infra/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.1.3
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- "http://localhost:3000/api/health" || curl -fsS "http://localhost:3000/api/health" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASS:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./infra/monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3002:3000"
+    depends_on:
+      - prometheus
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- "http://localhost:3001" || curl -fsS "http://localhost:3001" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    volumes:
+      - ./uptime-kuma/data:/app/data
+    ports:
+      - "3001:3001"
+
+volumes:
+  db_data:
+  redis_data:
+  grafana_data:
+
+nginx:
+  image: nginx:1.27-alpine
+  restart: unless-stopped
+  volumes:
+    - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./infra/nginx/certs:/etc/nginx/certs:ro
+  ports:
+    - "443:443"
+    - "80:80"
+  depends_on:
+    - backend
+
+
+alertmanager:
+  image: prom/alertmanager:v0.27.0
+  restart: unless-stopped
+  volumes:
+    - ./infra/monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+  ports:
+    - "9093:9093"
+  depends_on:
+    - prometheus

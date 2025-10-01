@@ -1,0 +1,45 @@
+{
+  "name": "therapy-engine-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host",
+    "cap:sync": "npx cap sync",
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios",
+    "shots": "node ../ops/screenshots/snapshots.js",
+    "e2e": "npx playwright test",
+    "postbuild": "node -e \"const fs=require('fs');const p='dist/index.html';let s=fs.readFileSync(p,'utf8');s=s.replace('%VITE_BRAND_NAME%', process.env.VITE_BRAND_NAME||'TherapyEngine');fs.writeFileSync(p,s);\""
+  },
+  "dependencies": {
+    "framer-motion": "^11.1.7",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "lucide-react": "^0.460.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@capacitor/core": "^6.1.0",
+    "@capacitor/cli": "^6.1.0",
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/ios": "^6.1.0",
+    "@capacitor/filesystem": "^6.1.0",
+    "@capacitor/share": "^6.1.0",
+    "@capacitor/push-notifications": "^6.1.0",
+    "@capacitor/local-notifications": "^6.1.0",
+    "@codetrix-studio/capacitor-google-auth": "^3.5.0",
+    "@capacitor-community/apple-sign-in": "^1.1.1",
+    "@capacitor/fingerprint-auth": "^6.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.10",
+    "vite": "^5.4.2",
+    "@vitejs/plugin-react": "^4.3.1",
+    "puppeteer": "^22.12.1",
+    "@playwright/test": "^1.47.1"
+  }
+}

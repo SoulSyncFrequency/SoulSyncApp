@@ -1,0 +1,12 @@
+groups:
+  - name: slo-alerts
+    interval: 1m
+    rules:
+      - alert: SLOErrorBudgetBurn
+        expr: (1 - http_requests:success_rate) > 0.01
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SLO error budget burn"
+          description: "Više od 1% zahtjeva neuspješno u zadnjih 15 minuta."

@@ -1,0 +1,7 @@
+git init
+git branch -M main
+git remote add origin https://github.com/SoulSyncFrequency/SoulSyncApp.git
+git add .
+git commit -m "Add full SoulSync project"
+git pull --rebase origin main
+git push -u origin main

@@ -1,0 +1,22 @@
+name: test
+on:
+  push:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+    branches: [ main ]
+  pull_request:
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with: { node-version: 20 }
+      - run: npm ci || npm i --no-audit --no-fund
+      - run: npx jest --version || npm i -D jest supertest @types/jest ts-node
+      - run: npm test --silent

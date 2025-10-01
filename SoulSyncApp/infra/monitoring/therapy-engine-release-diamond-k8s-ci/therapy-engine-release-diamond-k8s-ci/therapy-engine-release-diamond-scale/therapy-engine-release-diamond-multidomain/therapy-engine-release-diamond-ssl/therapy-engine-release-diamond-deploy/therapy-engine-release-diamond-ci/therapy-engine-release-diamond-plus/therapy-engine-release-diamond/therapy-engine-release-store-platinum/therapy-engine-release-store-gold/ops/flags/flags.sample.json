@@ -1,0 +1,11 @@
+{
+  "billingProvider": "revenuecat",
+  "features": {
+    "pct_report": true,
+    "advanced_frequency": true
+  },
+  "ui": {
+    "showLegal": true,
+    "showSettings": true
+  }
+}

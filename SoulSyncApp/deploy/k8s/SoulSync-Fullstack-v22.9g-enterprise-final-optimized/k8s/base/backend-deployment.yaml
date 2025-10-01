@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: soulsync
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: backend } }
+  template:
+    metadata: { labels: { app: backend } }
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/your-org/soulsync-backend:latest
+          ports: [{ containerPort: 5000 }]
+          env:
+            - name: NODE_ENV
+              value: "production"
+          livenessProbe:
+            httpGet: { path: /api/livez, port: 5000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /api/readyz, port: 5000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits: { cpu: "500m", memory: "512Mi" }

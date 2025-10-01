@@ -1,0 +1,32 @@
+{
+  "title": "Therapy Engine - SLOs",
+  "panels": [
+    {
+      "type": "gauge",
+      "title": "Success Rate (SLI)",
+      "targets": [
+        {
+          "expr": "http_requests:success_rate"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "p99 Latency (SLI)",
+      "targets": [
+        {
+          "expr": "http_requests:latency_p99"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Error Budget Burn",
+      "targets": [
+        {
+          "expr": "(1 - http_requests:success_rate)"
+        }
+      ]
+    }
+  ]
+}

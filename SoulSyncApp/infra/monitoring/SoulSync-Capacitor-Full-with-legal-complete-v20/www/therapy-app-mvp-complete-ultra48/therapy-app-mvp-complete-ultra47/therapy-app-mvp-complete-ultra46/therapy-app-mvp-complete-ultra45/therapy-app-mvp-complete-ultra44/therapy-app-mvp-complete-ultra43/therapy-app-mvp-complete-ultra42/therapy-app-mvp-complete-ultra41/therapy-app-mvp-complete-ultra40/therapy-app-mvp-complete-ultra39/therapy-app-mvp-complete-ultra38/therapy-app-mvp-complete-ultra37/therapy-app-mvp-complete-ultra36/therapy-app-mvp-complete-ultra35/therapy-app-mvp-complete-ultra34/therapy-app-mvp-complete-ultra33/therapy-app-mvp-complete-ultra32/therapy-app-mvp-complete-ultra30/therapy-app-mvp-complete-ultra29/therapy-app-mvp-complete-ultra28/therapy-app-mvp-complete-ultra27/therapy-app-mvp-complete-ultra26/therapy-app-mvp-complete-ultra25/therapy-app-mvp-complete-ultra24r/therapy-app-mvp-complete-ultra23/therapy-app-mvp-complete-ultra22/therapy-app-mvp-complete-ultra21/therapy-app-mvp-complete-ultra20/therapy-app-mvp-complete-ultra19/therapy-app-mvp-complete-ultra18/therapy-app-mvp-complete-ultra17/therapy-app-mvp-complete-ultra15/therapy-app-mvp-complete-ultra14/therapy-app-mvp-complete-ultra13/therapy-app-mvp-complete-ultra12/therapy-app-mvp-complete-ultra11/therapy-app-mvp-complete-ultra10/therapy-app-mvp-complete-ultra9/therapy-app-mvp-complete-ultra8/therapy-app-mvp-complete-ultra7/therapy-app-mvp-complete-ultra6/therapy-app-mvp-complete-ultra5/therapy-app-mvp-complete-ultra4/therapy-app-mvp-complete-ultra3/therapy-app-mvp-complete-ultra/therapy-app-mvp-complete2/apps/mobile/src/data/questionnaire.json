@@ -1,0 +1,2091 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "total": 140,
+    "followups": 10
+  },
+  "questions": [
+    {
+      "chakra": "Root",
+      "id": "root_1",
+      "order": 1,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_2",
+      "order": 2,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_3",
+      "order": 3,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_4",
+      "order": 4,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_5",
+      "order": 5,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_6",
+      "order": 6,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_7",
+      "order": 7,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_8",
+      "order": 8,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_9",
+      "order": 9,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_10",
+      "order": 10,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_11",
+      "order": 11,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_12",
+      "order": 12,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_13",
+      "order": 13,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_14",
+      "order": 14,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_15",
+      "order": 15,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_16",
+      "order": 16,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_17",
+      "order": 17,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_18",
+      "order": 18,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_19",
+      "order": 19,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Root",
+      "id": "root_20",
+      "order": 20,
+      "text_en": "[Root] Rate balance (1-5).",
+      "text_hr": "[Root] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_1",
+      "order": 21,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_2",
+      "order": 22,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_3",
+      "order": 23,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_4",
+      "order": 24,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_5",
+      "order": 25,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_6",
+      "order": 26,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_7",
+      "order": 27,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_8",
+      "order": 28,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_9",
+      "order": 29,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_10",
+      "order": 30,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_11",
+      "order": 31,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_12",
+      "order": 32,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_13",
+      "order": 33,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_14",
+      "order": 34,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_15",
+      "order": 35,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_16",
+      "order": 36,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_17",
+      "order": 37,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_18",
+      "order": 38,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_19",
+      "order": 39,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Sacral",
+      "id": "sacral_20",
+      "order": 40,
+      "text_en": "[Sacral] Rate balance (1-5).",
+      "text_hr": "[Sacral] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_1",
+      "order": 41,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_2",
+      "order": 42,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_3",
+      "order": 43,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_4",
+      "order": 44,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_5",
+      "order": 45,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_6",
+      "order": 46,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_7",
+      "order": 47,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_8",
+      "order": 48,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_9",
+      "order": 49,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_10",
+      "order": 50,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_11",
+      "order": 51,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_12",
+      "order": 52,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_13",
+      "order": 53,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_14",
+      "order": 54,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_15",
+      "order": 55,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_16",
+      "order": 56,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_17",
+      "order": 57,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_18",
+      "order": 58,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_19",
+      "order": 59,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Solar Plexus",
+      "id": "solar_plexus_20",
+      "order": 60,
+      "text_en": "[Solar Plexus] Rate balance (1-5).",
+      "text_hr": "[Solar Plexus] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_1",
+      "order": 61,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_2",
+      "order": 62,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_3",
+      "order": 63,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_4",
+      "order": 64,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_5",
+      "order": 65,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_6",
+      "order": 66,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_7",
+      "order": 67,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_8",
+      "order": 68,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_9",
+      "order": 69,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_10",
+      "order": 70,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_11",
+      "order": 71,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_12",
+      "order": 72,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_13",
+      "order": 73,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_14",
+      "order": 74,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_15",
+      "order": 75,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_16",
+      "order": 76,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_17",
+      "order": 77,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_18",
+      "order": 78,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_19",
+      "order": 79,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Heart",
+      "id": "heart_20",
+      "order": 80,
+      "text_en": "[Heart] Rate balance (1-5).",
+      "text_hr": "[Heart] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_1",
+      "order": 81,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_2",
+      "order": 82,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_3",
+      "order": 83,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_4",
+      "order": 84,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_5",
+      "order": 85,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_6",
+      "order": 86,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_7",
+      "order": 87,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_8",
+      "order": 88,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_9",
+      "order": 89,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_10",
+      "order": 90,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_11",
+      "order": 91,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_12",
+      "order": 92,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_13",
+      "order": 93,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_14",
+      "order": 94,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_15",
+      "order": 95,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_16",
+      "order": 96,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_17",
+      "order": 97,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_18",
+      "order": 98,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_19",
+      "order": 99,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Throat",
+      "id": "throat_20",
+      "order": 100,
+      "text_en": "[Throat] Rate balance (1-5).",
+      "text_hr": "[Throat] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_1",
+      "order": 101,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_2",
+      "order": 102,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_3",
+      "order": 103,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_4",
+      "order": 104,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_5",
+      "order": 105,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_6",
+      "order": 106,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_7",
+      "order": 107,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_8",
+      "order": 108,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_9",
+      "order": 109,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_10",
+      "order": 110,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_11",
+      "order": 111,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_12",
+      "order": 112,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_13",
+      "order": 113,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_14",
+      "order": 114,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_15",
+      "order": 115,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_16",
+      "order": 116,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_17",
+      "order": 117,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_18",
+      "order": 118,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_19",
+      "order": 119,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Third Eye",
+      "id": "third_eye_20",
+      "order": 120,
+      "text_en": "[Third Eye] Rate balance (1-5).",
+      "text_hr": "[Third Eye] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_1",
+      "order": 121,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_2",
+      "order": 122,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_3",
+      "order": 123,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_4",
+      "order": 124,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_5",
+      "order": 125,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_6",
+      "order": 126,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_7",
+      "order": 127,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_8",
+      "order": 128,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_9",
+      "order": 129,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_10",
+      "order": 130,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_11",
+      "order": 131,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_12",
+      "order": 132,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_13",
+      "order": 133,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_14",
+      "order": 134,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_15",
+      "order": 135,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_16",
+      "order": 136,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_17",
+      "order": 137,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_18",
+      "order": 138,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_19",
+      "order": 139,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "chakra": "Crown",
+      "id": "crown_20",
+      "order": 140,
+      "text_en": "[Crown] Rate balance (1-5).",
+      "text_hr": "[Crown] Ocijenite ravnotežu (1-5).",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "followups": [
+    {
+      "id": "personal_1",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_2",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_3",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_4",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_5",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_6",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_7",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_8",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_9",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "personal_10",
+      "text_en": "Personalized follow-up",
+      "text_hr": "Personalizirano dopunsko pitanje",
+      "scale": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}

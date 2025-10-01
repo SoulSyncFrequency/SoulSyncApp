@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: TherapyEngine API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5050
+paths:
+  /auth/register:
+    post:
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: OK }
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: OK }
+  /me:
+    get:
+      summary: Current user
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: OK }
+  /me/export:
+    get:
+      summary: Export my data (GDPR)
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: JSON export }
+  /me:
+    delete:
+      summary: Delete my account & data (GDPR)
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: Deleted }
+  /api/generateTherapy:
+    post:
+      summary: Generate therapy
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200': { description: Therapy object }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

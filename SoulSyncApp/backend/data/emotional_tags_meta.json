@@ -1,0 +1,52 @@
+{
+  "grounding": {
+    "icon": "🧘",
+    "label": "Grounding",
+    "description": "Uzemljuje i stabilizira — vraća osjećaj prisutnosti, sigurnosti i povezanosti s tijelom"
+  },
+  "nurturing": {
+    "icon": "🤱",
+    "label": "Nurturing",
+    "description": "Njeguje i hrani — pruža osjećaj topline, sigurnosti i emocionalne podrške"
+  },
+  "soothing": {
+    "icon": "🌙",
+    "label": "Soothing",
+    "description": "Smiruje i opušta — snižava stres i napetost"
+  },
+  "energizing": {
+    "icon": "⚡",
+    "label": "Energizing",
+    "description": "Aktivira i podiže vitalnost — pokreće energiju i motivaciju"
+  },
+  "uplifting": {
+    "icon": "🌞",
+    "label": "Uplifting",
+    "description": "Podiže raspoloženje i donosi optimizam — razbistruje misli i emocije"
+  },
+  "focus": {
+    "icon": "🎯",
+    "label": "Focus",
+    "description": "Povećava mentalnu jasnoću i koncentraciju — usmjerava energiju na zadatak"
+  },
+  "creative": {
+    "icon": "🎨",
+    "label": "Creative",
+    "description": "Otvara imaginaciju i fleksibilno razmišljanje — potiče izražavanje i stvaranje"
+  },
+  "cleansing": {
+    "icon": "💧",
+    "label": "Cleansing",
+    "description": "Čisti i resetira — donosi osjećaj lakoće, prozračnosti i svježeg početka"
+  },
+  "sensual": {
+    "icon": "🌺",
+    "label": "Sensual",
+    "description": "Potiče osjetilnost i tjelesnu ugodu — jača kontakt s osjetilima i užitkom"
+  },
+  "protective": {
+    "icon": "🛡️",
+    "label": "Protective",
+    "description": "Stvara osjećaj sigurnosti i granica — jača otpornost i osjećaj unutarnje snage"
+  }
+}

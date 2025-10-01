@@ -1,0 +1,26 @@
+{
+  "title": "Therapy Engine - Budgets",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Namespace cost vs budget",
+      "targets": [
+        {
+          "expr": "sum by (namespace) (kubecost_namespace_cost)"
+        },
+        {
+          "expr": "kubecost_namespace_budget"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Namespaces over budget",
+      "targets": [
+        {
+          "expr": "kubecost_namespace_cost - kubecost_namespace_budget"
+        }
+      ]
+    }
+  ]
+}

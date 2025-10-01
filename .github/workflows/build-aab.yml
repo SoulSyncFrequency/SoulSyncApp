@@ -1,0 +1,61 @@
+name: Build Android AAB
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
+      - name: Install Android platforms & build-tools
+        run: sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Install & build frontend
+        working-directory: ./SoulSyncApp/frontend
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Install & sync mobile (Capacitor)
+        working-directory: ./SoulSyncApp/mobile
+        run: |
+          npm ci || npm install
+          npx cap sync android
+
+      - name: Generate upload keystore + keystore.properties
+        working-directory: ./SoulSyncApp/mobile/android
+        run: |
+          keytool -genkeypair -v -keystore soulsync-upload-keystore.jks -alias soulsync-upload -keyalg RSA -keysize 2048 -validity 36500 -storepass "Najboljiprvas5@" -keypass "Najboljiprvas5@" -dname "CN=SoulSync, OU=Apps, O=SoulSync, L=Zagreb, ST=Croatia, C=HR"
+          printf "storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n" "$(pwd)/soulsync-upload-keystore.jks" "Najboljiprvas5@" "soulsync-upload" "Najboljiprvas5@" > keystore.properties
+
+      - name: Build AAB (bundleRelease)
+        working-directory: ./SoulSyncApp/mobile/android
+        run: ./gradlew --no-daemon bundleRelease
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: |
+            SoulSyncApp/mobile/android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Upload upload-keystore (save this offline!)
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-keystore
+          path: |
+            SoulSyncApp/mobile/android/soulsync-upload-keystore.jks

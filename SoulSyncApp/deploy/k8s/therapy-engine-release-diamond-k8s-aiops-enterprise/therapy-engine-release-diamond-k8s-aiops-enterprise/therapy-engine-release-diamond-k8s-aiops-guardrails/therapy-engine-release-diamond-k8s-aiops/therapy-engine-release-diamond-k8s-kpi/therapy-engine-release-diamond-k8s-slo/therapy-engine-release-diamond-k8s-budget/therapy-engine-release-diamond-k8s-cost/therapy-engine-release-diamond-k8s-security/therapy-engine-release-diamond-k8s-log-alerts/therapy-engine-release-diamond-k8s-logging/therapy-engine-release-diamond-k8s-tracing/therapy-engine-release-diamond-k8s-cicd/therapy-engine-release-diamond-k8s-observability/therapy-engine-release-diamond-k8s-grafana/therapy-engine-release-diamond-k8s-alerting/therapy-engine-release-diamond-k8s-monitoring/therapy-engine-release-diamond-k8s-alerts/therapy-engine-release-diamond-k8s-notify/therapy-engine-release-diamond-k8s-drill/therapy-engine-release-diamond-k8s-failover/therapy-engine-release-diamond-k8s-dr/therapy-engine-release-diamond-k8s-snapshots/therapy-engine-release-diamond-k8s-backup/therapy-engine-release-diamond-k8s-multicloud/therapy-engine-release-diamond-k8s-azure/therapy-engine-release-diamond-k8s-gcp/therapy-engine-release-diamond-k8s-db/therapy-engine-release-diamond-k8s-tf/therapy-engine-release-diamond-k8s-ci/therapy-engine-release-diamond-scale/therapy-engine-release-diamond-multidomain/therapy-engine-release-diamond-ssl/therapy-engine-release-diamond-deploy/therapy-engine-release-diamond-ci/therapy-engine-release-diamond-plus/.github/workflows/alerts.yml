@@ -1,0 +1,24 @@
+name: PagerDuty Alerts
+
+on:
+  workflow_run:
+    workflows: ["CI/CD", "Failover", "Disaster Recovery Drill"]
+    types:
+      - completed
+
+jobs:
+  pagerduty-alert:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger PagerDuty Incident
+        run: |
+          curl -X POST "https://events.pagerduty.com/v2/enqueue"             -H "Content-Type: application/json"             -d "{
+              \"routing_key\": \"${{ secrets.PAGERDUTY_ROUTING_KEY }}\",
+              \"event_action\": \"trigger\",
+              \"payload\": {
+                \"summary\": \"${{ github.event.workflow_run.name }} workflow failed\",
+                \"severity\": \"error\",
+                \"source\": \"github-actions\"
+              }
+            }"

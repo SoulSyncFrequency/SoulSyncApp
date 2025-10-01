@@ -1,0 +1,21 @@
+
+services:
+  - type: web
+    name: soulsync-backend
+    env: node
+    plan: starter
+    autoDeploy: true
+    buildCommand: cd backend && pnpm i && pnpm run build
+    startCommand: cd backend && node dist/server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ENABLE_CONCURRENCY_LIMIT
+        value: "true"
+      - key: POLICY_MAX_CONCURRENCY
+        value: "4"
+      - key: MAX_QUEUE
+        value: "100"
+      - key: DEFAULT_TIER
+        value: FREE

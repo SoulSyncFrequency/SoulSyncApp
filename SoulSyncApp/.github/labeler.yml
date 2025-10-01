@@ -1,0 +1,8 @@
+backend:
+  - backend/**
+frontend:
+  - frontend/**
+observability:
+  - observability/**
+docs:
+  - docs/**

@@ -1,0 +1,58 @@
+
+name: weekly-maintenance
+on:
+  schedule:
+    - cron: '15 3 * * 1'  # Mondays 03:15 UTC
+  workflow_dispatch: {}
+jobs:
+  housekeeping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Log retention dry-run
+        run: python backend/scripts/log_retention.py
+      - name: CSP analyze
+        run: python backend/scripts/csp_analyze.py || true
+
+
+      - name: Send notification (Slack)
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            STATUS="${{ job.status }}"
+            MSG="[$GITHUB_WORKFLOW] status: $STATUS (run $GITHUB_RUN_NUMBER)"
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{text:$t}')" "$SLACK_WEBHOOK_URL" || true
+          fi
+
+      - name: Send notification (Discord)
+        if: always()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            STATUS="${{ job.status }}"
+            MSG="[$GITHUB_WORKFLOW] status: $STATUS (run $GITHUB_RUN_NUMBER)"
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{content:$t}')" "$DISCORD_WEBHOOK_URL" || true
+          fi
+
+
+      - name: Send notification (include URL)
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          STATUS="${{ job.status }}"
+          MSG="[${{ github.workflow }}] $STATUS | run $GITHUB_RUN_NUMBER | $RUN_URL"
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{text:$t}')" "$SLACK_WEBHOOK_URL" || true
+          fi
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            curl -s -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{content:$t}')" "$DISCORD_WEBHOOK_URL" || true
+          fi

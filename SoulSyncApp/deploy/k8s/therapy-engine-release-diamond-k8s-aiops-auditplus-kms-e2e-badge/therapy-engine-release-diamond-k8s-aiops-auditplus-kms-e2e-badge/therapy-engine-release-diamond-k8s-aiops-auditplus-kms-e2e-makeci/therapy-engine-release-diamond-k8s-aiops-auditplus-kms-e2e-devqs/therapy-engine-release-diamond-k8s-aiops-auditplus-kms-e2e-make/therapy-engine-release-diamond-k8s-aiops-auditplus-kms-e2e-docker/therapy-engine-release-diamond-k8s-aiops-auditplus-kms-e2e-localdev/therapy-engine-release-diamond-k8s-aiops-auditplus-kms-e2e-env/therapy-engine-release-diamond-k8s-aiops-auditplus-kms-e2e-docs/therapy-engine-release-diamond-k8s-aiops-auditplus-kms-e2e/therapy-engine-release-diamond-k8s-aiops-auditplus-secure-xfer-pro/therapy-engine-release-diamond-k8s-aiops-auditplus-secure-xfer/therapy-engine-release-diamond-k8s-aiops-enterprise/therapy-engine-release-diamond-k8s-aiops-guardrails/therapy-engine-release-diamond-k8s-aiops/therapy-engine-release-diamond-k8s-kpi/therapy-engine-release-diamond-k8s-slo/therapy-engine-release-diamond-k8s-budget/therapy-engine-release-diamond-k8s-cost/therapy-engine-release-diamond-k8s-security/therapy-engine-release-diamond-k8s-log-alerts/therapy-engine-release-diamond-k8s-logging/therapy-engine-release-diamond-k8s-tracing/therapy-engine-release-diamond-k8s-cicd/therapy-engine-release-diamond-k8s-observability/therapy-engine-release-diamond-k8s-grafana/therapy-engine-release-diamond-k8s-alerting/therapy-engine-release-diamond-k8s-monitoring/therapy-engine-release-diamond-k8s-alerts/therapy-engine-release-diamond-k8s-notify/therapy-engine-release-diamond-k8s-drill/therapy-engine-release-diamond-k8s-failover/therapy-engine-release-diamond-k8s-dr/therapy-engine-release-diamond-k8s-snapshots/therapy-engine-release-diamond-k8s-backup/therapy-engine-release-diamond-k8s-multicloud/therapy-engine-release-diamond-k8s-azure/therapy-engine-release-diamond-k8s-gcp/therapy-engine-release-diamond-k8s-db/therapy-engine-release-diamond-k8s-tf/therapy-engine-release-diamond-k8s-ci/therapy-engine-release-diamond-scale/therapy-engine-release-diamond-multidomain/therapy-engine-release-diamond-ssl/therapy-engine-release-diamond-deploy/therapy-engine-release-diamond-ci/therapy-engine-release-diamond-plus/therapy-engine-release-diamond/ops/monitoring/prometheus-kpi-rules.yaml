@@ -1,0 +1,6 @@
+groups:
+  - name: kpi-rules
+    interval: 1m
+    rules:
+      - record: therapy:success_rate
+        expr: therapy_sessions_success_total / therapy_sessions_total

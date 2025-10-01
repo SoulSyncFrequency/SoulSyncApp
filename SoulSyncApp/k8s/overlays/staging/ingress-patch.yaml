@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: soulsync-app
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+spec:
+  tls:
+    - hosts:
+        - staging.<your-domain>
+      secretName: soulsync-staging-tls
+  rules:
+    - host: staging.<your-domain>
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: soulsync-app
+                port:
+                  number: 80

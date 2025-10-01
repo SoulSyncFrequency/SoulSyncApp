@@ -1,0 +1,16 @@
+describe('Auth flow (mocked)', () => {
+  it('register then login (mock)', () => {
+    cy.intercept('POST', '**/api/auth/register', { ok: true, token: 'fake' }).as('reg')
+    cy.intercept('POST', '**/api/auth/login', { ok: true, token: 'fake' }).as('login')
+    cy.visit('/register')
+    cy.get('input[placeholder="Email"]').type('test@example.com')
+    cy.get('input[placeholder="Password"]').type('secret123')
+    cy.contains('Create account').click()
+    cy.url().should('include', '/therapy')
+    cy.visit('/login')
+    cy.get('input[placeholder="Email"]').type('test@example.com')
+    cy.get('input[placeholder="Password"]').type('secret123')
+    cy.contains('Login').click()
+    cy.url().should('include', '/therapy')
+  })
+})

@@ -1,0 +1,22 @@
+name: Screenshots
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install frontend deps
+        run: cd frontend && npm ci
+      - name: Build
+        run: cd frontend && npm run build
+      - name: Generate screenshots
+        run: cd frontend && npm run shots
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screens
+          path: ops/screenshots/../../screenshots

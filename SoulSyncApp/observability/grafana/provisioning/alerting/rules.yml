@@ -1,0 +1,81 @@
+apiVersion: 1
+groups:
+- orgId: 1
+  name: App & System Alerts
+  folder: General
+  interval: 1m
+  rules:
+  - uid: backend-5xx-critical
+    title: Backend 5xx error rate > 5%
+    condition: A
+    data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: sum(rate(http_requests_total{status=~"5..",job="soulsync-backend"}[5m]))
+          / sum(rate(http_requests_total{job="soulsync-backend"}[5m])) > 0.05
+        refId: A
+    annotations:
+      severity: critical
+      summary: High 5xx error rate
+  - uid: mem-usage-warning
+    title: High Memory usage > 80%
+    condition: A
+    data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes
+          * 100 > 80
+        refId: A
+    annotations:
+      severity: warning
+      summary: High memory usage
+  - uid: slo-availability-critical
+    title: Availability < 99.9% (30d)
+    condition: A
+    data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: sli:availability_30d < 99.9
+        refId: A
+    annotations:
+      severity: critical
+      summary: 'SLO breach: availability < 99.9% (30d)'
+  - uid: slo-latency-warning
+    title: Latency p95 > 0.5s
+    condition: A
+    data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: sli:latency_p95_30d > 0.5
+        refId: A
+    annotations:
+      severity: warning
+      summary: Latency p95 exceeds 500ms
+  - uid: slo-availability-fastburn
+    title: SLO Fast Burn (1h) < 99.9%
+    condition: A
+    data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: sli:availability_1h < 99.9
+        refId: A
+    annotations:
+      severity: critical
+      summary: 'Fast burn: availability (1h) below 99.9%'
+  - uid: slo-availability-slowburn
+    title: SLO Slow Burn (6h) < 99.9%
+    condition: A
+    data:
+    - refId: A
+      datasourceUid: prometheus
+      model:
+        expr: sli:availability_6h < 99.9
+        refId: A
+    annotations:
+      severity: warning
+      summary: 'Slow burn: availability (6h) below 99.9%'

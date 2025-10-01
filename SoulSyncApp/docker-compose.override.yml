@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - ./observability/promtail/promtail.yml:/etc/promtail/config.yml
+      - /var/log:/var/log
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+tempo:
+  image: grafana/tempo:2.4.1
+  command: ["-config.file=/etc/tempo/tempo.yaml"]
+  volumes:
+    - ./observability/tempo/tempo.yaml:/etc/tempo/tempo.yaml
+  ports:
+    - "3200:3200"
+
+otel-collector:
+  image: otel/opentelemetry-collector-contrib:0.94.0
+  command: ["--config=/etc/otelcol/collector.yaml"]
+  ports:
+    - "4318:4318"
+  volumes:
+    - ./observability/otel/collector.yaml:/etc/otelcol/collector.yaml
+  depends_on:
+    - tempo
+
+redis:
+  image: redis:6
+  ports:
+    - "6379:6379"
