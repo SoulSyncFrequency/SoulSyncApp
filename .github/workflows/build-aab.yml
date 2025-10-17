@@ -5,6 +5,104 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: android-aab-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js 20 (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # --- Frontend build ---
+      - name: Install frontend deps
+        working-directory: ./SoulSyncApp/frontend
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build frontend (Vite/React)
+        working-directory: ./SoulSyncApp/frontend
+        run: npm run build
+
+      # --- Mobile (Capacitor) sync ---
+      - name: Install mobile deps
+        working-directory: ./SoulSyncApp/mobile
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Sync Capacitor Android
+        working-directory: ./SoulSyncApp/mobile
+        run: npx cap sync android
+
+      # --- Java/Gradle ---
+      - name: Setup Java 17 + Gradle cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Ensure gradlew is executable
+        working-directory: ./SoulSyncApp/mobile/android
+        run: chmod +x gradlew
+
+      # --- (OPCIJSKO) potpisivanje putem GitHub Secrets ---
+      # Ako dodaš 4 secreta (vidi korak 6), build će biti potpisan upload keystore-om
+      - name: Prepare signing (if secrets present)
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        working-directory: ./SoulSyncApp/mobile/android
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > app/soulsync-upload-keystore.jks
+          cat > key.properties <<'EOF'
+          storeFile=app/soulsync-upload-keystore.jks
+          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Build Android App Bundle (release)
+        working-directory: ./SoulSyncApp/mobile/android
+        run: ./gradlew clean bundleRelease --no-daemon --stacktrace
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: SoulSyncApp/mobile/android/app/build/outputs/bundle/release/*.aab
+          retention-days: 14
+name: Android • Build AAB
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
 # otkaži stare buildove na istoj grani da ne trošiš minute
 concurrency:
   group: android-aab-${{ github.ref }}
