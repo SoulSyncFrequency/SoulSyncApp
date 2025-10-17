@@ -1,0 +1,5 @@
+- rule: Terminal shell in container
+  desc: Detect interactive terminal shells
+  condition: container and shell_procs
+  output: "Shell in container (user=%user.name command=%proc.cmdline container=%container.id)"
+  priority: WARNING

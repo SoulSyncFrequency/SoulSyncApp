@@ -1,0 +1,16 @@
+
+groups:
+- name: soulsync-burnrate
+  rules:
+  - alert: ApiErrorBudgetBurnHighShort
+    expr: (sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) > 0.05
+    for: 5m
+    labels: { severity: page }
+    annotations:
+      summary: "5xx short-window burn >5% over 5m"
+  - alert: ApiErrorBudgetBurnHighLong
+    expr: (sum(rate(http_requests_total{status=~"5.."}[1h])) / sum(rate(http_requests_total[1h]))) > 0.02
+    for: 2h
+    labels: { severity: ticket }
+    annotations:
+      summary: "5xx long-window burn >2% over 1h"

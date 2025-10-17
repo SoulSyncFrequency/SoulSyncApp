@@ -1,0 +1,86 @@
+name: Disaster Recovery Drill
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"   # svake nedjelje u 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  dr-drill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+
+      - name: Simulate DB restore (AWS example)
+        run: |
+          echo "Pretvaramo se da podižemo RDS iz snapshot-a..."
+          # Ovdje ide terraform apply -var-file=disaster-recovery.tfvars
+          # ili AWS CLI naredba:
+          # aws rds restore-db-instance-from-db-snapshot --db-instance-identifier dr-test --db-snapshot-identifier my-snapshot
+          echo "postgres://dr_user:dr_pass@restored-db:5432/therapy" > new_db_url.txt
+
+      - name: Patch secret with DR database
+        run: |
+          DBURL=$(cat new_db_url.txt)
+          kubectl patch secret therapy-backend-secrets -p "{"stringData":{"DATABASE_URL":"$DBURL"}}"
+
+      - name: Restart backend
+        run: |
+          kubectl rollout restart deployment/therapy-engine-backend
+
+      - name: Health check
+        run: |
+          sleep 20
+          curl -f http://app.mojadomena.com/health
+
+      - name: Cleanup DR DB
+        run: |
+          echo "Brišemo testnu bazu nakon drill-a..."
+          # aws rds delete-db-instance --db-instance-identifier dr-test --skip-final-snapshot
+
+      - name: Notify (Slack/Discord) on success
+        if: success() && (secrets.SLACK_WEBHOOK_URL != '' || secrets.DISCORD_WEBHOOK_URL != '')
+        run: |
+          MSG="Disaster Recovery Drill ✓ succeeded on ${{ github.ref }} (commit ${{ github.sha }})"
+          if [ "${{ secrets.SLACK_WEBHOOK_URL }}" != "" ]; then
+            curl -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{{"text":$t}}')" "${{ secrets.SLACK_WEBHOOK_URL }}"
+          fi
+          if [ "${{ secrets.DISCORD_WEBHOOK_URL }}" != "" ]; then
+            curl -H "Content-Type: application/json" -X POST -d "$(jq -n --arg c "$MSG" '{{"content":$c}}')" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          fi
+
+      - name: Notify (Slack/Discord/Email) on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server: ${{ secrets.SMTP_SERVER || 'smtp.example.com' }}
+          port: ${{ secrets.SMTP_PORT || 587 }}
+          username: ${{ secrets.SMTP_USERNAME || 'user@example.com' }}
+          password: ${{ secrets.SMTP_PASSWORD || 'password' }}
+          subject: "Disaster Recovery Drill ✗ FAILED on ${{ github.ref }}"
+          to: ${{ secrets.NOTIFY_EMAIL || 'ops@example.com' }}
+          from: "Therapy Engine CI <no-reply@therapy.local>"
+          content_type: text/plain
+          body: |
+            Workflow: Disaster Recovery Drill
+            Repo: ${{ github.repository }}
+            Ref:  ${{ github.ref }}
+            SHA:  ${{ github.sha }}
+            Run:  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        continue-on-error: true
+
+      - name: Notify (Slack/Discord) on failure (webhook)
+        if: failure()
+        run: |
+          MSG="Disaster Recovery Drill ✗ FAILED on ${{ github.ref }} (commit ${{ github.sha }})"
+          if [ "${{ secrets.SLACK_WEBHOOK_URL }}" != "" ]; then
+            curl -X POST -H 'Content-type: application/json' --data "$(jq -n --arg t "$MSG" '{{"text":$t}}')" "${{ secrets.SLACK_WEBHOOK_URL }}"
+          fi
+          if [ "${{ secrets.DISCORD_WEBHOOK_URL }}" != "" ]; then
+            curl -H "Content-Type: application/json" -X POST -d "$(jq -n --arg c "$MSG" '{{"content":$c}}')" "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          fi
+        continue-on-error: true

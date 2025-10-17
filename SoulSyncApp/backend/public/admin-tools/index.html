@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SoulSync — Admin Tools</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+  <style> body{font-family:sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px}
+  section{border:1px solid #eee; padding:12px; border-radius:10px; margin:14px 0}
+  label{display:block; margin:6px 0} input, textarea{width:100%} .bar{height:18px;background:#ddd;border-radius:9px;overflow:hidden} .fill{height:100%;width:0;background:#4caf50;transition:width .2s}
+  </style>
+</head>
+<body>
+  <h1>SoulSync — Admin Tools</h1>
+
+  <section>
+    <h3>F₀ Engine probe</h3>
+    <button id="probe">Compute demo</button>
+    <pre id="f0out"></pre>
+  </section>
+
+  <section>
+    <h3>Suggestions apply</h3>
+    <label>Collection <input id="s_col" value="generic"></label>
+    <label>ID <input id="s_id" value="temp"></label>
+    <label>Document JSON <textarea id="s_doc">{ "title": "A", "notes": { "lang": "en" } }</textarea></label>
+    <label>Suggestions JSON <textarea id="s_sug">[ { "path": "notes.lang", "value": "hr", "score": 0.9 } ]</textarea></label>
+    <label><input type="checkbox" id="s_auto" checked> autoTune</label>
+    <label><input type="checkbox" id="s_dry"> dryRun</label>
+    <button id="s_apply">Apply</button>
+    <pre id="s_out"></pre>
+  </section>
+
+  <section>
+    <h3>Datasheet PDF</h3>
+    <label>Rows JSON <textarea id="d_rows">[{"name":"Alice","score":91},{"name":"Bob","score":86}]</textarea></label>
+    <label>Title <input id="d_title" value="My Data Sheet"></label>
+    <label>Columns (comma) <input id="d_cols" value=""></label>
+    <button id="d_make">Generate</button>
+    <pre id="d_out"></pre>
+  </section>
+
+  <section>
+    <h3>Export progress</h3>
+    <label>Job ID <input id="p_id" value="demo"></label>
+    <button id="p_start">Start stream</button>
+    <div class="bar"><div class="fill" id="p_fill"></div></div>
+    <pre id="p_log"></pre>
+  </section>
+
+<script>
+async function post(url, body){
+  const r = await fetch(url, { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body) })
+  return r.json()
+}
+
+document.getElementById('probe').onclick = async () => {
+  const r = await post('/api/f0score', { Sym:.8, Pol:.7, Bph:.9, Emo:.6, Coh:.7, Frac:.5, Conn:.6, Chak:.7, Info:.8, Safe:.9, disease_type:'psychological' })
+  document.getElementById('f0out').textContent = JSON.stringify(r,null,2)
+}
+
+document.getElementById('s_apply').onclick = async()=>{
+  const body = {
+    collection: document.getElementById('s_col').value,
+    id: document.getElementById('s_id').value,
+    document: JSON.parse(document.getElementById('s_doc').value || '{}'),
+    suggestions: JSON.parse(document.getElementById('s_sug').value || '[]'),
+    autoTune: document.getElementById('s_auto').checked,
+    dryRun: document.getElementById('s_dry').checked
+  }
+  const r = await post('/api/admin/suggestions/apply', body)
+  document.getElementById('s_out').textContent = JSON.stringify(r,null,2)
+}
+
+document.getElementById('d_make').onclick = async()=>{
+  const rows = JSON.parse(document.getElementById('d_rows').value || '[]')
+  const columns = (document.getElementById('d_cols').value||'').split(',').map(s=>s.trim()).filter(Boolean)
+  const body = { rows, title: document.getElementById('d_title').value || undefined, columns: columns.length? columns: undefined }
+  const r = await post('/api/admin/datasheet/pdf', body)
+  document.getElementById('d_out').textContent = JSON.stringify(r,null,2)
+}
+
+document.getElementById('p_start').onclick = ()=>{
+  const id = document.getElementById('p_id').value || 'demo'
+  const es = new EventSource('/api/admin/export/'+encodeURIComponent(id)+'/stream')
+  const fill = document.getElementById('p_fill')
+  const log = document.getElementById('p_log')
+  es.addEventListener('progress', (e)=>{
+    try{ const d = JSON.parse(e.data); fill.style.width = Math.max(0, Math.min(100, d.progress))+'%'; log.textContent += 'progress:'+d.progress+'\n' }catch{}
+  })
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,422 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Therapy App Backend (Wellness Engine)",
+    "version": "0.1.0",
+    "description": "Educational wellness API. Not medical advice."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000"
+    }
+  ],
+  "paths": {
+    "/api/therapy/direct": {
+      "post": {
+        "tags": [
+          "therapy"
+        ],
+        "summary": "Generate wellness plan (direct input)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectInputPayload"
+              },
+              "example": {
+                "language": "hr",
+                "condition": "nesanica",
+                "symptoms": "te\u0161ko uspavljivanje, bu\u0111enja",
+                "notes": "bez lijekova"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TherapyResponse"
+                },
+                "example": {
+                  "id": "uuid",
+                  "plan": {
+                    "mode": "direct",
+                    "language": "hr",
+                    "created_at": "2025-01-01T00:00:00Z",
+                    "risk_flags": [],
+                    "advisory": "Educational wellness plan; not medical advice.",
+                    "sections": {
+                      "nutrition_5day": [
+                        {
+                          "day": 1,
+                          "focus": "hydration & whole foods"
+                        }
+                      ],
+                      "lifestyle": [
+                        "7\u20139h sleep"
+                      ],
+                      "mindfulness": [
+                        "5\u201310 min body scan"
+                      ],
+                      "supplements_general": [
+                        "General multivitamin (RDA-level)"
+                      ],
+                      "psychoeducation": [
+                        "Trauma & EMDR: overview"
+                      ]
+                    },
+                    "chakra_scores": {},
+                    "why": [
+                      "Hydration and whole foods..."
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Accepts free-text condition/symptoms and returns an educational wellness plan (not medical advice)."
+      }
+    },
+    "/api/therapy/questionnaire": {
+      "post": {
+        "tags": [
+          "therapy"
+        ],
+        "summary": "Generate wellness plan (questionnaire)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionnairePayload"
+              },
+              "example": {
+                "language": "hr",
+                "answers": [
+                  {
+                    "id": "root_1",
+                    "value": 3
+                  }
+                ],
+                "notes": "umor ujutro"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TherapyResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Accepts 140 answers (1\u20135) + notes and returns an educational wellness plan (not medical advice)."
+      }
+    },
+    "/api/upload": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Upload lab/file (stored on disk)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/history": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Fetch recent generated plans with filters",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "time_min",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "time_max",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/{id}": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Fetch single plan by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Liveness/Readiness probe",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PlanSectionNutrition": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "integer"
+          },
+          "focus": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "day",
+          "focus"
+        ]
+      },
+      "PlanSections": {
+        "type": "object",
+        "properties": {
+          "nutrition_5day": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanSectionNutrition"
+            }
+          },
+          "lifestyle": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mindfulness": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supplements_general": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "psychoeducation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "nutrition_5day",
+          "lifestyle",
+          "mindfulness",
+          "supplements_general",
+          "psychoeducation"
+        ]
+      },
+      "PlanResponse": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "risk_flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "advisory": {
+            "type": "string"
+          },
+          "sections": {
+            "$ref": "#/components/schemas/PlanSections"
+          },
+          "chakra_scores": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "why": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "urgent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "language",
+          "created_at",
+          "advisory",
+          "sections"
+        ]
+      },
+      "TherapyResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/PlanResponse"
+          }
+        },
+        "required": [
+          "id",
+          "plan"
+        ]
+      },
+      "DirectInputPayload": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string"
+          },
+          "symptoms": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "QAAnswer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "value"
+        ]
+      },
+      "QuestionnairePayload": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QAAnswer"
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

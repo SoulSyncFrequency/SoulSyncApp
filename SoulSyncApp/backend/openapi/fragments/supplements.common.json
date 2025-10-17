@@ -1,0 +1,90 @@
+{
+  "tags": [
+    {
+      "name": "supplements/common",
+      "description": "Common supplement endpoints"
+    }
+  ],
+  "paths": {
+    "/api/supplements/plans": {
+      "get": {
+        "tags": [
+          "supplements/common"
+        ],
+        "summary": "List supplement plans (paginated)",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/summary": {
+      "get": {
+        "tags": [
+          "supplements/common"
+        ],
+        "summary": "Cross-supplement summary counts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/export": {
+      "get": {
+        "tags": [
+          "supplements/common"
+        ],
+        "summary": "Export doses as NDJSON (time range)",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "NDJSON stream"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+GIT PUSH – Personal Access Token (PAT) i prvi push
+===================================================
+Datum: 2025-09-14 20:41:19
+
+1) Generiranje PAT tokena (ako koristiš 2FA)
+   - GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Generate new token → scope: repo
+   - Kopiraj token i spremi sigurno
+
+2) Prvi push (HTTPS)
+   - U root folderu ovog projekta pokreni:
+       git init
+       git branch -M main
+       git remote add origin https://github.com/SoulSyncFrequency/SoulSyncApp.git
+       git add .
+       git commit -m "Add full SoulSync project"
+       git pull --rebase origin main
+       git push -u origin main
+
+   - Kad traži credentials:
+       Username: tvoj GitHub username (SoulSyncFrequency)
+       Password: tvoj PAT token (umjesto passworda)
+
+Napomene:
+- Ako remote repo već ima README/licencu, zato radimo 'git pull --rebase' prije push-a.
+- Ako želiš prepisati remote (oprez!): git push --force
+- VITE_ varijable su javne u frontendu; privatne ključeve drži u .env.local koji je ignoriran.

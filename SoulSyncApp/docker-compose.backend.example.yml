@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  backend:
+    image: soulsync-backend:ci
+    # Or build:
+    # build: .
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://soulsync:soulsync@db:5432/soulsync?schema=public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy

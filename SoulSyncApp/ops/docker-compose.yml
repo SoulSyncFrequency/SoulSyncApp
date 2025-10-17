@@ -1,0 +1,102 @@
+version: "3.9"
+services:
+  backend:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - org.opencontainers.image.title=SoulSync-backend
+      - org.opencontainers.image.version=latest
+      - org.opencontainers.image.vendor=SoulSync
+      - org.opencontainers.image.source=https://example.com/repo
+    build: ../backend
+    image: soulsync-backend:101.0.0
+    env_file: .env.backend
+    ports: ["8080:8080"]
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks: [appnet]
+    restart: unless-stopped
+    volumes:
+      - ../logs:/app/logs
+
+  frontend:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - org.opencontainers.image.title=SoulSync-frontend
+      - org.opencontainers.image.version=latest
+      - org.opencontainers.image.vendor=SoulSync
+      - org.opencontainers.image.source=https://example.com/repo
+    build: ../frontend
+    image: soulsync-frontend:101.0.0
+    ports: ["5173:80"]
+    depends_on: [backend]
+    networks: [appnet]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+    networks: [appnet]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks: [appnet]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.4.5
+    ports: ["3000:3000"]
+    networks: [appnet]
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.8
+    ports: ["3100:3100"]
+    command: -config.file=/etc/loki/local-config.yaml
+    networks: [appnet]
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:2.9.8
+    volumes:
+      - ../logs:/var/log/soulsync:ro
+      - ./promtail-config.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks: [appnet]
+    restart: unless-stopped
+
+networks:
+  appnet:
+    driver: bridge
+
+
+watchdog:
+  image: alpine:3.20
+  networks: [appnet]
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./:/work
+  working_dir: /work
+  entrypoint: /bin/sh
+  command: -c "apk add --no-cache curl docker-cli-compose >/dev/null 2>&1 || true; ./watchdog.sh"
+  environment:
+    - BASE_URL=http://backend:8080
+    - SERVICES=backend,frontend
+  restart: unless-stopped

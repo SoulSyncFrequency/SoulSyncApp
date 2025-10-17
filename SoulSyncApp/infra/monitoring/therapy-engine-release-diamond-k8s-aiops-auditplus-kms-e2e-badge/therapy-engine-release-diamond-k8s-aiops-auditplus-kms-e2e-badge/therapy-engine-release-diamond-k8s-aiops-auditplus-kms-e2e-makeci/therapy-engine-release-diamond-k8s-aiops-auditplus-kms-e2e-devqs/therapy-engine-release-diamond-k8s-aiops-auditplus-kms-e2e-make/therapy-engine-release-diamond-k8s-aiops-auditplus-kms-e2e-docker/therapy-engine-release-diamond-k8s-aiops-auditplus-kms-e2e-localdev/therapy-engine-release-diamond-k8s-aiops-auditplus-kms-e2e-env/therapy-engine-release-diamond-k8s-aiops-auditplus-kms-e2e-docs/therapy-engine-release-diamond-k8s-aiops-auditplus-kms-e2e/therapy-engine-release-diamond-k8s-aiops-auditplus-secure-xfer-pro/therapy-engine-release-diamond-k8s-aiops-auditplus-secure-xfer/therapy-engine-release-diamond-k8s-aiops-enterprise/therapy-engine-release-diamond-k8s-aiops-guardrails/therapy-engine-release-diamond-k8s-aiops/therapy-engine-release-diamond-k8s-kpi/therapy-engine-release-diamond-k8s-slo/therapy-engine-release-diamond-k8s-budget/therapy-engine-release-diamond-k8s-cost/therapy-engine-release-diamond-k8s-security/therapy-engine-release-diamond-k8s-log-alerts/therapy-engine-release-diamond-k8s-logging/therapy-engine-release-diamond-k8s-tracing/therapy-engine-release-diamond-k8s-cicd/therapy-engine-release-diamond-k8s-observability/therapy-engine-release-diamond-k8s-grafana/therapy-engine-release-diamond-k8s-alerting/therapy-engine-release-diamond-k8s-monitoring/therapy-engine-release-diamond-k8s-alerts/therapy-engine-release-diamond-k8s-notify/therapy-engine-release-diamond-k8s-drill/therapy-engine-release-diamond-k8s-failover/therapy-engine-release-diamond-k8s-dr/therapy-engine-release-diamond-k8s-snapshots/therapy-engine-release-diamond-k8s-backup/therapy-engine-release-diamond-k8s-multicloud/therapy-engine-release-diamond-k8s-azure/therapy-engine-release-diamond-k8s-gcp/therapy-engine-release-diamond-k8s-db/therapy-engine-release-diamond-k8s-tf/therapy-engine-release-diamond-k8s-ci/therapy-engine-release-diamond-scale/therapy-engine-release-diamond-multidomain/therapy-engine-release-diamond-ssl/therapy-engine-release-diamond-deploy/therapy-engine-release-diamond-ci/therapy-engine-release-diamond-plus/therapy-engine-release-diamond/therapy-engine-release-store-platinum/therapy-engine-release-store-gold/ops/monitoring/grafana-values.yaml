@@ -1,0 +1,46 @@
+adminUser: admin
+adminPassword: admin123
+
+dashboards:
+  default:
+    therapy-drill:
+      json: |
+        {
+          "title": "Therapy Engine - DR & Backups",
+          "timezone": "browser",
+          "panels": [
+            {
+              "type": "stat",
+              "title": "Backend Up",
+              "targets": [
+                { "expr": "sum(up{service=~".*-backend"})" }
+              ]
+            },
+            {
+              "type": "stat",
+              "title": "Minutes since last successful DR drill",
+              "targets": [
+                { "expr": "(time() - last_successful_drill_timestamp_seconds) / 60" }
+              ],
+              "thresholds": [
+                { "color": "green", "value": 0 },
+                { "color": "orange", "value": 1440 },
+                { "color": "red", "value": 2880 }
+              ]
+            }
+          ]
+        }
+    therapy-alerts:
+      json: |
+        {
+          "title": "Therapy Engine - Alerts",
+          "panels": [
+            {
+              "type": "table",
+              "title": "Active Alerts",
+              "targets": [
+                { "expr": "ALERTS{alertstate=\"firing\"}" }
+              ]
+            }
+          ]
+        }

@@ -1,0 +1,38 @@
+{
+  "title": "DB & Redis Overview",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Redis Commands Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(redis_commands_processed_total[1m]))",
+          "legendFormat": "commands/s"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Postgres Scrapes",
+      "targets": [
+        {
+          "expr": "up{job='postgres-exporter'}",
+          "legendFormat": "postgres-exporter up"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Blackbox Probe Success",
+      "targets": [
+        {
+          "expr": "probe_success",
+          "legendFormat": "{{instance}}"
+        }
+      ]
+    }
+  ]
+}

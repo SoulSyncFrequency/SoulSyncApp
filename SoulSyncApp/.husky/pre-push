@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🧪 Running unit tests (if present)"
+npm run test:ci --workspace=backend --if-present || npm run test --workspace=backend --if-present || true
+
+echo "🚦 Running local smoke check (requires backend up)"
+make smoke-ci || true

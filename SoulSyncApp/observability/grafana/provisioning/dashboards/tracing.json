@@ -1,0 +1,1 @@
+{"title": "Tracing (Tempo)", "schemaVersion": 27, "version": 1, "panels": [{"type": "text", "title": "How to use", "options": {"content": "Filter traces by service name and latency. Use Trace Explorer."}}, {"type": "trace", "title": "Trace Explorer", "datasource": {"type": "tempo", "uid": "tempo"}, "targets": [{"query": "{}"}]}]}

@@ -1,0 +1,43 @@
+# Argo Rollouts Canary example for SoulSync backend
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: soulsync-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: soulsync-backend
+  template:
+    metadata:
+      labels:
+        app: soulsync-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/your-org/soulsync-backend:latest
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet: { path: /readyz, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /livez, port: 3000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+  strategy:
+    canary:
+      canaryService: soulsync-backend-canary
+      stableService: soulsync-backend
+      trafficRouting:
+        nginx:
+          stableIngress: soulsync-backend-ingress
+      steps:
+        - setWeight: 10
+        - pause: { duration: 60 }
+        - setWeight: 25
+        - pause: { duration: 120 }
+        - setWeight: 50
+        - pause: { duration: 180 }
+        - setWeight: 100

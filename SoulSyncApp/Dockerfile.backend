@@ -1,0 +1,21 @@
+# Dockerfile.backend (multi-stage, small runtime)
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY backend/package*.json backend/
+RUN cd backend && npm ci --omit=dev
+
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY backend backend
+RUN cd backend && npm ci && npm run build
+
+FROM gcr.io/distroless/nodejs20-debian12
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/backend/node_modules backend/node_modules
+COPY --from=build /app/backend/dist backend/dist
+COPY backend/package.json backend/
+EXPOSE 3000
+CMD ["backend/dist/server.js"]
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s CMD wget -qO- http://localhost:3000/healthz || exit 1

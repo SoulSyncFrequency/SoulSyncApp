@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: soulsync-app
+  labels:
+    app.kubernetes.io/name: soulsync
+    release: prometheus
+spec:
+  jobLabel: app
+  selector:
+    matchLabels:
+      app: soulsync
+      tier: app
+  namespaceSelector:
+    matchNames:
+      - soulsync
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+
+# Note: 'jobLabel: app' sets Prometheus 'job' label to the k8s label app=soulsync

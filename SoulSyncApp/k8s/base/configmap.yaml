@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: soulsync-config
+data:
+  # Add non-secret configuration here if needed
+  APP_NAME: "SoulSync"

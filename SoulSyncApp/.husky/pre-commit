@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+npm run lint || exit 1
+npm test -- --passWithNoTests || exit 1

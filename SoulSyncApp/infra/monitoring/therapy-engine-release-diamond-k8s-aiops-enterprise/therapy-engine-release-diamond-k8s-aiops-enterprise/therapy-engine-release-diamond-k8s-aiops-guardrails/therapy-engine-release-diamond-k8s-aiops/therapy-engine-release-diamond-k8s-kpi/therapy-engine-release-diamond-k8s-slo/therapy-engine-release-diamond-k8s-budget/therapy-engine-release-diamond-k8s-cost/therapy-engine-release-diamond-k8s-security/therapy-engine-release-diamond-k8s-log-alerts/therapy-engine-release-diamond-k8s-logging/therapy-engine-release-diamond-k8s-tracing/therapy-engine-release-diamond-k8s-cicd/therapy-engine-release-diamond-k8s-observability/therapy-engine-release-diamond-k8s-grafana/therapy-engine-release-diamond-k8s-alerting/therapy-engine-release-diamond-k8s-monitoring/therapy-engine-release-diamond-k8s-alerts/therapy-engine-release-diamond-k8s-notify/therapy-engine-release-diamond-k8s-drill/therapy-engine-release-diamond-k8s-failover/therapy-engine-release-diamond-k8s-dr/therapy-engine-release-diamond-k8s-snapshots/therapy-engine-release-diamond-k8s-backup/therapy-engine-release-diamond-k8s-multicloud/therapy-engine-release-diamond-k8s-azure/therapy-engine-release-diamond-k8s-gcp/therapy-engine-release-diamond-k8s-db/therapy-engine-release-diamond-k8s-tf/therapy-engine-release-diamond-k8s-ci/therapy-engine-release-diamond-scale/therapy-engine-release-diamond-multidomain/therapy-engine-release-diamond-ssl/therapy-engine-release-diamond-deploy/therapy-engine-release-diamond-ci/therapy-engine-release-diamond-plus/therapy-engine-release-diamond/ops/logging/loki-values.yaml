@@ -1,0 +1,12 @@
+loki:
+  auth_enabled: false
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+compactor:
+  retention_enabled: true
+
+limits_config:
+  retention_period: 168h   # 7 dana (promijeni po potrebi)

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>SoulSync</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.soulsync.app</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0.0</string>
+  <key>CFBundleVersion</key>
+  <string>1</string>
+
+	<key>NSCameraUsageDescription</key>
+	<string>Camera is used for profile photos and QR scanning.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Face ID is used for secure login.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is used to let you select a profile photo.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Notifications are used to send reminders and updates.</string>
+
+</dict>
+</plist>

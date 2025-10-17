@@ -1,0 +1,2 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE IF NOT EXISTS content_embeddings (id TEXT PRIMARY KEY, title TEXT NOT NULL, embedding vector(1536));

@@ -1,0 +1,30 @@
+{
+  "data_collected": {
+    "Contact Info": [
+      "Email Address"
+    ],
+    "Identifiers": [
+      "User ID",
+      "Device ID (push token)"
+    ],
+    "Diagnostics": [
+      "Crash Data (Sentry)",
+      "Performance Data"
+    ]
+  },
+  "linked_to_user": [
+    "Email Address",
+    "User ID"
+  ],
+  "tracking": false,
+  "data_use": {
+    "App Functionality": [
+      "Email Address",
+      "User ID",
+      "Device ID"
+    ],
+    "Analytics": [
+      "Crash/Performance"
+    ]
+  }
+}

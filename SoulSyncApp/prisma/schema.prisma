@@ -1,0 +1,237 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+model AuditLog {
+  traceId   String?
+  id        Int      @id @default(autoincrement())
+  ts        DateTime @default(now())
+  ip        String?
+  method    String
+  path      String
+  status    Int
+  user      String?
+}
+model Protocol {
+  id        Int      @id @default(autoincrement())
+  version   Int
+  status    String
+  createdAt DateTime @default(now())
+  data      Json
+}
+
+
+enum Role {
+  ADMIN
+  THERAPIST
+  USER
+}
+
+model User {
+  totpSecret String?
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  password  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  sessions  Session[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+
+model MagicToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  email     String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  used      Boolean  @default(false)
+}
+
+// 2FA secret for users who enable TOTP
+// appended to existing User model
+
+
+model ResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  used      Boolean  @default(false)
+}
+
+
+model TherapyModule {
+  endpoint   String?
+  config     Json?
+  files      Json?
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  version     String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model ModuleRunLog {
+  id          Int      @id @default(autoincrement())
+  moduleId    Int
+  status      String
+  response    Json?
+  createdAt   DateTime @default(now())
+  module      TherapyModule @relation(fields: [moduleId], references: [id])
+}
+
+
+model TherapySession {
+  triggeredByRole String? // ADMIN | THERAPIST | USER
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  modulesUsed Json
+  result      Json?
+  status      String   @default("PENDING") // States: PENDING | IN_PROGRESS | DONE | PARTIAL | FAILED
+  createdAt   DateTime @default(now())
+}
+
+
+model TherapistClient {
+  id           Int  @id @default(autoincrement())
+  therapistId  Int
+  userId       Int
+  createdAt    DateTime @default(now())
+}
+
+
+model UserPlan {
+  version    Int      @default(1)
+  sourceSessionId Int?
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  sessionId  Int
+  plan       Json
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+
+model ModuleHealth {
+  id               Int      @id @default(autoincrement())
+  moduleId         Int
+  consecutiveFails Int      @default(0)
+  lastSuccess      DateTime?
+  disabledUntil    DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AiCache {
+  id        Int      @id @default(autoincrement())
+  promptHash String  @unique
+  result     Json
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  traceId   String?
+  id         Int      @id @default(autoincrement())
+  event      String
+  actorId    Int?
+  targetType String?
+  targetId   Int?
+  meta       Json?
+  createdAt  DateTime @default(now())
+}
+
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  type      String
+  message   String
+  meta      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt], name: "idx_notification_createdAt")
+
+  @@index([type], name: "idx_notification_type")
+}
+
+
+model WebhookEndpoint {
+  id        Int      @id @default(autoincrement())
+  url       String
+  secret    String
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  logs      WebhookLog[]
+
+  @@index([active], name: "idx_webhookendpoint_active")
+}
+
+model WebhookLog {
+  id        Int      @id @default(autoincrement())
+  webhookId Int?
+  url       String
+  payload   Json
+  sentAt    DateTime  @default(now())
+  status    String
+  attempts  Int       @default(1)
+  error     String?
+  webhook   WebhookEndpoint? @relation(fields: [webhookId], references: [id])
+
+  @@index([sentAt], name: "idx_webhooklog_sentAt")
+
+  @@index([status], name: "idx_webhooklog_status")
+}
+
+model EmailLog {
+  id        Int      @id @default(autoincrement())
+  to        String
+  subject   String
+  sentAt    DateTime  @default(now())
+  status    String
+  error     String?
+
+  @@index([sentAt], name: "idx_emaillog_sentAt")
+}
+
+model SystemLog {
+  id        Int      @id @default(autoincrement())
+  level     String
+  message   String
+  context   Json?
+  requestId String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt], name: "idx_systemlog_createdAt")
+  @@index([level], name: "idx_systemlog_level")
+}
+
+
+model SLOConfig {
+  id                     Int      @id @default(1)
+  webhookFailAlertPct    Int      @default(50)
+  emailFailAlertPct      Int      @default(50)
+  alertWebhookUrl        String?  // Slack/webhook URL for alerts
+  updatedAt              DateTime @updatedAt
+}
+
+// trace correlation
+  // Added in v154

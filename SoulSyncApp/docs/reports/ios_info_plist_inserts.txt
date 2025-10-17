@@ -1,0 +1,9 @@
+<!-- Add to Info.plist -->
+<key>NSCameraUsageDescription</key>
+<string>Camera is used for profile photos and QR scanning.</string>
+<key>NSFaceIDUsageDescription</key>
+<string>Face ID is used for secure login.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Photo library access is used to let you select a profile photo.</string>
+<key>NSUserNotificationUsageDescription</key>
+<string>Notifications are used to send reminders and updates.</string>

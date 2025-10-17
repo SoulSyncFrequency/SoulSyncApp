@@ -1,0 +1,25 @@
+name: License Scan
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install license-checker
+        run: npm i -g license-checker
+      - name: Check licenses (disallow GPL/AGPL/LGPL)
+        run: |
+          cd backend
+          license-checker --summary --production --excludePrivatePackages --failOn "GPL-3.0;AGPL-3.0;LGPL-3.0"
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true

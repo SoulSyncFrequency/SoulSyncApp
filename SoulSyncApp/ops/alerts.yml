@@ -1,0 +1,48 @@
+groups:
+- name: soulsync.rules
+  rules:
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
+    for: 5m
+    labels:
+      severity: page
+    annotations:
+      summary: "High 5xx error rate"
+      description: "Error rate >1% for 5 minutes"
+
+  - alert: TherapyGenerateHighLatency
+    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route="/api/therapy/generate",method="POST"}[5m])) by (le)) > 0.5
+    for: 10m
+    labels:
+      severity: warn
+    annotations:
+      summary: "High latency on /api/therapy/generate (p95 > 500ms)"
+      description: "Investigate model load or downstream latency."
+
+  - alert: TherapyGenerateErrorSpike
+    expr: rate(http_requests_total{route="/api/therapy/generate",status=~"5.."}[5m]) / rate(http_requests_total{route="/api/therapy/generate"}[5m]) > 0.02
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+      summary: "Error spike on /api/therapy/generate (>2% in 5m)"
+      description: "Check recent deploy and Sentry incidents."
+
+  - alert: ReportsErrorSpike
+    expr: rate(http_requests_total{route="/api/reports/daily/send-now",status=~"5.."}[5m]) / rate(http_requests_total{route="/api/reports/daily/send-now"}[5m]) > 0.05
+    for: 10m
+    labels:
+      severity: warn
+    annotations:
+      summary: "Reports error spike (>5%)"
+      description: "Check reports service."
+
+  - alert: BillingErrorSpike
+    expr: rate(http_requests_total{route=~"/api/billing.*",status=~"5.."}[5m]) / rate(http_requests_total{route=~"/api/billing.*"}[5m]) > 0.01
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+      summary: "Billing error spike (>1%)"
+      description: "Investigate billing service quickly."
+

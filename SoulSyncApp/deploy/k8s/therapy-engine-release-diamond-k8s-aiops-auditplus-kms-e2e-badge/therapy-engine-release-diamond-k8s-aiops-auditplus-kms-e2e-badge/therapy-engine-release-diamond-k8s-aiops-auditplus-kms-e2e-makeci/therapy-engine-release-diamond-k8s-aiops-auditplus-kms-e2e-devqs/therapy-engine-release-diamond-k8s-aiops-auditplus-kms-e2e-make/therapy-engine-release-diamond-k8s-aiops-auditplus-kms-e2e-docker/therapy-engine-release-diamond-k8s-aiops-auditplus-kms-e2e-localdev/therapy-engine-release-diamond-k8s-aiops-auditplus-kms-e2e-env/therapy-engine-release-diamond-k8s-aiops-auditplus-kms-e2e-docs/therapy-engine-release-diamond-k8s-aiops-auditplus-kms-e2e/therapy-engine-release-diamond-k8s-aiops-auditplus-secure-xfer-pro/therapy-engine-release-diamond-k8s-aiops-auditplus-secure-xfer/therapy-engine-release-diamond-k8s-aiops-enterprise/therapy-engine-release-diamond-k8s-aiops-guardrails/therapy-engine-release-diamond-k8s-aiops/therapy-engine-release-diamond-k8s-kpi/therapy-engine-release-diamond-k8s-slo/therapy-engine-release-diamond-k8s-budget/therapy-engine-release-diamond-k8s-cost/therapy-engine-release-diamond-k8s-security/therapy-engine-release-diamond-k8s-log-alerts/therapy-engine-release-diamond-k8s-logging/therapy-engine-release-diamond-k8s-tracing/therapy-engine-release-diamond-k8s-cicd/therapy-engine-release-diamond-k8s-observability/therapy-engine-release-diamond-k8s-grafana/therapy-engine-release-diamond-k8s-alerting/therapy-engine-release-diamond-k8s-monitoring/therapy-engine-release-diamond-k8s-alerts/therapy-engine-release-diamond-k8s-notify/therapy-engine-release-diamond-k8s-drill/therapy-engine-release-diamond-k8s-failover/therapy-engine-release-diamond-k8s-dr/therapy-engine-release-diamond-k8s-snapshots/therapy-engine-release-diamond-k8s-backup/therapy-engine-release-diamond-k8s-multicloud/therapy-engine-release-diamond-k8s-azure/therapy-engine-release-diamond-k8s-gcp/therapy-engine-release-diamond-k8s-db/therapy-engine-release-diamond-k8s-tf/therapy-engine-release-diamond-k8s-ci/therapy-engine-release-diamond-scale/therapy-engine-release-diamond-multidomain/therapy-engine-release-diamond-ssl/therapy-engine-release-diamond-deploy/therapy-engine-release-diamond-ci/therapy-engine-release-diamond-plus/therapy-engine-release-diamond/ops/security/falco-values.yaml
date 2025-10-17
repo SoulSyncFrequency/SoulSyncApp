@@ -1,0 +1,7 @@
+falco:
+  rulesFile: /etc/falco/falco-rules.yaml
+falcosidekick:
+  enabled: true
+  config:
+    prometheus:
+      enabled: true

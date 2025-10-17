@@ -1,0 +1,4 @@
+- [x] Legal
+- [x] i18n
+- [x] CI
+- [x] Render config

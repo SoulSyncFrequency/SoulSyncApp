@@ -1,0 +1,4 @@
+Contact: mailto:soulsyncfrequency@gmail.com
+Preferred-Languages: en
+Policy: https://github.com/SoulSyncFrequency/SoulSyncApp
+Hiring: https://souk.example.com/careers

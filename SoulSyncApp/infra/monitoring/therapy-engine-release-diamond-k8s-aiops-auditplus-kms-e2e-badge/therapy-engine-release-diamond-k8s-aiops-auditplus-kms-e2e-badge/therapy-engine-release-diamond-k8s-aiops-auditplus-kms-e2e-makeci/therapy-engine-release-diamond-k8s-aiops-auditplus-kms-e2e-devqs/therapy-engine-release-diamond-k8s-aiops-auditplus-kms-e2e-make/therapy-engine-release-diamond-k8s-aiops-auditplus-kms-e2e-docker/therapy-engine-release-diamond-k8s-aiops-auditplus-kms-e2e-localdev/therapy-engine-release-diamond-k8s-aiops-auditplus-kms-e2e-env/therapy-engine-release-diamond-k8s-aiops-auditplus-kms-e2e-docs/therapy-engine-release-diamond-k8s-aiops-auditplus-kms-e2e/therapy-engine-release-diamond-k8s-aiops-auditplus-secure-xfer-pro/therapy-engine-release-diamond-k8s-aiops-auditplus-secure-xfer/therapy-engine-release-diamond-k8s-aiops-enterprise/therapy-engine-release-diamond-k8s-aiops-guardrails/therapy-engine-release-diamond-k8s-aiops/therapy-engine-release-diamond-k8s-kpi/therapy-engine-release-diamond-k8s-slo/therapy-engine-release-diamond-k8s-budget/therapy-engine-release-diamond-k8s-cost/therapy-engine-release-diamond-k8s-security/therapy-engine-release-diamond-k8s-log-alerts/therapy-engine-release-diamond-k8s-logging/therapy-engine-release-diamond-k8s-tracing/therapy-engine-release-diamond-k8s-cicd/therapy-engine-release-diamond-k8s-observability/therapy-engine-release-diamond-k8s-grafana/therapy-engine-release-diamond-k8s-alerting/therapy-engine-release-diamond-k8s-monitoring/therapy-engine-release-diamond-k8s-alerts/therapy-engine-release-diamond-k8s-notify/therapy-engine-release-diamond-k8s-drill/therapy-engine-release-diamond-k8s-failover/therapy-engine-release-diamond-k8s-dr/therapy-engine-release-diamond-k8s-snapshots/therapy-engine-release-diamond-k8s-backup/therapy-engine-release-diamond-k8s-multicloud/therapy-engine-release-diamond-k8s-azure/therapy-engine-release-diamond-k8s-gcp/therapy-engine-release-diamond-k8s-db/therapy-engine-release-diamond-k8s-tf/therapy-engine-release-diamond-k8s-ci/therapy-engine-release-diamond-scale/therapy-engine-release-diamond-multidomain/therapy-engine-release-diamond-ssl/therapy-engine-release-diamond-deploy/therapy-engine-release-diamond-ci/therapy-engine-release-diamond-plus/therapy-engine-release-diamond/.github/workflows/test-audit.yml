@@ -1,0 +1,69 @@
+name: E2E Test Audit Pipeline
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'ops/runbooks/export_audit.py'
+      - '.github/workflows/test-audit.yml'
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg docker.io
+          pip install psycopg2-binary boto3 google-api-python-client google-auth-httplib2 google-auth-oauthlib dropbox msal requests pgpy paramiko google-cloud-storage azure-storage-blob cryptography google-cloud-kms azure-identity azure-keyvault-keys google-cloud-secret-manager azure-keyvault-secrets
+      - name: Generate test GPG key
+        run: |
+          cat >gpg-batch.txt <<'EOF'
+          %no-protection
+          Key-Type: ed25519
+          Key-Curve: ed25519
+          Name-Real: Test Audit
+          Name-Email: test@example.com
+          Expire-Date: 0
+          %commit
+          EOF
+          gpg --batch --gen-key gpg-batch.txt
+          gpg --armor --export test@example.com > pub.asc
+      - name: Start SFTP container
+        run: |
+          mkdir -p sftp
+          docker run -d --name sftp -p 2222:22 -e SFTP_USERS="test:pass:1001" -v "${{ github.workspace }}/sftp:/home/test/upload" atmoz/sftp
+          sleep 3
+      - name: Run export (mock DB) with PGP + SFTP verify
+        env:
+          AIOPS_DATABASE_URL: mock
+          EXPORT_DAYS: "7"
+          AUDIT_ENCRYPTION: "on"
+          AUDIT_GPG_CLI: "on"
+          AUDIT_PGP_PUBLIC_KEY_FILES: "pub.asc"
+          AUDIT_PGP_DELETE_PLAINTEXT: "true"
+          AUDIT_FILENAME_MODE: "hashed"
+          SFTP_HOST: "127.0.0.1"
+          SFTP_PORT: "2222"
+          SFTP_USERNAME: "test"
+          SFTP_PASSWORD: "pass"
+          SFTP_REMOTE_DIR: "/upload"
+          SFTP_VERIFY: "size"
+        run: python ops/runbooks/export_audit.py
+      - name: Check outputs
+        run: |
+          ls -la
+          ls -la sftp || true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: e2e-outputs
+          path: |
+            *.csv*
+            sftp/**
+      - name: Cleanup
+        if: always()
+        run: docker rm -f sftp || true

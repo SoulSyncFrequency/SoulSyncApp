@@ -1,50 +1,93 @@
-name: Build Android AAB
+name: Android • Build AAB
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# otkaži stare buildove na istoj grani da ne trošiš minute
+concurrency:
+  group: android-aab-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      CI: true
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          node-version: 18
+          fetch-depth: 1
+
+      - name: Setup Node.js 20 (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
-      - name: Build Web
+      - name: Build web (React)
         run: npm run build
 
       - name: Install Capacitor CLI
-        run: npm install -g @capacitor/cli
+        run: npm i -g @capacitor/cli
 
-      - name: Sync Capacitor
+      - name: Sync Capacitor Android
         run: npx cap sync android
 
-      - name: Setup JDK
-        uses: actions/setup-java@v3
+      - name: Setup Java 17 + Gradle cache
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
-      - name: Build Android
+      - name: Ensure gradlew is executable
+        run: chmod +x android/gradlew
+
+      # --- (OPCIJSKO) POTPISIVANJE: radi samo ako si dodao Secrets u GitHubu ---
+      # 1) ANDROID_KEYSTORE_BASE64  (base64 sadržaj .jks datoteke)
+      # 2) ANDROID_STORE_PASSWORD   (lozinka za store)
+      # 3) ANDROID_KEY_ALIAS        (alias)
+      # 4) ANDROID_KEY_PASSWORD     (lozinka za ključ)
+      - name: Prepare signing (if secrets present)
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/soulsync-upload-keystore.jks
+          cat > android/key.properties <<'EOF'
+          storeFile=app/soulsync-upload-keystore.jks
+          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Build Android App Bundle (release)
         run: |
           cd android
-          ./gradlew bundleRelease
+          ./gradlew clean bundleRelease --no-daemon --stacktrace
 
       - name: Upload AAB artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: app-release-bundle
-          path: android/app/build/outputs/bundle/release/app-release.aab
+          name: android-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          retention-days: 14
 

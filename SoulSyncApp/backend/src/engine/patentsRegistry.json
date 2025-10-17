@@ -1,0 +1,38 @@
+{
+  "F0 Validator": {
+    "endpoint": "/engine/f0-validator",
+    "configKeys": [
+      "f0Target",
+      "tolerance",
+      "window"
+    ]
+  },
+  "SMILES Generator": {
+    "endpoint": "/engine/smiles-generator",
+    "configKeys": [
+      "profile",
+      "constraints"
+    ]
+  },
+  "EMDR": {
+    "endpoint": "/engine/emdr",
+    "configKeys": [
+      "protocolId",
+      "duration"
+    ]
+  },
+  "Psilocybin": {
+    "endpoint": "/engine/psilo",
+    "configKeys": [
+      "doseModel",
+      "profile"
+    ]
+  },
+  "Nutrition": {
+    "endpoint": "/engine/nutrition",
+    "configKeys": [
+      "planType",
+      "restrictions"
+    ]
+  }
+}

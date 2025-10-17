@@ -1,0 +1,32 @@
+{
+  "title": "API Latency & Error Budget",
+  "panels": [
+    {
+      "title": "API p95 Latency",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job='soulsync-backend'}[5m])) by (le))"
+        }
+      ]
+    },
+    {
+      "title": "API p99 Latency",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "slo:request_latency:99p"
+        }
+      ]
+    },
+    {
+      "title": "Error Budget Burn",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{status=~'5..'}[5m])"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,398 @@
+openapi: 3.0.3
+info:
+  title: SoulSync API
+  version: 1.0.0
+paths:
+  /healthz:
+    get:
+      summary: Liveness
+      responses:
+        '200':
+          description: OK
+  /readyz:
+    get:
+      summary: Readiness
+      responses:
+        '200':
+          description: Ready
+  /version:
+    get:
+      summary: Version
+      responses:
+        '200':
+          description: Info
+  /metrics:
+    get:
+      summary: Metrics
+      responses:
+        '200':
+          description: Prometheus
+  /admin/diagnostics:
+    get:
+      summary: Diagnostics
+      responses:
+        '200':
+          description: OK
+  /api/billing/create-checkout-session:
+    post:
+      summary: Create Stripe Checkout Session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Checkout URL
+        '400':
+          description: Bad request
+        '409':
+          description: Duplicate (idempotency)
+  /api/billing/webhook:
+    post:
+      summary: Stripe webhook
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Signature invalid
+  /api/me/entitlements:
+    get:
+      summary: Entitlements
+      responses:
+        '200':
+          description: Data
+        '401':
+          description: Unauthorized
+  /api/admin/devices:
+    get:
+      summary: Get all devices
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+    post:
+      summary: Create new device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+              required:
+              - name
+              - type
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+  /api/auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+              - email
+              - password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+  /api/auth/me:
+    get:
+      summary: Get current user info
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/devices/register:
+    post:
+      summary: Register device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceId:
+                  type: string
+                platform:
+                  type: string
+              required:
+              - deviceId
+              - platform
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /api/flags:
+    get:
+      summary: Get feature flags
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
+  /api/therapy:
+    post:
+      summary: Generate therapy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: string
+              required:
+              - input
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  therapyId:
+                    type: string
+                  result:
+                    type: object
+  /api/verifier/analyze:
+    post:
+      summary: Analyze input
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+              required:
+              - text
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  score:
+                    type: number
+                  details:
+                    type: object
+  /api/billing/checkout:
+    post:
+      summary: Create Stripe checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                priceId:
+                  type: string
+              required:
+              - priceId
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+        '501':
+          description: Billing not configured
+  /ai/consent/summary:
+    post:
+      summary: Summarize consent text (HR)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+              required:
+              - text
+      responses:
+        '200':
+          description: OK
+  /ai/dailyNudge:
+    get:
+      summary: Daily motivational nudge (HR)
+      responses:
+        '200':
+          description: OK
+  /ai/schema/summary:
+    post:
+      summary: Schema summary
+      responses:
+        '200':
+          description: OK
+  /auth/mfa/step-up/initiate:
+    post:
+      summary: Initiate step-up MFA
+      responses:
+        '200':
+          description: OK
+  /auth/mfa/step-up/verify:
+    post:
+      summary: Verify step-up MFA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              required:
+              - code
+      responses:
+        '200':
+          description: OK
+  /history/export.csv:
+    get:
+      summary: Export audit history CSV
+      responses:
+        '200':
+          description: CSV
+  /gdpr/export:
+    get:
+      summary: Export personal data JSON
+      responses:
+        '200':
+          description: JSON
+  /gdpr/delete:
+    post:
+      summary: Anonymize and delete personal data
+      responses:
+        '200':
+          description: OK
+  /admin/policy:
+    get:
+      summary: Fetch access policy
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Update access policy
+      responses:
+        '200':
+          description: OK
+  /ai/guarded:
+    post:
+      summary: Guarded JSON (schema+retry)
+      responses:
+        '200':
+          description: OK
+/api/therapy/generate:
+  post:
+    summary: Demo therapy generation (entitlement protected)
+    responses:
+      '200':
+        description: OK
+      '402':
+        description: Payment required
+/api/revenuecat/sync:
+  post:
+    summary: Sync entitlements from RevenueCat
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+    responses:
+      '200':
+        description: Synced
+      '400':
+        description: Bad request
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+    UserRole:
+      type: string
+      enum:
+      - ADMIN
+      - USER

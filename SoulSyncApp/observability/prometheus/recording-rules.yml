@@ -1,0 +1,8 @@
+groups:
+  - name: recording-rules
+    interval: 30s
+    rules:
+      - record: backend:error_rate_5m
+        expr: sum(rate(http_requests_total{status=~"5..",job="soulsync-backend"}[5m])) / sum(rate(http_requests_total{job="soulsync-backend"}[5m]))
+      - record: system:memory_usage_pct
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100

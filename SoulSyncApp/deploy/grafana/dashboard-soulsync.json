@@ -1,0 +1,284 @@
+{
+  "title": "SoulSync \u2014 API Overview",
+  "editable": true,
+  "schemaVersion": 36,
+  "version": 1,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Latency p95 (seconds)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "alert": {
+        "name": "p95 latency > 1s",
+        "noDataState": "no_data",
+        "execErrState": "alerting",
+        "frequency": "1m",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                1
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A"
+              ]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p99 (seconds)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests per second",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count[5m]))",
+          "legendFormat": "RPS"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Error rate (%)",
+      "targets": [
+        {
+          "expr": "100 * sum(rate(http_request_duration_seconds_count{status_code=~\"5..\"}[5m])) / sum(rate(http_request_duration_seconds_count[5m]))",
+          "legendFormat": "5xx %"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "alert": {
+        "name": "error rate > 5%",
+        "noDataState": "no_data",
+        "execErrState": "alerting",
+        "frequency": "1m",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                5
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A"
+              ]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency p95 by route",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Top 5 routes by p95 latency",
+      "targets": [
+        {
+          "expr": "topk(5, histogram_quantile(0.95, sum by (le, route) (rate(http_request_duration_seconds_bucket[5m]))))",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Top 5 routes by 5xx rate",
+      "targets": [
+        {
+          "expr": "topk(5, sum by (route) (rate(http_request_duration_seconds_count{status_code=~\"5..\"}[5m])))",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      }
+    },
+    {
+      "type": "heatmap",
+      "title": "Latency distribution (heatmap)",
+      "targets": [
+        {
+          "expr": "sum by (le) (rate(http_request_duration_seconds_bucket[5m]))",
+          "legendFormat": "latency bucket"
+        }
+      ],
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 40
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Error budget burn (1h)",
+      "targets": [
+        {
+          "expr": "(sum(rate(http_request_duration_seconds_count{status_code=~\"5..\"}[1h])) / sum(rate(http_request_duration_seconds_count[1h])))",
+          "legendFormat": "5xx rate"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 48
+      },
+      "alert": {
+        "name": "burn-rate > 2% (1h)",
+        "noDataState": "no_data",
+        "execErrState": "alerting",
+        "frequency": "1m",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.02
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A"
+              ]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Error budget burn (6h)",
+      "targets": [
+        {
+          "expr": "(sum(rate(http_request_duration_seconds_count{status_code=~\"5..\"}[6h])) / sum(rate(http_request_duration_seconds_count[6h])))",
+          "legendFormat": "5xx rate"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 48
+      },
+      "alert": {
+        "name": "burn-rate > 2% (6h)",
+        "noDataState": "no_data",
+        "execErrState": "alerting",
+        "frequency": "5m",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.02
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A"
+              ]
+            },
+            "reducer": {
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ]
+      }
+    }
+  ]
+}

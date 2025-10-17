@@ -1,0 +1,12 @@
+groups:
+  - name: kubecost-budget-alerts
+    interval: 1m
+    rules:
+      - alert: NamespaceBudgetExceeded
+        expr: sum by (namespace) (kubecost_namespace_cost) > on(namespace) group_left() (kubecost_namespace_budget)
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Namespace premašio budžet"
+          description: "Namespace {{ $labels.namespace }} troši više od definiranog budžeta."

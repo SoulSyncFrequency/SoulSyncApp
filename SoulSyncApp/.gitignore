@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+coverage/
+playwright-report/
+npm-debug.log*
+.DS_Store
+logs/
+*.log
+*.gz
+
+.env.alert

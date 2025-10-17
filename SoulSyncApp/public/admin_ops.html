@@ -1,0 +1,181 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Admin Ops Dashboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style nonce="__CSP_NONCE__">
+body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:2rem;max-width:1100px}
+h1{margin-bottom:0.25rem} .muted{color:#666;margin-top:0}
+section{border:1px solid #eee;border-radius:12px;padding:1rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+pre{background:#0b0b0b;color:#e8e8e8;padding:1rem;border-radius:8px;overflow:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.badge{display:inline-block;padding:.2rem .5rem;border-radius:999px;background:#eee;margin-left:.3rem}
+.ok{background:#d7f7df} .warn{background:#fff4cc} .err{background:#ffd7d7}
+button{padding:.5rem .8rem;border-radius:8px;border:1px solid #ddd;background:#fafafa;cursor:pointer}
+button:hover{background:#f2f2f2}
+small{color:#777}
+</style>
+</head>
+<body>
+<h1>Admin Ops Dashboard <span id="version" class="badge"></span></h1>
+<p class="muted">Snapshot ključnih metrika i promjena. (client-side fetch; requires admin auth via cookies/headers)</p>
+
+
+<div style="margin: 0 0 1rem 0">
+  <label for="winSel"><small>Window:</small></label>
+  <select id="winSel">
+    <option value="5m">5m</option>
+    <option value="15m" selected>15m</option>
+    <option value="60m">60m</option>
+  </select>
+  <button id="refresh">Refresh</button>
+</div>
+
+
+<div class="grid">
+  <section>
+    <h3>Golden Signals</h3>
+    <canvas id="golden" width="800" height="180" style="max-width:100%;border:1px solid #eee;border-radius:8px"></canvas>
+    <div><small id="golden-meta" class="muted"></small></div>
+  </section>
+
+  <section>
+    <h3>Status <small>/ops/status</small></h3>
+    <div id="status"></div>
+  </section>
+  <section>
+    <h3>Anomaly Hints <small>/ops/anomaly-hints</small></h3>
+    <ul id="hints"></ul>
+  </section>
+  <section>
+    <h3>Release Notes <small>/ops/release-notes</small></h3>
+    <pre id="reln"></pre>
+  </section>
+  <section>
+    <h3>Rate Limit Proposal <small>/ops/rl-proposal</small></h3>
+    <pre id="rlp"></pre>
+  </section>
+
+  <section>
+    <h3>Top Routes p95 <small>/ops/top-routes</small></h3>
+    <canvas id="spark" width="800" height="180" style="max-width:100%;border:1px solid #eee;border-radius:8px"></canvas>
+    <div><small id="spark-meta" class="muted"></small></div>
+  </section>
+
+
+  <section>
+    <h3>RCA Hints <small>/ops/rca-hints</small></h3>
+    <pre id="rca"></pre>
+  </section>
+
+
+  <section>
+    <h3>Slow Queries <small>/ops/slow-queries</small></h3>
+    <pre id="slowq"></pre>
+  </section>
+  <section>
+    <h3>Error Budget <small>/ops/error-budget</small></h3>
+    <div id="ebud" class="badge"></div>
+    <pre id="ebudx" class="muted"></pre>
+  </section>
+
+</div>
+
+<section>
+  <h3>Akcije</h3>
+  <button id="selftest">Run Self-test</button>
+  <button id="notify">Send Test Notification</button>
+  <div id="actions"></div>
+</section>
+
+<script nonce="__CSP_NONCE__">
+async function jget(u){ const r = await fetch(u); return r.json() }
+function win(){ return (document.getElementById('winSel')||{value:'15m'}).value }
+function drawSpark(rows){
+  try{
+    const c = document.getElementById('spark'); if(!c) return;
+    const ctx = c.getContext('2d');
+    const w = c.width, h = c.height;
+    ctx.clearRect(0,0,w,h);
+    if(!rows || !rows.length){ ctx.fillText('no data', 10, 20); return; }
+    // Sort by p95 descending and take up to 30
+    rows = rows.slice(0,30);
+    const max = Math.max(...rows.map(r=>r.p95Ms||0), 1);
+    const barW = Math.max(6, Math.floor((w-40)/rows.length));
+    rows.forEach((r,i)=>{
+      const v = (r.p95Ms||0)/max;
+      const bh = Math.max(2, Math.floor(v*(h-40)));
+      const x = 20 + i*barW;
+      const y = h-20 - bh;
+      ctx.fillRect(x, y, barW-2, bh);
+    });
+    const meta = document.getElementById('spark-meta');
+    if(meta){
+      meta.textContent = `window=15m top=${rows.length} max p95=${max}ms`;
+    }
+  }catch(e){}
+}
+
+function drawGolden(slo, loop){
+  try{
+    const c = document.getElementById('golden'); if(!c) return;
+    const ctx = c.getContext('2d');
+    const w=c.width, h=c.height; ctx.clearRect(0,0,w,h);
+    const bars = [
+      {label:'p95', val:(slo?.metrics?.p95Ms||0), max:1500, unit:'ms'},
+      {label:'err%', val:Math.round((slo?.metrics?.errRate||0)*100), max:10, unit:'%'},
+      {label:'lag', val:(loop?.p99Ms||0), max:200, unit:'ms'}
+    ];
+    const barW = Math.floor((w-60)/bars.length);
+    bars.forEach((b,i)=>{
+      const ratio = Math.max(0, Math.min(1, b.val / b.max));
+      const bh = Math.max(2, Math.floor(ratio*(h-40)));
+      const x = 30 + i*barW; const y = h-20 - bh;
+      ctx.fillRect(x, y, barW-10, bh);
+      ctx.fillText(`${b.label}`, x, h-6);
+      ctx.fillText(`${b.val}${b.unit}`, x, y-4);
+    });
+    const meta = document.getElementById('golden-meta');
+    if(meta){ meta.textContent = `window=${Math.round((slo?.windowMs||0)/60000)}m targets: p95<=${slo?.targets?.p95Ms}ms, p99<=${slo?.targets?.p99Ms}ms, err<=${(slo?.targets?.errRate||0)*100}%`; }
+  }catch(e){}
+}
+async function init(){
+  const w = win();
+
+  try{
+    const v = await jget('/ops/version'); document.getElementById('version').textContent = v.version||'unknown'
+  }catch{}
+  try{
+    const s = await jget('/ops/status?window='+win()); document.getElementById('status').innerHTML = '<pre>'+JSON.stringify(s,null,2)+'</pre>'
+    const hints = s.anomalyHints || []
+    const ul = document.getElementById('hints'); ul.innerHTML = ''; hints.forEach(h=>{ const li=document.createElement('li'); li.textContent=h; ul.appendChild(li) })
+  }catch{}
+  try{
+    const a = await jget('/ops/anomaly-hints?window='+win()); const ul = document.getElementById('hints'); a.hints?.forEach(h=>{ const li=document.createElement('li'); li.textContent=h; ul.appendChild(li) })
+  }catch{}
+  try{
+    const r = await jget('/ops/release-notes'); document.getElementById('reln').textContent = JSON.stringify(r.summary,null,2) + '\n' + (r.highlights||[]).join('\n')
+  }catch{}
+  try{
+    const p = await jget('/ops/rl-proposal'); document.getElementById('rlp').textContent = JSON.stringify(p,null,2)
+  try{ const slo = await jget('/ops/slo-status?window='+win()); const loop = await jget('/ops/loop-lag'); drawGolden(slo, loop); }catch{}
+  try{ const tr = await jget('/ops/top-routes?n=30&window='+w); drawSpark(tr.rows||[]) }catch{}
+  try{ const rca = await jget('/ops/rca-hints?window='+w); document.getElementById('rca').textContent = JSON.stringify(rca,null,2) }catch{}
+  try{ const sq = await jget('/ops/slow-queries?limit=10'); document.getElementById('slowq').textContent = JSON.stringify(sq.top||[], null, 2) }catch{}
+  try{ const eb = await jget('/ops/error-budget?window=24h'); const badge=document.getElementById('ebud'); if(eb&&badge){ const used = ((0.001 - eb.remainingErrorBudget)||0); const pct = Math.max(0, Math.min(100, Math.round( (used/0.001)*100 ))); badge.textContent = `remaining ${(eb.remainingErrorBudget*100).toFixed(2)}%`; badge.className = 'badge ' + (pct>80?'err': (pct>50?'warn':'ok')); } const ebx=document.getElementById('ebudx'); if(ebx){ ebx.textContent = JSON.stringify(eb,null,2) } }catch{}
+  }catch{}
+}
+init();
+(document.getElementById('refresh')||{}).onclick = init;
+
+document.getElementById('selftest').onclick = async ()=>{
+  try{
+    const r = await fetch('/self-test'); const t = await r.text(); document.getElementById('actions').innerHTML = '<pre>'+t+'</pre>'
+  }catch(e){ document.getElementById('actions').textContent = 'error '+e }
+}
+document.getElementById('notify').onclick = async ()=>{
+  try{
+    const r = await fetch('/admin/ops/notify',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ subject:'Ops Dashboard Test', body:'Hello from admin_ops.html' }) })
+    const j = await r.json(); document.getElementById('actions').innerHTML = '<pre>'+JSON.stringify(j,null,2)+'</pre>'
+  }catch(e){ document.getElementById('actions').textContent = 'error '+e }
+}
+</script>
+</body></html>

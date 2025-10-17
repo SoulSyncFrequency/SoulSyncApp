@@ -1,0 +1,16 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: default
+    receivers:
+      - uid: email-default
+        type: email
+        settings:
+          addresses: ops@example.com
+
+notificationPolicies:
+  - orgId: 1
+    receiver: email-default
+    group_by: ['alertname']
+    continue: false

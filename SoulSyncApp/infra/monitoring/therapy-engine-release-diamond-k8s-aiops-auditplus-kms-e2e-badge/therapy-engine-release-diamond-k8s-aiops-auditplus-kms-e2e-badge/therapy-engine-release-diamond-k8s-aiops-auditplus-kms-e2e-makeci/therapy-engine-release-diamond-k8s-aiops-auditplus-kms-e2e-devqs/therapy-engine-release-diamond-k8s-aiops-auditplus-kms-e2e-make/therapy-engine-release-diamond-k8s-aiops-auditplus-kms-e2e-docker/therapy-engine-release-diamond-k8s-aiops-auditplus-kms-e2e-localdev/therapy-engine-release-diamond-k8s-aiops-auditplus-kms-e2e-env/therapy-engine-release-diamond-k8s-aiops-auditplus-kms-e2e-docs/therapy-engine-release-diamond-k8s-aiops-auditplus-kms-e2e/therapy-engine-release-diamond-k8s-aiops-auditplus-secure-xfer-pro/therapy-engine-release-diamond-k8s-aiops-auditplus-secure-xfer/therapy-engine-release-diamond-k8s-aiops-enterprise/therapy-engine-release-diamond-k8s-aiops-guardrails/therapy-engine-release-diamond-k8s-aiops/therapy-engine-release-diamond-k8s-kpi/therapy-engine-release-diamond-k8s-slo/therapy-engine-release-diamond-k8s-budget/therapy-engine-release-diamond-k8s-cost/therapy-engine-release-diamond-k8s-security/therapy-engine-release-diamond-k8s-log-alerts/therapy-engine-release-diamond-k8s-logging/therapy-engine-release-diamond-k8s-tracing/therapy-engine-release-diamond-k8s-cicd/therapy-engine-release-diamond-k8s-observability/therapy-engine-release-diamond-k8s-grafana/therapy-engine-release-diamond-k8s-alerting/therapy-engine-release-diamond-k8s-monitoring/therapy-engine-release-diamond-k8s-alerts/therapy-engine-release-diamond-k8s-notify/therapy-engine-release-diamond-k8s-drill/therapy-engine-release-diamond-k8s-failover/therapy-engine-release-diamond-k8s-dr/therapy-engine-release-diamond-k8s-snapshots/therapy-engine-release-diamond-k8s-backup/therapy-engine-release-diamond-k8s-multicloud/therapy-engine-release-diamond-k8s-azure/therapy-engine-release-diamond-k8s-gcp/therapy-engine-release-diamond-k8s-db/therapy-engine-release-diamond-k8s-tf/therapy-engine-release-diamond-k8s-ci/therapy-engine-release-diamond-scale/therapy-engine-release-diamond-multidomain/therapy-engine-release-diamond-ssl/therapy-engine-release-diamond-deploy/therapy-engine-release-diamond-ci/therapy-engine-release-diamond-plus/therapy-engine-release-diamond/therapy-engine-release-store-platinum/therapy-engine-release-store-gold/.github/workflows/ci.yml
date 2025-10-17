@@ -1,0 +1,88 @@
+name: CI & Release
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: ${{ github.repository }}-backend
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
+  IMAGE_NAME_CHEM: ${{ github.repository }}-chem
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set release vars
+        run: |
+          echo "SENTRY_RELEASE=${GITHUB_SHA}" >> $GITHUB_ENV
+          echo "VITE_SENTRY_RELEASE=${GITHUB_SHA}" >> $GITHUB_ENV
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ env.IMAGE_NAME_BACKEND }}:${{ github.sha }}
+          build-args: |
+            SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}
+
+      - name: Build & push chem
+        uses: docker/build-push-action@v6
+        with:
+          context: ./chem-microservice
+          file: ./chem-microservice/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ env.IMAGE_NAME_CHEM }}:${{ github.sha }}
+
+      - name: Build frontend (set release)
+        run: |
+          cd frontend
+          echo "VITE_SENTRY_RELEASE=${GITHUB_SHA}" >> .env
+          npm ci --omit=dev
+          npm run build
+
+      - name: Package frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}  # for backend
+        with:
+          environment: production
+          version: ${{ github.sha }}
+
+      - name: Create Sentry release (frontend project)
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT_FRONTEND }}
+        with:
+          environment: production
+          version: ${{ github.sha }}

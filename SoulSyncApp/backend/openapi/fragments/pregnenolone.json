@@ -1,0 +1,238 @@
+{
+  "tags": [
+    {
+      "name": "supplements/pregnenolone",
+      "description": "Pregnenolone supplement endpoints"
+    }
+  ],
+  "paths": {
+    "/api/supplements/pregnenolone/plan": {
+      "post": {
+        "tags": [
+          "supplements/pregnenolone"
+        ],
+        "summary": "Create Pregnenolone plan (draft)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PregnenolonePlanCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/pregnenolone/consent/{planId}": {
+      "post": {
+        "tags": [
+          "supplements/pregnenolone"
+        ],
+        "summary": "Accept consent and activate plan",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/pregnenolone/dose": {
+      "post": {
+        "tags": [
+          "supplements/pregnenolone"
+        ],
+        "summary": "Log a Pregnenolone dose",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PregnenoloneDoseLog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/pregnenolone/doses/{planId}": {
+      "get": {
+        "tags": [
+          "supplements/pregnenolone"
+        ],
+        "summary": "List doses (paginated)",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/supplements/pregnenolone/summary/{planId}": {
+      "get": {
+        "tags": [
+          "supplements/pregnenolone"
+        ],
+        "summary": "Deterministic summary (+optional AI text)",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PregnenolonePlanCreate": {
+        "type": "object",
+        "properties": {
+          "doseUnit": {
+            "type": "string",
+            "enum": [
+              "mg",
+              "drop"
+            ]
+          },
+          "mgPerDrop": {
+            "type": "number",
+            "nullable": true
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "topical"
+            ]
+          },
+          "schedule": {},
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "doseUnit",
+          "route"
+        ]
+      },
+      "PregnenoloneDoseLog": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "mg",
+              "drop"
+            ]
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "oral",
+              "topical"
+            ]
+          },
+          "note": {
+            "type": "string"
+          },
+          "symptoms": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "planId",
+          "ts",
+          "amount",
+          "unit",
+          "route"
+        ]
+      }
+    }
+  }
+}

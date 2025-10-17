@@ -1,0 +1,23 @@
+{
+  "title": "Therapy Engine - Security Events",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Falco Events per Minute",
+      "targets": [
+        {
+          "expr": "rate(falco_events_total[1m])"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Recent Audit Logs",
+      "targets": [
+        {
+          "expr": "count_over_time({job=\"audit-logs\"}[5m])"
+        }
+      ]
+    }
+  ]
+}

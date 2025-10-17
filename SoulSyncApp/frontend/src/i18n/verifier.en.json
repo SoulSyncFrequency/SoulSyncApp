@@ -1,0 +1,11 @@
+{
+  "title": "Verifier",
+  "subtitle": "Check food, INCI or textiles against Nutrition & Lifestyle + F\u2080 rules.",
+  "kind_food": "Food",
+  "kind_inci": "INCI",
+  "kind_textile": "Textile",
+  "parse": "Parse",
+  "evaluate": "Evaluate",
+  "ocr": "OCR (label)",
+  "barcode": "Scan barcode"
+}

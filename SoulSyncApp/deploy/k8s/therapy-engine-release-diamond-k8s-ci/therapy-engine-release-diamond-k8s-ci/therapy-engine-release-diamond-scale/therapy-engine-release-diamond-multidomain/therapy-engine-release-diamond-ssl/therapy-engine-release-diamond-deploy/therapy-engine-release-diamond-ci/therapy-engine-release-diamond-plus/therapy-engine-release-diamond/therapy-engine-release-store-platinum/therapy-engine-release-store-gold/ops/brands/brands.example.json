@@ -1,0 +1,17 @@
+{
+  "default": {
+    "name": "TherapyEngine",
+    "primary": "#111827",
+    "accent": "#60a5fa"
+  },
+  "brandx.com": {
+    "name": "BrandX Health",
+    "primary": "#0b3d2e",
+    "accent": "#f59e0b"
+  },
+  "brandy.app": {
+    "name": "Brandy Wellness",
+    "primary": "#1f2937",
+    "accent": "#10b981"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": null,
+  "title": "SLO & Error Budget",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Availability (1d)",
+      "targets": [
+        {
+          "expr": "1 - (sum(rate(http_requests_total{status_code=~\"5..\"}[1d])) / sum(rate(http_requests_total[1d])))",
+          "legendFormat": "availability"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Error rate (5xx %)",
+      "targets": [
+        {
+          "expr": "(sum(rate(http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))) * 100",
+          "legendFormat": "5xx % (5m)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency SLI (p95, s)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95 (5m)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Error Budget Burn (5m / 1h)",
+      "targets": [
+        {
+          "expr": "(sum(rate(http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))) / 0.001",
+          "legendFormat": "burn_5m"
+        },
+        {
+          "expr": "(sum(rate(http_requests_total{status_code=~\"5..\"}[1h])) / sum(rate(http_requests_total[1h]))) / 0.001",
+          "legendFormat": "burn_1h"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Error Budget Burn (fast/slow)",
+      "targets": [
+        {
+          "expr": "(sum(rate(http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))) / 0.001",
+          "legendFormat": "5m burn / SLO 99.9%"
+        },
+        {
+          "expr": "(sum(rate(http_requests_total{status_code=~\"5..\"}[1h])) / sum(rate(http_requests_total[1h]))) / 0.001",
+          "legendFormat": "1h burn / SLO 99.9%"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "SLO Budget Remaining (%)",
+      "targets": [
+        {
+          "expr": "(1 - ((sum(rate(http_requests_total{status_code=~\"5..\"}[1d])) / sum(rate(http_requests_total[1d]))) / 0.001)) * 100",
+          "legendFormat": "remaining % (1d)"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s"
+}

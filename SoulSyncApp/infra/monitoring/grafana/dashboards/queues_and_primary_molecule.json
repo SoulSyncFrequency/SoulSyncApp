@@ -1,0 +1,79 @@
+{
+  "title": "Queues & Therapy Primary Molecule",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Webhook waiting",
+      "targets": [
+        {
+          "expr": "queue_jobs_current{queue=\"webhookQueue\",state=\"waiting\"}"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Email waiting",
+      "targets": [
+        {
+          "expr": "queue_jobs_current{queue=\"emailQueue\",state=\"waiting\"}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Jobs completed rate",
+      "targets": [
+        {
+          "expr": "sum(rate(queue_jobs_completed_total[5m])) by (queue)"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Jobs failed rate",
+      "targets": [
+        {
+          "expr": "sum(rate(queue_jobs_failed_total[5m])) by (queue)"
+        }
+      ]
+    },
+    {
+      "type": "heatmap",
+      "title": "Job duration (s)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(queue_job_duration_seconds_bucket[5m])) by (le,queue))"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Primary molecule valid",
+      "targets": [
+        {
+          "expr": "increase(therapy_primary_molecule_total{status=\"valid\"}[1h])"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Primary molecule fallback",
+      "targets": [
+        {
+          "expr": "increase(therapy_primary_molecule_total{status=\"fallback\"}[1h])"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "DLQ purged jobs rate",
+      "targets": [
+        {
+          "expr": "sum(rate(dlq_purged_total[5m])) by (queue)"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

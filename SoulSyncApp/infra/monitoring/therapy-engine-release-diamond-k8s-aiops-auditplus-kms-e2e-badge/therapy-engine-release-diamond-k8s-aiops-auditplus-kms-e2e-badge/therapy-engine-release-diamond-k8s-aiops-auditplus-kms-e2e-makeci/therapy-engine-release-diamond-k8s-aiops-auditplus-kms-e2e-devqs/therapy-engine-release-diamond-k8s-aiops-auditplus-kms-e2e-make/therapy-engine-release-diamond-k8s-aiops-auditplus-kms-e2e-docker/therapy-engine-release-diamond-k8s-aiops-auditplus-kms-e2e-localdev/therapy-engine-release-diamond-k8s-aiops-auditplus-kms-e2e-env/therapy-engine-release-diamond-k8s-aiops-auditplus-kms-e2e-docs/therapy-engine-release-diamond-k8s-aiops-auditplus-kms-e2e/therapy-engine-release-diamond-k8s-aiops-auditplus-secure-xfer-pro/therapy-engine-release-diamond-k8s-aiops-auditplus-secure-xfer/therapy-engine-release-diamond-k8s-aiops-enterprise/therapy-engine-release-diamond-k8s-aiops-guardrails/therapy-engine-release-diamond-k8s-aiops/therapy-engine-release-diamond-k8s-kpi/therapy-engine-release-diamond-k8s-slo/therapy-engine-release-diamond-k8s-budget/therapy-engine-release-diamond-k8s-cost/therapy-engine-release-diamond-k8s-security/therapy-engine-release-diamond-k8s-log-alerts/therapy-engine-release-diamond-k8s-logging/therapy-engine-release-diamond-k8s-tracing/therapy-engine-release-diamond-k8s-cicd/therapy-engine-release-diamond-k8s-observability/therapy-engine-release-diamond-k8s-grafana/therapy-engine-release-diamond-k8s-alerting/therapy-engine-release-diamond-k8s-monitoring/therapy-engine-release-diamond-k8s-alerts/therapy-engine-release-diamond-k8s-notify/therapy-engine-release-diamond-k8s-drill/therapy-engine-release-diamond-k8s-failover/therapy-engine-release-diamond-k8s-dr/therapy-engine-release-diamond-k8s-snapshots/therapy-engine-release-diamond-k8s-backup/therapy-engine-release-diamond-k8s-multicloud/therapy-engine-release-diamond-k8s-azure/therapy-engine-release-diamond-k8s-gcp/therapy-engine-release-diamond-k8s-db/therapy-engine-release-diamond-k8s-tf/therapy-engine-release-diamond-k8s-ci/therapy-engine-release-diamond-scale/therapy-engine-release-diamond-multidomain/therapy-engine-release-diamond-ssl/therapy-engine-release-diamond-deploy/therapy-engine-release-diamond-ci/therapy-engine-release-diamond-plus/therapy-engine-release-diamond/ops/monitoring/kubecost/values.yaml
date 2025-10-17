@@ -1,0 +1,22 @@
+# Kubecost values for existing Prometheus setup
+global:
+  prometheus:
+    enabled: false   # we already run Prometheus separately
+
+prometheus:
+  enabled: false
+  fqdn: http://prometheus-server.default.svc
+
+kubecostProductConfigs:
+  clusterName: therapy-cluster
+
+networkCosts:
+  enabled: true
+
+serviceMonitor:
+  enabled: true
+  additionalLabels:
+    release: prometheus
+
+ingress:
+  enabled: false

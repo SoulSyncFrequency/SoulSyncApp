@@ -1,0 +1,20 @@
+apiVersion: 1
+
+contactPoints:
+  - name: Email Team
+    email:
+      to: "soulsyncfrequency@gmail.com"
+      from: "${ALERT_SMTP_USER}"
+      smarthost: "${ALERT_SMTP_HOST}:${ALERT_SMTP_PORT}"
+      authUsername: "${ALERT_SMTP_USER}"
+      authPassword: "${ALERT_SMTP_PASS}"
+
+  - name: Slack Warnings
+    slack:
+      url: "${SLACK_WEBHOOK_URL}"
+      recipient: "${SLACK_CHANNEL_WARN:-#alerts}"
+
+  - name: Slack Critical
+    slack:
+      url: "${SLACK_WEBHOOK_CRITICAL_URL:-${SLACK_WEBHOOK_URL}}"
+      recipient: "${SLACK_CHANNEL_CRIT:-#alerts-critical}"

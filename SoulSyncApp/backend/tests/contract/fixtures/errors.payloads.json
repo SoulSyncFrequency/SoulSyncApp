@@ -1,0 +1,28 @@
+{
+  "400": {
+    "error": "invalid_request",
+    "details": [
+      {
+        "path": "field",
+        "code": "too_small",
+        "message": "min 1"
+      }
+    ]
+  },
+  "401": {
+    "error": "unauthorized"
+  },
+  "403": {
+    "error": "forbidden"
+  },
+  "404": {
+    "error": "not_found"
+  },
+  "429": {
+    "error": "rate_limited"
+  },
+  "503": {
+    "error": "backpressure",
+    "retryAfter": 1
+  }
+}

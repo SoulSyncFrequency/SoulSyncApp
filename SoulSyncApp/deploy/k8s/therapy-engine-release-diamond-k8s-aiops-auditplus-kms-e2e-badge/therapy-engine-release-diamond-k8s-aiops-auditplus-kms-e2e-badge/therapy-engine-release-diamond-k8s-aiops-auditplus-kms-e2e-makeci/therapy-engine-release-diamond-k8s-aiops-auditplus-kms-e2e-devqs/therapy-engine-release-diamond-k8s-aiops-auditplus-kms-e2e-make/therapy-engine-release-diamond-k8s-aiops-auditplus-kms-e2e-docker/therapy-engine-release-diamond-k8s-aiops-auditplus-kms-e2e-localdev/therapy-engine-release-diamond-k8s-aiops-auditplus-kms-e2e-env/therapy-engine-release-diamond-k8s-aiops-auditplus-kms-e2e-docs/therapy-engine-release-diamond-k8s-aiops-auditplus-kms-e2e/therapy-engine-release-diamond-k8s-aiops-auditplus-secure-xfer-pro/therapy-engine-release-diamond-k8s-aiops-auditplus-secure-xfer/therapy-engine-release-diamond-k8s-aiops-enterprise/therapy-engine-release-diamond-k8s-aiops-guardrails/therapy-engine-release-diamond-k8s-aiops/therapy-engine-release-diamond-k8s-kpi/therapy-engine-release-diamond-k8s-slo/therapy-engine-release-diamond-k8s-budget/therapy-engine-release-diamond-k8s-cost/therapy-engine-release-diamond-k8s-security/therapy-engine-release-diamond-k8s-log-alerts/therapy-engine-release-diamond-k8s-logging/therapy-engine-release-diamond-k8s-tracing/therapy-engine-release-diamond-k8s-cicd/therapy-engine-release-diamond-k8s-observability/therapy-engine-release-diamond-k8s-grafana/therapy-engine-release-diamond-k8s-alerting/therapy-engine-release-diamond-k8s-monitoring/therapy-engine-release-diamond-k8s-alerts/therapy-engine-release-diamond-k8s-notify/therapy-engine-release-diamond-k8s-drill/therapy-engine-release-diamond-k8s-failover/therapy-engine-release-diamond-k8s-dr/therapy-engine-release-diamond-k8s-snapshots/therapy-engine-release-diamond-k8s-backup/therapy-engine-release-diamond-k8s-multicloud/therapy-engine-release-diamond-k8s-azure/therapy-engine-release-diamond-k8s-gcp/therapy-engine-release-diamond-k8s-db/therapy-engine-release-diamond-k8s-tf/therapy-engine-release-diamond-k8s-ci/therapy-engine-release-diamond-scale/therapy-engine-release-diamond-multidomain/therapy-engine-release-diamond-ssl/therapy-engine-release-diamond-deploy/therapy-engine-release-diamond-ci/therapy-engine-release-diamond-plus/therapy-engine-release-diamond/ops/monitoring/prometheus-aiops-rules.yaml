@@ -1,0 +1,12 @@
+groups:
+  - name: aiops-alerts
+    interval: 1m
+    rules:
+      - alert: AIOpsAnomalyDetected
+        expr: aiops_anomaly_current == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AIOps: anomaly signal detected"
+          description: "aiops_anomaly_current=1 za neku od praćenih metrika."

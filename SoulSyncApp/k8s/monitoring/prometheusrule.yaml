@@ -1,0 +1,40 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: soulsync-rules
+  labels:
+    app.kubernetes.io/name: soulsync
+    release: prometheus
+spec:
+  groups:
+    - name: soulsync-app.rules
+      rules:
+        - alert: SoulSyncHighErrorRate
+          expr: |
+            sum(rate(http_requests_total{namespace="soulsync",status=~"5.."}[5m])) / clamp_min(sum(rate(http_requests_total{namespace="soulsync"}[5m])), 1) > 0.05
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+      runbook_url: https://docs.soulsync.app/runbooks/<alertname>
+            summary: "High 5xx error rate (>5%) on SoulSync"
+            description: "Error ratio is above 5% for 10 minutes."
+        - alert: SoulSyncPodRestarts
+          expr: |
+            increase(kube_pod_container_status_restarts_total{namespace="soulsync",container="app"}[10m]) > 3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+      runbook_url: https://docs.soulsync.app/runbooks/<alertname>
+            summary: "Frequent pod restarts"
+            description: "More than 3 restarts in the last 10 minutes."
+        - alert: SoulSyncHighCPU
+          expr: avg(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace="soulsync",container="app"}) > 0.5
+          for: 10m
+          labels:
+            severity: info
+          annotations:
+      runbook_url: https://docs.soulsync.app/runbooks/<alertname>
+            summary: "High average CPU (>0.5 cores) on SoulSync app"
+            description: "Average CPU usage exceeded 0.5 for 10 minutes."

@@ -1,0 +1,2610 @@
+{
+  "beef": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "b12",
+      "zinc"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_liver": {
+    "f0": 0.95,
+    "grade": "A",
+    "flags": [
+      "vitA_retinol",
+      "b_vitamins"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "lamb": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "zinc"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "pork": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "chicken": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "turkey": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "duck": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "protein",
+      "fat"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "eggs": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "choline",
+      "cholesterol"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "raw_milk": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "bioactive",
+      "enzymes",
+      "b12_calcium"
+    ],
+    "purpose_tags": [
+      "drink",
+      "protein_source",
+      "snack"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "whole_milk": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "nutrient_dense"
+    ],
+    "purpose_tags": [
+      "drink",
+      "protein_source",
+      "snack"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "yogurt_whole": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "probiotics"
+    ],
+    "purpose_tags": [
+      "drink",
+      "protein_source",
+      "snack"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "kefir_whole": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "probiotics"
+    ],
+    "purpose_tags": [
+      "drink",
+      "protein_source",
+      "snack"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "cheddar_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "gouda_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein",
+      "k2_dep"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "parmesan_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "mozzarella_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "cottage_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "ricotta_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "beef_tallow": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "saturated_fat"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "baking",
+      "saute"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "lard": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "saturated_fat"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "baking",
+      "saute"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "butter": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "vitamin_A",
+      "k2_dep"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "baking",
+      "saute"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "ghee": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "butyrate",
+      "saturated_fat"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "baking",
+      "saute"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "soothing",
+      "grounding"
+    ]
+  },
+  "coconut_oil": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "mct",
+      "saturated_fat"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "baking",
+      "saute"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "olive_oil": {
+    "f0": 0.88,
+    "grade": "A",
+    "flags": [
+      "mufa"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "baking",
+      "saute"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "salmon": {
+    "f0": 0.72,
+    "grade": "B",
+    "flags": [
+      "seafood_whole"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "sardines": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "seafood_whole"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "mackerel": {
+    "f0": 0.72,
+    "grade": "B",
+    "flags": [
+      "seafood_whole"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "cod": {
+    "f0": 0.72,
+    "grade": "B",
+    "flags": [
+      "seafood_whole"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "tuna": {
+    "f0": 0.72,
+    "grade": "B",
+    "flags": [
+      "seafood_whole"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "oysters": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "zinc",
+      "copper",
+      "b12"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "mussels": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "b12",
+      "minerals"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "shrimp": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "focus",
+      "energizing"
+    ]
+  },
+  "white_rice": {
+    "f0": 0.78,
+    "grade": "B",
+    "flags": [
+      "easy_digestible"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "jasmine_rice": {
+    "f0": 0.78,
+    "grade": "B",
+    "flags": [
+      "easy_digestible"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "basmati_rice": {
+    "f0": 0.78,
+    "grade": "B",
+    "flags": [
+      "easy_digestible"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "potato": {
+    "f0": 0.78,
+    "grade": "B",
+    "flags": [
+      "potassium"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "sweet_potato": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "carotenoids"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "sourdough_white_bread": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "gluten"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "corn_tortilla": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "starch"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "honey": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "simple_sugars"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "snack"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "maple_syrup": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "simple_sugars"
+    ],
+    "purpose_tags": [
+      "carb_source",
+      "snack"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing",
+      "creative"
+    ]
+  },
+  "apple": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "banana": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "orange": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "blueberries": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "strawberry": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "raspberry": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "blackberry": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "pineapple": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "mango": {
+    "f0": 0.75,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "papaya": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "pear": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "peach": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "plum": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "cherry": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "grapes": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "watermelon": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "cantaloupe": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "kiwi": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "pomegranate": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "apricot": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "fig": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "date": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "lemon": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "lime": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "grapefruit": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "passionfruit": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "guava": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "dragonfruit": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "persimmon": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "cranberry": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "tangerine": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "nectarine": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "coconut": {
+    "f0": 0.74,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "carrot": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "beetroot": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "tomato": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "cucumber": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "zucchini": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "pumpkin": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "broccoli": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable",
+      "goitrogens"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "cauliflower": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "spinach": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "vegetable",
+      "oxalates"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "kale": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "vegetable",
+      "goitrogens"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "lettuce": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "arugula": {
+    "f0": 0.55,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "onion": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "garlic": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "leek": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "cabbage": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable",
+      "goitrogens"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "brussels_sprouts": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable",
+      "goitrogens"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "asparagus": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "eggplant": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "bell_pepper_red": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "bell_pepper_green": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "mushroom_white": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "mushroom_shiitake": {
+    "f0": 0.62,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "sunflower_oil": {
+    "f0": 0.2,
+    "grade": "E",
+    "flags": [
+      "PUFA_high",
+      "oxidation"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "soy_oil": {
+    "f0": 0.22,
+    "grade": "E",
+    "flags": [
+      "PUFA_high",
+      "goitrogen"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "corn_oil": {
+    "f0": 0.22,
+    "grade": "E",
+    "flags": [
+      "PUFA_high"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "canola_oil": {
+    "f0": 0.22,
+    "grade": "E",
+    "flags": [
+      "PUFA_high",
+      "processing"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "grapeseed_oil": {
+    "f0": 0.2,
+    "grade": "E",
+    "flags": [
+      "PUFA_high"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "margarine": {
+    "f0": 0.18,
+    "grade": "E",
+    "flags": [
+      "hydrogenated",
+      "trans_fats"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "fish_oil_capsules": {
+    "f0": 0.18,
+    "grade": "E",
+    "flags": [
+      "oxidation",
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "fat_source",
+      "high_heat_cooking",
+      "saute",
+      "baking"
+    ],
+    "emotional_tags": [
+      "cleansing"
+    ]
+  },
+  "peanut": {
+    "f0": 0.28,
+    "grade": "E",
+    "flags": [
+      "PUFA_high",
+      "allergen",
+      "aflatoxin_risk"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "almonds": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "PUFA",
+      "antinutrients"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "walnuts": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "cashews": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "hazelnuts": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "flaxseed": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "phytoestrogens",
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "chia_seed": {
+    "f0": 0.35,
+    "grade": "E",
+    "flags": [
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "sesame_seed": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "PUFA"
+    ],
+    "purpose_tags": [
+      "snack",
+      "fat_source",
+      "protein_source"
+    ],
+    "emotional_tags": [
+      "energizing",
+      "creative"
+    ]
+  },
+  "table_sugar": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "processed_sugar"
+    ],
+    "purpose_tags": [
+      "sweetener"
+    ],
+    "emotional_tags": [
+      "uplifting"
+    ]
+  },
+  "hfcs": {
+    "f0": 0.4,
+    "grade": "D",
+    "flags": [
+      "processed_sugar"
+    ],
+    "purpose_tags": [
+      "sweetener"
+    ],
+    "emotional_tags": [
+      "uplifting"
+    ]
+  },
+  "aspartame": {
+    "f0": 0.28,
+    "grade": "E",
+    "flags": [
+      "artificial_sweetener"
+    ],
+    "purpose_tags": [
+      "sweetener"
+    ],
+    "emotional_tags": [
+      "uplifting"
+    ]
+  },
+  "sucralose": {
+    "f0": 0.28,
+    "grade": "E",
+    "flags": [
+      "artificial_sweetener"
+    ],
+    "purpose_tags": [
+      "sweetener"
+    ],
+    "emotional_tags": [
+      "uplifting"
+    ]
+  },
+  "acesulfame_k": {
+    "f0": 0.28,
+    "grade": "E",
+    "flags": [
+      "artificial_sweetener"
+    ],
+    "purpose_tags": [
+      "sweetener"
+    ],
+    "emotional_tags": [
+      "uplifting"
+    ]
+  },
+  "emmental_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "edam_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "colby_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "monterey_jack_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "provolone_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "pecorino_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "gruyere_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "asiago_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "halloumi_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "feta_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "chevre_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "manchego_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "gorgonzola_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "blue_cheese_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "camembert_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "brie_cheese": {
+    "f0": 0.8,
+    "grade": "B",
+    "flags": [
+      "calcium",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "snack",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "nurturing",
+      "grounding"
+    ]
+  },
+  "pluot": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "mirabelle": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "blackcurrant": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "redcurrant": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "gooseberry": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "boysenberry": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "mulberry": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "jackfruit": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "longan": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "lychee": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "rambutan": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "soursop": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "starfruit": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "tamarind": {
+    "f0": 0.73,
+    "grade": "B",
+    "flags": [
+      "fruit"
+    ],
+    "purpose_tags": [
+      "snack",
+      "carb_source"
+    ],
+    "emotional_tags": [
+      "uplifting",
+      "energizing"
+    ]
+  },
+  "bok_choy": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "daikon": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "okra": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "parsley": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "celery": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "radish": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "turnip": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "rutabaga": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "artichoke": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "kohlrabi": {
+    "f0": 0.6,
+    "grade": "C",
+    "flags": [
+      "vegetable"
+    ],
+    "purpose_tags": [
+      "side"
+    ],
+    "emotional_tags": [
+      "cleansing",
+      "uplifting"
+    ]
+  },
+  "beef_ribeye": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_sirloin": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_tenderloin": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_brisket": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_short_rib": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_flank": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_round": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_chuck": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  },
+  "beef_shank": {
+    "f0": 0.9,
+    "grade": "A",
+    "flags": [
+      "heme_iron",
+      "protein"
+    ],
+    "purpose_tags": [
+      "protein_source",
+      "main_meal"
+    ],
+    "emotional_tags": [
+      "grounding",
+      "protective",
+      "focus"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+@import url("theme.css");
+
+body { font-family: var(--brand-font); margin:0; display:flex; flex-direction:column; background:var(--bg); color:var(--text); }
+header { background: var(--header-bg); display:flex; align-items:center; padding:0.5rem 1rem; box-shadow:0 2px 4px rgba(0,0,0,0.1); position: sticky; top:0; z-index:20; transition: all 0.3s ease; }
+header .logo { height:40px; margin-right:1rem; }
+header.compact { padding:0.2rem 0.5rem; backdrop-filter: blur(10px); background: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(0,0,0,0.1); }
+[data-theme='dark'] header.compact { background: rgba(30,30,30,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); }
+header.hide { transform: translateY(-100%); }
+#searchBox { margin-left:auto; padding:0.3rem; font-size:0.9rem; }
+#themeToggle, #printBtn, #pdfBtn, #sidebarToggle, #adminBtn { margin-left:0.5rem; }
+.container { display:flex; flex:1; }
+.sidebar { width:220px; background:var(--sidebar-bg); color:var(--sidebar-text); padding:1rem; border-right:1px solid #ddd; transition: left 0.3s ease; }
+.sidebar ul { list-style:none; padding:0; }
+.sidebar a { text-decoration:none; display:block; padding:0.25rem 0; color:inherit; }
+.sidebar a.active { font-weight:bold; color: var(--brand-primary); }
+.sidebar-footer { margin-top:2rem; padding-top:1rem; border-top:1px solid rgba(0,0,0,0.1); text-align:center; font-size:0.8rem; opacity:0.7; }
+.sidebar-footer img { height:30px; display:block; margin:0 auto 0.5rem; }
+main { flex:1; padding:2rem; }
+@media (max-width: 768px) {
+  .sidebar { position:fixed; top:0; left:-260px; height:100%; overflow-y:auto; z-index:10; }
+  .sidebar.open { left: 0; }
+  #sidebarToggle { display:inline-block; }
+  .container { flex-direction: column; }
+  main { padding:1rem; }
+}
+#sidebarToggle { display:none; background:none; border:none; font-size:1.5rem; cursor:pointer; }
+
+/* Print styles */
+@media print {
+  header, .sidebar, #searchBox, #themeToggle, #printBtn, #pdfBtn, #sidebarToggle, #adminBtn { display: none !important; }
+  body { background: #ffffff !important; color: #000000 !important; }
+  main { width: 100%; padding: 0; font-family: serif; font-size: 12pt; }
+  a:after { content: " (" attr(href) ")"; font-size: 10pt; }
+}

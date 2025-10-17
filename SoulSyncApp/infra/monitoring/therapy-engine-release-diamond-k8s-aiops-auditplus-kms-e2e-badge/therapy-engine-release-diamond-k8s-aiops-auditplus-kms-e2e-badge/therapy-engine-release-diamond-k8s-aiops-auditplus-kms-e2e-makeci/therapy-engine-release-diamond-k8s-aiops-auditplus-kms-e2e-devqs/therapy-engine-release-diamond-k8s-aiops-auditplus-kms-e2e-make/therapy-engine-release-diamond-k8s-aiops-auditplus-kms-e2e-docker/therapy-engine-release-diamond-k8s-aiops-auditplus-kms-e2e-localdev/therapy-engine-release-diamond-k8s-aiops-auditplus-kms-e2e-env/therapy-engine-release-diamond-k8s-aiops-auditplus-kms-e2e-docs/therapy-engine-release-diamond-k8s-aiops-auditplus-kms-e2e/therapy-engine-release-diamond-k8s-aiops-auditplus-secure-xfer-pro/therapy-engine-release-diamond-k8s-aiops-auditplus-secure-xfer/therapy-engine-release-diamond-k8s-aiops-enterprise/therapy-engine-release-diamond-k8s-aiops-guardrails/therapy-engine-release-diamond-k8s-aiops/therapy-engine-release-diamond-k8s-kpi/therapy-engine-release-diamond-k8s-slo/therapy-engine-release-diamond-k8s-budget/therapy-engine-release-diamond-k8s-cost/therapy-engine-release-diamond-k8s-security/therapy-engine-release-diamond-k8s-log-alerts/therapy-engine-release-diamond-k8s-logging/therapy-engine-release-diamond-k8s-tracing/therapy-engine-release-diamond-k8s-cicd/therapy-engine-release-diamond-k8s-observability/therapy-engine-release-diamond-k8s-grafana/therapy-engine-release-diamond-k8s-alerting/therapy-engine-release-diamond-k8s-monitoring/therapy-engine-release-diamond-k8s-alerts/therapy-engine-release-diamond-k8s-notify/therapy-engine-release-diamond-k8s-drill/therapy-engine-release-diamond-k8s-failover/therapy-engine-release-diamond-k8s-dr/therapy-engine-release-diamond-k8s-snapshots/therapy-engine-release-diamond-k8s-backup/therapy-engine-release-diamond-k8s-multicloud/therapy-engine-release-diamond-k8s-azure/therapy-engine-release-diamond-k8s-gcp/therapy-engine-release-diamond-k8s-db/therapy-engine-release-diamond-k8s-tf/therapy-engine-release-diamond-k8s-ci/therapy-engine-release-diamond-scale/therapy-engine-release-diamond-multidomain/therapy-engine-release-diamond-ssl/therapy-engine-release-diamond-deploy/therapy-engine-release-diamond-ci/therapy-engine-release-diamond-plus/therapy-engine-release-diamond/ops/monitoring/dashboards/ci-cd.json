@@ -1,0 +1,32 @@
+{
+  "title": "Therapy Engine - CI/CD",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Last Workflow Status",
+      "targets": [
+        {
+          "expr": "github_workflow_run_conclusion{repository=\"therapy-engine\"}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Workflow Duration",
+      "targets": [
+        {
+          "expr": "github_workflow_run_duration_seconds{repository=\"therapy-engine\"}"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Failed Workflows",
+      "targets": [
+        {
+          "expr": "github_workflow_run_conclusion{repository=\"therapy-engine\", conclusion=\"failure\"}"
+        }
+      ]
+    }
+  ]
+}

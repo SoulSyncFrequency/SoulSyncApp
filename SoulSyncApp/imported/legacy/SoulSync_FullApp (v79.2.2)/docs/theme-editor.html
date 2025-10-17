@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoulSync Theme Editor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    body { max-width: 980px; margin: 0 auto; padding: 1.5rem; font-family: 'Inter', sans-serif; }
+    .card { background: var(--bg); color: var(--text); border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    h1 { margin: 0 0 1rem 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.35rem 0.2rem; }
+    .row label { font-weight: 600; }
+    .actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1rem; }
+    button { padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; background: #fff; }
+    .primary { background: var(--brand-primary); color:#fff; border: none; }
+    .danger { background: #ffe5e5; border-color:#ffb3b3; }
+    .success { color: #0a7a2f; font-weight:600; display:none; }
+    .preview { margin-top:1rem; border:1px solid rgba(0,0,0,0.1); border-radius:12px; overflow:hidden; }
+    .preview .p-header { background: var(--header-bg); padding:0.6rem 1rem; display:flex; align-items:center; gap:0.5rem; }
+    .preview .p-header img { height:28px; }
+    .preview .p-sidebar { background: var(--sidebar-bg); color: var(--sidebar-text); width: 220px; padding:0.8rem; }
+    .preview .p-main { padding:1rem; }
+    .flex { display:flex; }
+    .grow { flex:1; }
+    .note { font-size:0.9rem; opacity:0.8; }
+    .logo-box { display:flex; align-items:center; gap:0.75rem; }
+    input[type="color"] { width: 52px; height: 32px; padding: 0; border: 1px solid #ccc; border-radius: 6px; }
+    select, input[type="file"] { padding: 0.35rem; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+    .hidden { display:none; }
+    .cols-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; align-items:center; }
+    .muted { opacity: 0.75; font-size: 0.9rem; }
+    .toolbar { display:flex; gap:0.5rem; align-items:center; }
+    .themes { margin-top:1rem; }
+    .theme-item { display:flex; align-items:center; gap:0.75rem; border:1px solid rgba(0,0,0,0.08); border-radius:10px; padding:0.5rem; margin-bottom:0.5rem; }
+    .theme-item img { width: 72px; height: 42px; object-fit: cover; border: 1px solid rgba(0,0,0,0.1); border-radius:6px; }
+    .theme-item .meta { flex: 1; }
+    .pill { background:#f0f0f0; padding:0.1rem 0.5rem; border-radius:999px; font-size:0.75rem; }
+    .toggle { display:inline-flex; border:1px solid #ddd; border-radius:999px; overflow:hidden; }
+    .toggle button { border:none; background:#fff; padding:0.25rem 0.6rem; }
+    .toggle button.active { background: var(--brand-primary); color:#fff; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>Theme Editor</h1>
+    <div class="toolbar">
+      <div class="toggle">
+        <button id="previewLight" class="active">Light</button>
+        <button id="previewDark">Dark</button>
+      </div>
+      <a href="/index.html" class="button">← Back to Docs</a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="grid">
+      <div>
+        <h3>🎨 Colors — Light</h3>
+        <div class="cols-2">
+          <label for="l_brand_primary">Brand primary</label><input id="l_brand_primary" type="color">
+          <label for="l_brand_accent">Brand accent</label><input id="l_brand_accent" type="color">
+          <label for="l_bg">Background</label><input id="l_bg" type="color">
+          <label for="l_text">Text</label><input id="l_text" type="color">
+          <label for="l_sidebar_bg">Sidebar bg</label><input id="l_sidebar_bg" type="color">
+          <label for="l_sidebar_text">Sidebar text</label><input id="l_sidebar_text" type="color">
+          <label for="l_header_bg">Header bg</label><input id="l_header_bg" type="color">
+        </div>
+        <h3 style="margin-top:1rem;">🌙 Colors — Dark</h3>
+        <div class="cols-2">
+          <label for="d_bg">Background</</label><input id="d_bg" type="color">
+          <label for="d_text">Text</label><input id="d_text" type="color">
+          <label for="d_sidebar_bg">Sidebar bg</label><input id="d_sidebar_bg" type="color">
+          <label for="d_sidebar_text">Sidebar text</label><input id="d_sidebar_text" type="color">
+          <label for="d_header_bg">Header bg</label><input id="d_header_bg" type="color">
+        </div>
+        <div class="row" style="margin-top:0.5rem;">
+          <label for="font">Font</label>
+          <select id="font">
+            <option value="'Inter', sans-serif">Inter</option>
+            <option value="'Roboto', sans-serif">Roboto</option>
+            <option value="'Lato', sans-serif">Lato</option>
+            <option value="'Open Sans', sans-serif">Open Sans</option>
+            <option value="'System-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">System</option>
+          </select>
+        </div>
+        <div class="row logo-box">
+          <label for="logo">Logo</label>
+          <input id="logo" type="file" accept=".png,.svg,image/png,image/svg+xml">
+          <button id="exportLogo">Export Logo</button>
+        </div>
+        <div class="actions">
+          <button class="primary" id="export">💾 Export theme.css</button>
+          <button id="duplicate">📁 Duplicate to New Theme</button>
+          <button id="importBtn">📥 Import theme.css</button><input id="importFile" type="file" accept=".css" class="hidden">
+          <button id="undo">⏪ Undo last import</button>
+          <button class="danger" id="reset">♻️ Reset to defaults</button>
+          <span id="saved" class="success">✅ Changes saved</span>
+        </div>
+        <div class="note">Export preuzima novu <code>theme.css</code> (s light + dark blokovima). Datoteka sadrži komentar s datumom exporta. Možeš je zamijeniti u <code>docs/assets/theme.css</code>.</div>
+        <div class="themes">
+          <h3>💾 Saved Themes</h3>
+          <div id="themesList"></div>
+        </div>
+      </div>
+      <div class="preview" id="previewBox">
+        <div class="p-header"><img id="previewLogo" src="/assets/logo.png" alt="logo"><strong>Header preview</strong></div>
+        <div class="flex">
+          <div class="p-sidebar">Sidebar preview<br><em>Links and active state</em></div>
+          <div class="p-main grow">Main content preview<br>Lorem ipsum dolor sit amet…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    if (new URLSearchParams(location.search).get('admin') !== '1') { location.replace('/index.html'); }
+  </script>
+  <script src="/assets/theme-manager.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+config:
+  github:
+    token: ${GITHUB_TOKEN}
+    repositories:
+      - owner: my-org
+        repo: therapy-engine
+
+serviceMonitor:
+  enabled: true
+  additionalLabels:
+    release: prometheus

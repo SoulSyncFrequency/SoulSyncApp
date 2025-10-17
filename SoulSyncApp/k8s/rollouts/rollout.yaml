@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: soulsync-app
+spec:
+  replicas: 3
+  strategy:
+    blueGreen:
+      activeService: soulsync-app-active
+      previewService: soulsync-app-preview
+      autoPromotionEnabled: false
+  selector:
+    matchLabels:
+      app: soulsync
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: soulsync
+        tier: app
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: app
+          image: ghcr.io/<your-org>/<your-repo>:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+            - name: FRONTEND_ORIGIN
+              value: "https://app.<your-domain>"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: DATABASE_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: JWT_SECRET
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: REFRESH_TOKEN_SECRET
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_HOST
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_USER
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_PASS
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: soulsync-secrets
+                  key: SMTP_FROM
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"

@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-proxy-le
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+
+  therapy-backend:
+    image: ghcr.io/YOUR_GITHUB_USER/therapy-engine:latest
+    restart: always
+    environment:
+      - VIRTUAL_HOST=api.mojadomena.com
+      - LETSENCRYPT_HOST=api.mojadomena.com
+      - LETSENCRYPT_EMAIL=admin@mojadomena.com
+    env_file:
+      - ../backend/.env
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+
+  therapy-frontend:
+    image: nginx:alpine
+    container_name: therapy-frontend
+    restart: always
+    volumes:
+      - ../frontend/dist:/usr/share/nginx/html:ro
+    environment:
+      - VIRTUAL_HOST=app.mojadomena.com
+      - LETSENCRYPT_HOST=app.mojadomena.com
+      - LETSENCRYPT_EMAIL=admin@mojadomena.com

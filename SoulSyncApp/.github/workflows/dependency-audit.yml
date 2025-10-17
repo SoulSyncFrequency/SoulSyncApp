@@ -1,0 +1,21 @@
+name: Dependency Audit
+on:
+  schedule: [{ cron: '0 3 * * 1' }]
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps
+        run: npm ci --workspace=backend
+      - name: Run npm audit (high and critical)
+        run: npm audit --workspace=backend --audit-level=high
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true

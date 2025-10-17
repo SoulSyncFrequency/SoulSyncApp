@@ -1,0 +1,30 @@
+name: Runbooks Build & Deploy
+on: { workflow_dispatch: {} }
+jobs:
+  build-runbooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Build & Push runbook collector
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}-runbook-collector:latest
+          docker build -t "$IMAGE" ops/runbooks/collector
+          docker push "$IMAGE"
+      - name: Build & Push runbook webhook
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}-runbook-webhook:latest
+          docker build -t "$IMAGE" ops/runbooks/webhook
+          docker push "$IMAGE"
+      - name: Build & Push runbook remediator
+        run: |
+          IMAGE=ghcr.io/${{ github.repository }}-runbook-remediator:latest
+          docker build -t "$IMAGE" ops/runbooks/remediator
+          docker push "$IMAGE"
+      - name: Set up kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+      - name: Deploy runbooks stack
+        run: |
+          sed -e "s#ghcr.io/REPLACE_WITH_OWNER/therapy-runbook-collector:latest#ghcr.io/${{ github.repository }}-runbook-collector:latest#g"               -e "s#ghcr.io/REPLACE_WITH_OWNER/therapy-runbook-webhook:latest#ghcr.io/${{ github.repository }}-runbook-webhook:latest#g"               -e "s#ghcr.io/REPLACE_WITH_OWNER/therapy-runbook-remediator:latest#ghcr.io/${{ github.repository }}-runbook-remediator:latest#g"               ops/runbooks/runbooks.yaml | kubectl apply -f -

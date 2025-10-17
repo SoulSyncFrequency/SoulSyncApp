@@ -1,0 +1,26 @@
+name: Lint Check
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+      - name: Install deps
+        run: npm ci --workspace=backend
+      - name: ESLint (if present)
+        run: npm run lint --workspace=backend --if-present || true
+      - name: Prettier check
+      - name: Strict lint on style label
+        if: contains(github.event.pull_request.labels.*.name, 'style')
+        run: npm run lint --workspace=backend --if-present (if configured)
+        run: npx prettier -c . || true

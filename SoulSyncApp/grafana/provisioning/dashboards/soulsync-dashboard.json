@@ -1,0 +1,19 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "SoulSync Overview",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "HTTP Requests Rate",
+        "targets": [{ "expr": "rate(http_requests_total[1m])" }]
+      },
+      {
+        "type": "graph",
+        "title": "Error Rate",
+        "targets": [{ "expr": "rate(http_requests_total{status=~\"5..\"}[1m])" }]
+      }
+    ]
+  },
+  "overwrite": true
+}

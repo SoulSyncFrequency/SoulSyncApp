@@ -1,0 +1,32 @@
+{
+  "title": "Perf Gate Overview",
+  "panels": [
+    {
+      "title": "Login Scenario p95",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "k6_http_req_duration_p95{scenario='login'}"
+        }
+      ]
+    },
+    {
+      "title": "Therapy Scenario p95",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "k6_http_req_duration_p95{scenario='therapy'}"
+        }
+      ]
+    },
+    {
+      "title": "Nutrition Scenario p95",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "k6_http_req_duration_p95{scenario='nutrition'}"
+        }
+      ]
+    }
+  ]
+}

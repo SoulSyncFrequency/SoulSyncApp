@@ -1,0 +1,25 @@
+{
+  "title": "Runbooks Audit Log",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "table",
+      "title": "Audit Events (last 500)",
+      "targets": [
+        {
+          "rawSql": "SELECT ts, source, app_label, namespace, metric, action, reasons::text, details::text FROM runbooks_audit ORDER BY ts DESC LIMIT 500;",
+          "format": "table",
+          "datasource": {
+            "type": "postgres",
+            "uid": "aiopsdb"
+          }
+        }
+      ],
+      "options": {
+        "showHeader": true
+      }
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}

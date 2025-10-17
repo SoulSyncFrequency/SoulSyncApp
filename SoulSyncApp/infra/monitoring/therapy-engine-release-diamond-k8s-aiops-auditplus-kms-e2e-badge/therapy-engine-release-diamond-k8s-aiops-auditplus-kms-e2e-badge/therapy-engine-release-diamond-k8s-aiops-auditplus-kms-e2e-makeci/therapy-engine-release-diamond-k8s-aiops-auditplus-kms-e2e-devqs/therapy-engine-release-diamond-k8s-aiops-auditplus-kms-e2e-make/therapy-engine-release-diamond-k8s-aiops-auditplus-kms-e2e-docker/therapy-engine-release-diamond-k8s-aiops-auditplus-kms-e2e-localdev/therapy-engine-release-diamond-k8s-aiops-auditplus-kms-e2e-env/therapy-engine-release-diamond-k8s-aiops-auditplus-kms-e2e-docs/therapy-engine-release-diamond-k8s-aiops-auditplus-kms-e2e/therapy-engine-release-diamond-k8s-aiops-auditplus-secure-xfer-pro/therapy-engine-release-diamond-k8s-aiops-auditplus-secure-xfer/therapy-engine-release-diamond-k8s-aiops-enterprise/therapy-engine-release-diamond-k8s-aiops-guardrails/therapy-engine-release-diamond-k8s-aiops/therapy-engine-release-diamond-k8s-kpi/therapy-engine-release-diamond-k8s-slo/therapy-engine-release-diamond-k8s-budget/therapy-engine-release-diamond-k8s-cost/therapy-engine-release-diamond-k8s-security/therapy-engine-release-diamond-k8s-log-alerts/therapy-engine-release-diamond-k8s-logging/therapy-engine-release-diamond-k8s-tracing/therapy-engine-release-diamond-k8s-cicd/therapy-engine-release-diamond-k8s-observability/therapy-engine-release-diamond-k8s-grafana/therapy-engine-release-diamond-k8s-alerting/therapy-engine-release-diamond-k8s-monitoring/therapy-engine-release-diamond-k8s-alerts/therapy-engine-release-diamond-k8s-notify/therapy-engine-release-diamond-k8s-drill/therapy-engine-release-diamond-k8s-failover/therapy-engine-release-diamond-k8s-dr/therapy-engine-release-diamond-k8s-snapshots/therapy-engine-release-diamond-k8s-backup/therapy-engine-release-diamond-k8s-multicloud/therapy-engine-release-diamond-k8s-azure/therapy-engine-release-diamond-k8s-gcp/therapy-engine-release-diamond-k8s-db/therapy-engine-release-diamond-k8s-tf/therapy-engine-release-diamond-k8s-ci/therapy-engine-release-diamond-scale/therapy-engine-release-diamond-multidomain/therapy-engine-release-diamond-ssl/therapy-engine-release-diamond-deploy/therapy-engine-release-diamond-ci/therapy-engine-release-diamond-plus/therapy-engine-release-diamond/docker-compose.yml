@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: audit-app
+    env_file: .env
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: >
+      sh -c "
+        pip install -r requirements.txt &&
+        python ops/runbooks/export_audit.py
+      "
+    depends_on:
+      - db
+      - sftp
+
+  db:
+    image: postgres:15
+    container_name: audit-db
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: audit
+      POSTGRES_DB: audit
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  sftp:
+    image: atmoz/sftp
+    container_name: audit-sftp
+    ports:
+      - "2222:22"
+    volumes:
+      - ./sftp:/home/test/upload
+    command: test:pass:1001
+
+volumes:
+  db-data:

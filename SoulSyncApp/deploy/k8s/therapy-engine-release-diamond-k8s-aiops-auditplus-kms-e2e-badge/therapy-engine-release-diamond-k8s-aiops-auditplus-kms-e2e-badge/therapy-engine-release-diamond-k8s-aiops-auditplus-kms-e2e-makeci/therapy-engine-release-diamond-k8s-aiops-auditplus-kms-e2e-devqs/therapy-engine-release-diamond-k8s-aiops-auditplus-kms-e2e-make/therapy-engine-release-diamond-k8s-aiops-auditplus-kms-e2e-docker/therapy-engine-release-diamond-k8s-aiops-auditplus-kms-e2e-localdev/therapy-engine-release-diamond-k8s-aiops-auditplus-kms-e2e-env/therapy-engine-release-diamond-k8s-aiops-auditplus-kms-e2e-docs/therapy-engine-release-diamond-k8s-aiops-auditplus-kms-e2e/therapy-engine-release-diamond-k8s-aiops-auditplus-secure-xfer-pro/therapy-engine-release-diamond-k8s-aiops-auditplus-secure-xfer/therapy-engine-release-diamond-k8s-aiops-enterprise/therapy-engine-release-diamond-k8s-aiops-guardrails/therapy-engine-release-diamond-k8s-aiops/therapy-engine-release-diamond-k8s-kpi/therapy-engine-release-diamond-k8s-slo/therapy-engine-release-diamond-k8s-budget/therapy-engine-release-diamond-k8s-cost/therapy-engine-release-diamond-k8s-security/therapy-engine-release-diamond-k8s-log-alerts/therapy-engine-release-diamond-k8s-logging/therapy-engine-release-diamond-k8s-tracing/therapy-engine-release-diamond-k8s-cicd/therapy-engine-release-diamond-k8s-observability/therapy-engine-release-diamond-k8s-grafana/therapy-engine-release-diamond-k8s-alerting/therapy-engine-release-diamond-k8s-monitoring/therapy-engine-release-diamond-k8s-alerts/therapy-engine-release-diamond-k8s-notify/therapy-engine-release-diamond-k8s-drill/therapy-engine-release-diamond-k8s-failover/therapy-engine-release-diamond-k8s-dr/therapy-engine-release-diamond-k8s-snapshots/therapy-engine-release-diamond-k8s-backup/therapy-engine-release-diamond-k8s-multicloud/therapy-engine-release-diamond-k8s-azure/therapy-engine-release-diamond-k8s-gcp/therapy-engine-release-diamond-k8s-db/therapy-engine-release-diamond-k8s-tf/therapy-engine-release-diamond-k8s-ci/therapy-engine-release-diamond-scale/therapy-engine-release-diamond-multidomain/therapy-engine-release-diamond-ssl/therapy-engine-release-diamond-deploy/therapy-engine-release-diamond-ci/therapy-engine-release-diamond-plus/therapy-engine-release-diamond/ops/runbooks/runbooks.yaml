@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: runbooks
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: runbooks-sa
+  namespace: runbooks
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: runbooks-role
+  namespace: runbooks
+rules:
+  - apiGroups: [""]
+    resources: ["pods","pods/log","events"]
+    verbs: ["get","list","watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get","list","watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create","get","list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: runbooks-clusterrole
+rules:
+  - apiGroups: [""]
+    resources: ["pods","pods/log","events"]
+    verbs: ["get","list","watch","delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get","list","watch","patch","update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments/scale"]
+    verbs: ["get","patch","update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: runbooks-clusterrole-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: runbooks-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: runbooks-sa
+    namespace: runbooks
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runbooks-webhook
+  namespace: runbooks
+  labels:
+    app: runbooks-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runbooks-webhook
+  template:
+    metadata:
+      labels:
+        app: runbooks-webhook
+    spec:
+      serviceAccountName: runbooks-sa
+      containers:
+        - name: webhook
+          image: ghcr.io/REPLACE_WITH_OWNER/therapy-runbook-webhook:latest
+          imagePullPolicy: Always
+          env:
+            - name: RUNBOOKS_NAMESPACE
+              value: "runbooks"
+            - name: RUNBOOK_JOB_TTL
+              value: "3600"
+            - name: RUNBOOK_COLLECTOR_IMAGE
+              value: "ghcr.io/REPLACE_WITH_OWNER/therapy-runbook-collector:latest"
+            - name: RUNBOOK_REMEDIATOR_IMAGE
+              value: "ghcr.io/REPLACE_WITH_OWNER/therapy-runbook-remediator:latest"
+            - name: RUNBOOK_AUTOFIX_ENABLED
+              value: "false"
+            - name: RUNBOOK_AUTOFIX_REQUIRE_APPROVAL
+              value: "false"
+            - name: RUNBOOK_APPROVAL_SECRET
+              value: "changeme"
+            - name: RUNBOOK_CIRCUIT_MAX_HOURLY
+              value: "3"
+            - name: RUNBOOK_CIRCUIT_MAX_DAILY
+              value: "10"
+            - name: RUNBOOKS_SLACK_WEBHOOK
+              value: ""
+            - name: RUNBOOK_REDIS_URL
+              value: ""
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: AIOPS_DATABASE_URL
+              value: "postgres://user:pass@host:5432/dbname"
+            - name: SLACK_BOT_TOKEN
+              value: ""
+            - name: SLACK_CHANNEL
+              value: ""
+            - name: SLACK_SIGNING_SECRET
+              value: ""
+            - name: RUNBOOK_POLICY_CM
+              value: "runbooks-policy"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: runbooks-webhook
+  namespace: runbooks
+  labels:
+    app: runbooks-webhook
+spec:
+  selector:
+    app: runbooks-webhook
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: runbooks-aws
+  namespace: runbooks
+type: Opaque
+stringData:
+  AWS_REGION: "eu-central-1"
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  AWS_SESSION_TOKEN: ""
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: runbooks-policy
+  namespace: runbooks
+data:
+  default: "crashloop=restart_pods;success_rate:trend_break=rollout_restart"
+  "default.*": "success_rate:trend_break=rollout_restart"
+  "default.therapy-backend": "latency_p99:level_shift=scale_up:+1;success_rate:trend_break=rollout_restart"
+  "*.therapy-backend": "success_rate:trend_break=rollout_restart"

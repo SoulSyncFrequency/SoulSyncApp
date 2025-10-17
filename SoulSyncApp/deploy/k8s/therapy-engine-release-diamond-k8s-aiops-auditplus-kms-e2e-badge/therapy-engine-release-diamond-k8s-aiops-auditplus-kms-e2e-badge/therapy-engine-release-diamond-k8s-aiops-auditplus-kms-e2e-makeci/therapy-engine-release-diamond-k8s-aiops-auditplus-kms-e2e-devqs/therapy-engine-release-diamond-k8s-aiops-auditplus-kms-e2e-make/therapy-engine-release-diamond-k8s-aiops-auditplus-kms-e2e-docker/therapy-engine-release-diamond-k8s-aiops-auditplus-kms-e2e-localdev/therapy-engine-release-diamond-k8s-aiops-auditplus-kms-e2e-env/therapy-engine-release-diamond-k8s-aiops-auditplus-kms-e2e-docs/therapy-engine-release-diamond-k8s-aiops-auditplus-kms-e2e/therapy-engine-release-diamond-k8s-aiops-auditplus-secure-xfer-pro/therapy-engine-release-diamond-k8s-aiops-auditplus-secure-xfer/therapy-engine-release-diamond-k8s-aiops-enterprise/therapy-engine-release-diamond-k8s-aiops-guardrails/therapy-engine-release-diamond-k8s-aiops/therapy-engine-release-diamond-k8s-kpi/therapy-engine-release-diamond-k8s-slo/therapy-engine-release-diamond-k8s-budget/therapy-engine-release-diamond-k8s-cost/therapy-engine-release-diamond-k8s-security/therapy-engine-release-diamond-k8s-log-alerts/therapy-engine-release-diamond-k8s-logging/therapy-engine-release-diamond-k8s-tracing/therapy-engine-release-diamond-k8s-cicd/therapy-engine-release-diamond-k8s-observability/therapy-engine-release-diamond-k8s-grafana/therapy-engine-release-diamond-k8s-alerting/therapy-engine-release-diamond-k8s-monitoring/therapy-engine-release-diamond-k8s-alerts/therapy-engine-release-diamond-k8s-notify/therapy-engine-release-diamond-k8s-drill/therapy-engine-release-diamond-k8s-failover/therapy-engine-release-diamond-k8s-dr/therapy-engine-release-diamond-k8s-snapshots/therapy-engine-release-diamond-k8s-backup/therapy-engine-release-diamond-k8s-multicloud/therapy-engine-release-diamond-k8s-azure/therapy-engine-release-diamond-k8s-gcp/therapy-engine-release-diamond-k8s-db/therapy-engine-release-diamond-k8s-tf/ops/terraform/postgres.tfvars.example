@@ -1,0 +1,4 @@
+aws_region   = "eu-central-1"
+db_name      = "therapy"
+db_username  = "therapy_user"
+db_password  = "superSecretPass123"

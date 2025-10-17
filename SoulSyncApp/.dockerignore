@@ -1,0 +1,20 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+*.log
+
+# Build output
+frontend/dist
+backend/dist
+coverage
+
+# Git
+.git
+.gitignore
+
+# Local env
+.env
+.env.*
+ops/.env*

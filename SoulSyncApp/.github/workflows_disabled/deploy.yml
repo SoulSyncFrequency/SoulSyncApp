@@ -1,0 +1,40 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ secrets.RENDER_SERVICE_URL }}
+
+    steps:
+      - name: Skip real deploy on PR (create env record only)
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "PR event: samo kreiran deployment zapis."
+
+      - name: Trigger Render deploy (only on push to main)
+        if: ${{ github.event_name == 'push' }}
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Wait for healthcheck (only on push to main)
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          URL="${{ secrets.RENDER_HEALTHCHECK_URL }}"
+          echo "Čekam healthcheck na $URL ..."
+          for i in {1..60}; do
+            code=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
+            if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+              echo "✅ Healthy ($code)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "❌ Healthcheck failed (timeout)."
+          exit 1

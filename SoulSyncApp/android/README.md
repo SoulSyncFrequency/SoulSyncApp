@@ -1,0 +1,1 @@
+# Android platform (generate via `npx cap add android`)

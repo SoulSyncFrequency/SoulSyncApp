@@ -1,0 +1,3 @@
+#example	IGNORE	Reason
+10096	IGNORE	Ignore HttpOnly cookie flag in dev
+10054	IGNORE	Ignore missing X-Content-Type-Options in dev

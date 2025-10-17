@@ -1,0 +1,11 @@
+# Optimization Addendum
+- Strict CORS whitelist (FRONTEND_ORIGIN supports CSV)
+- CSP via helmet
+- GZIP compression
+- Global + login-specific rate limits
+- Prometheus /metrics
+- Liveness /healthz and Readiness /readyz
+- /version endpoint
+- Admin IP allowlist (ADMIN_IP_ALLOWLIST)
+- Hashed refresh tokens (sha256) + index
+- Extra migration: npm run migrate:harden

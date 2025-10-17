@@ -1,0 +1,20 @@
+name: openapi-lint
+on:
+  pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+    paths:
+      - 'backend/openapi.yaml'
+  push:
+    paths:
+      - 'backend/openapi.yaml'
+jobs:
+  spectral:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: stoplightio/spectral-action@v0
+        with:
+          file_glob: 'backend/openapi.yaml'

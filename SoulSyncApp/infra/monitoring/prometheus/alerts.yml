@@ -1,0 +1,29 @@
+groups:
+  - name: soulsync-alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 5xx rate detected"
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance is down"
+
+- alert: HighLatencyP95
+  expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.5
+  for: 5m
+  labels: { severity: warning }
+  annotations: { description: "p95 latency > 500ms for 5m" }
+
+- alert: Elevated5xx
+  expr: sum(rate(http_requests_total{status=~"5.."}[5m])) > 1
+  for: 5m
+  labels: { severity: warning }
+  annotations: { description: "5xx > 1 req/s for 5m" }

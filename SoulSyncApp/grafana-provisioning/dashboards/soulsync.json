@@ -1,0 +1,39 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Requests",
+      "targets": [
+        {
+          "expr": "app_requests_total"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Heap Used MB",
+      "targets": [
+        {
+          "expr": "app_heap_used_bytes/1024/1024"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Uptime Seconds",
+      "targets": [
+        {
+          "expr": "app_uptime_seconds"
+        }
+      ]
+    }
+  ],
+  "title": "SoulSync Metrics",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  }
+}

@@ -1,0 +1,15 @@
+github_token = "ghp_yourPAT"
+github_owner = "your-github-user"
+repo_name    = "therapy-engine"
+
+secrets = {
+  CR_PAT           = "ghp_yourContainerPAT"
+  SSH_HOST         = "123.45.67.89"
+  SSH_USER         = "ubuntu"
+  SSH_KEY          = "-----BEGIN OPENSSH PRIVATE KEY-----..."
+  KUBE_CONFIG_DATA = "LS0tLS1CRUdJTiBDT05GSUc..."
+  STRIPE_KEY       = "sk_test_..."
+  REVENUECAT_KEY   = "dummy"
+  JWT_SECRET       = "superSecretKey12345"
+  DATABASE_URL     = "postgres://user:pass@host:5432/db"
+}

@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  labels:
+    app.kubernetes.io/name: soulsync
+data:
+  alertmanager.yaml: |
+    global:
+      smtp_smarthost: '${SMTP_HOST}:587'
+      smtp_from: '${ALERT_EMAIL_FROM}'
+      smtp_auth_username: '${SMTP_USER}'
+      smtp_auth_password: '${SMTP_PASS}'
+    route:
+      group_by: ['alertname']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 2h
+      receiver: 'slack-warnings'
+      routes:
+        - match:
+            severity: critical
+          receiver: 'email+slack-critical'
+        - match:
+            severity: warning
+          receiver: 'slack-warnings'
+    receivers:
+      - name: 'email+slack-critical'
+        email_configs:
+          - to: '${ALERT_EMAIL_TO}'
+        slack_configs:
+          - api_url: '${SLACK_WEBHOOK_URL}'
+            send_resolved: true
+            channel: '#alerts-critical'
+            title: '{{ .CommonAnnotations.summary }}'
+            text: '{{ .CommonAnnotations.description }}'
+      - name: 'slack-warnings'
+        slack_configs:
+          - api_url: '${SLACK_WEBHOOK_URL}'
+            send_resolved: true
+            channel: '#alerts'
+            title: '{{ .CommonAnnotations.summary }}'
+            text: '{{ .CommonAnnotations.description }}'

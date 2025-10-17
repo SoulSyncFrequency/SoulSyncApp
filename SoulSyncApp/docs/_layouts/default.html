@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} - SoulSync Docs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <header>
+    <img src="/assets/logo.png" alt="SoulSync" class="logo">
+    <h1>SoulSync Runbooks</h1>
+    <input type="text" id="searchBox" placeholder="Search runbooks...">
+    <button id="themeToggle" title="Toggle dark mode">🌙</button>
+    <button id="printBtn" title="Print this runbook">🖨️</button>
+    <button id="pdfBtn" title="Export to PDF">💾</button>
+    <a id="adminBtn" href="/theme-editor.html?admin=1" title="Theme Editor" style="display:none;">⚙️</a>
+    <button id="sidebarToggle" title="Toggle sidebar">☰</button>
+  </header>
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Runbooks</h3>
+      <ul id="sidebar-list"></ul>
+      <div class="sidebar-footer">
+        <img src="/assets/logo.png">
+        <a href="https://soulsync.app" target="_blank">SoulSync Docs</a>
+      </div>
+    </aside>
+    <main>
+      {{ content }}
+    </main>
+  </div>
+  <script src="https://unpkg.com/lunr/lunr.js"></script>
+  <script src="/assets/search.js"></script>
+  <script src="/assets/theme.js"></script>
+  <script src="/assets/anchors.js"></script>
+  <script src="/assets/scrollspy.js"></script>
+  <script src="/assets/toc.js"></script>
+  <script src="/assets/responsive.js"></script>
+  <script src="/assets/compact-header.js"></script>
+  <script src="/assets/print.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="/assets/pdf.js"></script>
+  <script src="/assets/branding-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+{
+  "uid": "soulsync_main",
+  "title": "SoulSync \u2014 Observability (v101.2.20)",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "type": "gauge",
+      "title": "Webhook Fail Ratio %",
+      "targets": [
+        {
+          "expr": "100 * (sum(webhook_sent_total{status=\"fail\"}) / sum(webhook_sent_total))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 5
+      },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    {
+      "type": "gauge",
+      "title": "Email Fail Ratio %",
+      "targets": [
+        {
+          "expr": "100 * (sum(email_sent_total{status=\"fail\"}) / sum(email_sent_total))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 5
+      },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Webhook Sent (success/fail)",
+      "targets": [
+        {
+          "expr": "sum by(status) (increase(webhook_sent_total[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Email Sent (success/fail)",
+      "targets": [
+        {
+          "expr": "sum by(status) (increase(email_sent_total[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Notifications by type",
+      "targets": [
+        {
+          "expr": "sum by(type) (increase(notifications_total[5m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 16,
+        "h": 8
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  }
+}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SoulSync API Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" integrity="sha384-4nMLrU5cI7wpaUcw3P/4nV9r18Oa9tH6VgbmGJt1VxQpPrh1r0g63JXKx7i8u7bR" crossorigin="anonymous">
+</head>
+<body>
+<div id="swagger"></div>
+<script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" integrity="sha384-sri-placeholder" crossorigin="anonymous"></script>
+<script>
+  window.ui = SwaggerUIBundle({
+    url: '/api/openapi.yaml',
+    dom_id: '#swagger',
+    presets: [SwaggerUIBundle.presets.apis],
+    layout: "BaseLayout"
+  });
+</script>
+</body>
+</html>

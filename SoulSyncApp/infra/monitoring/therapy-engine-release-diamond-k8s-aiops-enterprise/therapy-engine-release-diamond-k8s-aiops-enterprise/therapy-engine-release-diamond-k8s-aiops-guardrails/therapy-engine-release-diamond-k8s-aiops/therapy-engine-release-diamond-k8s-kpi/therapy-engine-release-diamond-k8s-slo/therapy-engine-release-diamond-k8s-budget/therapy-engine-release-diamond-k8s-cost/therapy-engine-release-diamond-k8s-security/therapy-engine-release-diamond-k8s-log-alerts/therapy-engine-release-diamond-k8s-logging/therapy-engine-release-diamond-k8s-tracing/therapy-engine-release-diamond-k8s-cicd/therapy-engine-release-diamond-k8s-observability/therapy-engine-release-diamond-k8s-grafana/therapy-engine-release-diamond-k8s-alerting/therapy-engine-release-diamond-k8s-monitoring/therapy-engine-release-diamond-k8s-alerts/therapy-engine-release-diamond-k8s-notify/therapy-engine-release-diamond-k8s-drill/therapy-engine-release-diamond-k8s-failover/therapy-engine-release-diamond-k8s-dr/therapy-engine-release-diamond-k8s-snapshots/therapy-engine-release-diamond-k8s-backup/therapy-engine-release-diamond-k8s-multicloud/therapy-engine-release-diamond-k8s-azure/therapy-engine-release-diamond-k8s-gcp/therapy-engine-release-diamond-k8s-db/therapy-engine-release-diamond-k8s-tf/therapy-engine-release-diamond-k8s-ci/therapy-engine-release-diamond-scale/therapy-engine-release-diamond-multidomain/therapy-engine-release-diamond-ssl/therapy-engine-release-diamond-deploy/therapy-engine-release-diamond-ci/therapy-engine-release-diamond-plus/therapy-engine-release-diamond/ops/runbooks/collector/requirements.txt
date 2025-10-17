@@ -1,0 +1,5 @@
+kubernetes==29.0.0
+boto3==1.35.4
+requests==2.32.3
+google-cloud-storage==2.18.2
+azure-storage-blob==12.19.1

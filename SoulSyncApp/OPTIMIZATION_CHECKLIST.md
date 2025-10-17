@@ -1,0 +1,8 @@
+- Strict CSP (nonce), HSTS, CORS
+- Rate limiting & idempotency on billing
+- Entitlements via Postgres (fallback MEM)
+- Webhook uses raw body; signature verified
+- OpenAPI maintained
+- CI: lint, prettier, e2e, coverage, migrate step
+- Nginx cache headers for static assets
+- Sentry DSN set in prod

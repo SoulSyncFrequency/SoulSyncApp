@@ -1,0 +1,17 @@
+# --- AWS ---
+aws_snapshot_id   = "rds:therapy-db-snapshot-2025-09-01"
+aws_instance_class = "db.t3.micro"
+
+# --- GCP ---
+gcp_project         = "my-gcp-project-id"
+gcp_region          = "europe-west3"
+gcp_source_instance = "therapy-db"
+gcp_backup_id       = "1234567890"
+gcp_target_instance = "therapy-db-restore"
+
+# --- Azure ---
+azure_resource_group     = "therapy-rg"
+azure_location           = "westeurope"
+azure_source_server_name = "therapy-db"
+azure_target_server_name = "therapy-db-restore"
+azure_restore_time       = "2025-09-04T10:00:00Z"

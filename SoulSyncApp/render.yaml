@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: soulsync-backend
+    env: docker
+    plan: standard
+    branch: main
+    dockerfilePath: backend/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: REDIS_URL
+        sync: false
+      - key: POSTGRES_URL
+        sync: false
+      - key: ADMIN_TOKENS
+        sync: false
+      - key: METRICS_TOKEN
+        sync: false
+      - key: RUN_MIGRATIONS
+        value: "true"
+
+  preDeployCommand: npx prisma migrate deploy

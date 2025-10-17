@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: soulsync
+resources:
+  - alertmanager-config.yaml
+  - servicemonitor.yaml
+  - prometheusrule.yaml
+configMapGenerator:
+  - name: grafana-dashboard-soulsync
+    files:
+      - dashboard.json
+generatorOptions:
+  disableNameSuffixHash: true
+labels:
+  - includeSelectors: true
+    pairs:
+      grafana_dashboard: "1"

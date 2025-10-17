@@ -1,0 +1,88 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Process RSS (MB)",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes/1024/1024"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 6
+      }
+    },
+    {
+      "type": "stat",
+      "title": "DLQ Purged Total",
+      "targets": [
+        {
+          "expr": "dlq_purged_total"
+        }
+      ],
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 6
+      }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Requests",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[5m])"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Latency p95",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 16,
+        "h": 8
+      }
+    },
+    {
+      "type": "graph",
+      "title": "5xx Error Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m]))"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 16,
+        "h": 8
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "title": "SoulSync Overview",
+  "version": 1
+}

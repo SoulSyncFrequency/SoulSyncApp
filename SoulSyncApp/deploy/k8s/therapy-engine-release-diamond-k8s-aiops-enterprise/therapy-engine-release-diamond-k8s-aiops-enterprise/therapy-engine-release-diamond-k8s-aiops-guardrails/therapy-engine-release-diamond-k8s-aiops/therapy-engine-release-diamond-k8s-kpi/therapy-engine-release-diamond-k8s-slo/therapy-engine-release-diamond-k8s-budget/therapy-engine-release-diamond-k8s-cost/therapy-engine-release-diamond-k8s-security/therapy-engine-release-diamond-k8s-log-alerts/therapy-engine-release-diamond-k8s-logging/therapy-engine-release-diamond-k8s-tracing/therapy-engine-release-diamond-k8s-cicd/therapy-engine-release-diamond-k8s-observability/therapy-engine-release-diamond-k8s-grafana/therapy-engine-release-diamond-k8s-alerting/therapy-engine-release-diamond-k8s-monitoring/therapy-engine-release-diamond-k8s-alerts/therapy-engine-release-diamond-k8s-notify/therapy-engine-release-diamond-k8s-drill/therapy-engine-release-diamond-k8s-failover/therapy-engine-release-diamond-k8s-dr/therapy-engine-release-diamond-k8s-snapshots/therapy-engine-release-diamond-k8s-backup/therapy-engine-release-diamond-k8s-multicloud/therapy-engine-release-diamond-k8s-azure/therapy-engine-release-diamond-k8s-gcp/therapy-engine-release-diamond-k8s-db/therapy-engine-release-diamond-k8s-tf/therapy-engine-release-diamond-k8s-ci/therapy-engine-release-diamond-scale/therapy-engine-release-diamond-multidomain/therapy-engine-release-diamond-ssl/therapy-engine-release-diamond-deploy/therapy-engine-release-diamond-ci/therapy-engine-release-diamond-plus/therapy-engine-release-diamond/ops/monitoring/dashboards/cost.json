@@ -1,0 +1,32 @@
+{
+  "title": "Therapy Engine - Costs",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Estimated Cluster Cost (Monthly)",
+      "targets": [
+        {
+          "expr": "sum(kubecost_cluster_cost)"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Cost by Namespace",
+      "targets": [
+        {
+          "expr": "sum by (namespace) (kubecost_namespace_cost)"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Top 10 Deployments by Cost",
+      "targets": [
+        {
+          "expr": "topk(10, kubecost_deployment_cost)"
+        }
+      ]
+    }
+  ]
+}

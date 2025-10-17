@@ -1,0 +1,4 @@
+Historic ZIP keyword union: export, guardrail, legal, logs, route, sdk, verify
+Current keywords: export, guardrail, integrity, legal, logs, retry, route, sdk, verify
+Missing hinted features (before patch): 
+Added in this pass: frontend page Legal, frontend page SDK, ConfirmDialog component, Tooltip component, fetchWithRetry helper (auto-retry), frontend Logs page, wired routes /logs, /legal, /sdk, backend logs endpoints

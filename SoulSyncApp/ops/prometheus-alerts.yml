@@ -1,0 +1,13 @@
+groups:
+- name: soulsync.rules
+  rules:
+  - alert: WebhookHighFailRatio
+    expr: (sum(webhook_sent_total{status="fail"}) / clamp_min(sum(webhook_sent_total), 1)) > 0.5
+    for: 5m
+    labels: { severity: critical }
+    annotations: { description: "Webhook fail ratio > 50%" }
+  - alert: EmailHighFailRatio
+    expr: (sum(email_sent_total{status="fail"}) / clamp_min(sum(email_sent_total), 1)) > 0.5
+    for: 5m
+    labels: { severity: critical }
+    annotations: { description: "Email fail ratio > 50%" }

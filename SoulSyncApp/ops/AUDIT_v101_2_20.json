@@ -1,0 +1,23 @@
+{
+  "docker_compose": true,
+  "prometheus_yml": true,
+  "prometheus_alerts_yml": true,
+  "alertmanager_yml": true,
+  "grafana_datasource": true,
+  "grafana_dashboard": true,
+  "grafana_provision": true,
+  "g_alerts_loki": true,
+  "backend_integrity_endpoints": true,
+  "frontend_verify_page": true,
+  "frontend_integrity_page": true,
+  "nav_links": true,
+  "cli_scripts": [
+    true,
+    true,
+    true
+  ],
+  "signing_keys_placeholders": [
+    true,
+    true
+  ]
+}

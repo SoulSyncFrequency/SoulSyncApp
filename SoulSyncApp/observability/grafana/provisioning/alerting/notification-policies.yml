@@ -1,0 +1,12 @@
+apiVersion: 1
+policies:
+  - orgId: 1
+    receiver: default
+    group_by: ['alertname']
+    routes:
+      - receiver: default
+        object_matchers:
+          - ['severity', '==', 'critical']
+      - receiver: default
+        object_matchers:
+          - ['severity', '==', 'warning']

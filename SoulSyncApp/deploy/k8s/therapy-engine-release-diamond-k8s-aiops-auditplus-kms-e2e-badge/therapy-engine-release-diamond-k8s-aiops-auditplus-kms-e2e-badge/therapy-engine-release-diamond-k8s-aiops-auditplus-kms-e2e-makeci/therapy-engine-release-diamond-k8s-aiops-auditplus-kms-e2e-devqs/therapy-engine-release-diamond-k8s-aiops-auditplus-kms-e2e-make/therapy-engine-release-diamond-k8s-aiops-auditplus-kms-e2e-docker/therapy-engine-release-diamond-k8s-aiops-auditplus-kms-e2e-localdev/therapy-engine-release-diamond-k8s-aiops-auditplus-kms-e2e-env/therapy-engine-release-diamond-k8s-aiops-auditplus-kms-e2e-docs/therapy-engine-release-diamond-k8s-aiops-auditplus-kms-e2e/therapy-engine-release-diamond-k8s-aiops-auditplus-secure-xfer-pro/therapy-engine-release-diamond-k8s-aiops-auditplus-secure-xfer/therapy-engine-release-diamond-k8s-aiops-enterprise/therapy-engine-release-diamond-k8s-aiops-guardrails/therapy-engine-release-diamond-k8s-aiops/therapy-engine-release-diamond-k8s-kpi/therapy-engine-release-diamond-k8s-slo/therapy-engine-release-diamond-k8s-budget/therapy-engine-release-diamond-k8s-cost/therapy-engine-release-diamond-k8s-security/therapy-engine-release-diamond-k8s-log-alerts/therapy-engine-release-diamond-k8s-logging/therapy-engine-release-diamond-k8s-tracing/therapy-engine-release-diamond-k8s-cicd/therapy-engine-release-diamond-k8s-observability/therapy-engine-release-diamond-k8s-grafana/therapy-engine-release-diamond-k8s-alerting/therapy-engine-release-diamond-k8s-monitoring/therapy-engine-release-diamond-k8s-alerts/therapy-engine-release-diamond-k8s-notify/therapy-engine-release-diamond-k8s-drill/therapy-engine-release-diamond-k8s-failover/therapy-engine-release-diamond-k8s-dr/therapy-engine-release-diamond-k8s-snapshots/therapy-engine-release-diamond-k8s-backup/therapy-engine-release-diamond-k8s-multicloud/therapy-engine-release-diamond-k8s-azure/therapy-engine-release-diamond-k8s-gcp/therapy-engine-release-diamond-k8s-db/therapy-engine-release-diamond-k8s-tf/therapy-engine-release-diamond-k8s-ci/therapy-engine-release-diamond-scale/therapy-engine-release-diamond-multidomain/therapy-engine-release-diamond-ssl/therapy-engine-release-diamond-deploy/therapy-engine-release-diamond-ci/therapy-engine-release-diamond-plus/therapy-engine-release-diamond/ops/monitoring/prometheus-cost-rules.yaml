@@ -1,0 +1,12 @@
+groups:
+  - name: kubecost-alerts
+    interval: 1m
+    rules:
+      - alert: CostSpikeCluster
+        expr: sum(kubecost_cluster_cost) > 1000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Cluster monthly cost iznad praga"
+          description: "Procijenjeni mjesečni trošak clustera premašuje definiran prag (1000). Prilagodi prag u prometheus-cost-rules.yaml."

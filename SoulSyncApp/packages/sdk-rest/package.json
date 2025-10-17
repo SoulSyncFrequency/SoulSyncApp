@@ -1,0 +1,26 @@
+{
+  "name": "@soulsync/sdk-rest",
+  "version": "101.5.34",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "gen": "openapi -i ../../backend/openapi.yaml -o src --client axios --useOptions",
+    "build": "tsc -p tsconfig.json && node scripts/postbuild.cjs",
+    "prepublishOnly": "npm run gen && npm run build"
+  },
+  "dependencies": {
+    "axios": "^1.7.7"
+  },
+  "devDependencies": {
+    "openapi-typescript-codegen": "^0.29.0",
+    "typescript": "^5.6.2"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}
