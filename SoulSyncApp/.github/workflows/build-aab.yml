@@ -52,7 +52,7 @@ jobs:
       - name: Evaluate release condition
         id: check
         run: |
-          echo "commit_msg=$(echo '${{ toJson(github.event.commits.*.message) }}' | grep -i release || true)" >> $GITHUB_ENV
+          echo "commit_msg=$(git log -1 --pretty=%B | grep -i release || true)" >> $GITHUB_ENV
 
       - name: Skip if no release keyword
         if: env.commit_msg == ''
