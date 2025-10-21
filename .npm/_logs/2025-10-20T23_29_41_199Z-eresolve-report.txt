@@ -1,0 +1,29 @@
+'Log files:
+/data/data/com.termux/files/home/.npm/_logs/2025-10-20T23_29_41_199Z-debug-0.log
+
+# npm resolution error report
+
+While resolving: backend@1.0.0
+Found: vitest@1.6.1
+node_modules/vitest
+  dev vitest@"^1.5.0" from backend@1.0.0
+  backend
+    backend@1.0.0
+    node_modules/backend
+      workspace backend from the root project
+  peer vitest@"1.6.1" from @vitest/ui@1.6.1
+  node_modules/@vitest/ui
+    peerOptional @vitest/ui@"1.6.1" from vitest@1.6.1
+
+Could not resolve dependency:
+peer vitest@"3.2.4" from @vitest/coverage-v8@3.2.4
+node_modules/@vitest/coverage-v8
+  dev @vitest/coverage-v8@"*" from backend@1.0.0
+  backend
+    backend@1.0.0
+    node_modules/backend
+      workspace backend from the root project
+
+Fix the upstream dependency conflict, or retry
+this command with --force or --legacy-peer-deps
+to accept an incorrect (and potentially broken) dependency resolution.
