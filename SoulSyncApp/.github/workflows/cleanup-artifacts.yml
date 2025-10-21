@@ -1,0 +1,83 @@
+name: Cleanup Old Builds & Verified Releases
+
+on:
+  schedule:
+    - cron: '0 3 * * 0' # svake nedjelje u 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧭 Checkout repo
+        uses: actions/checkout@v4
+
+      # 🧹 1️⃣ Briši stare workflow artefakte
+      - name: 🧹 Delete old workflow artifacts
+        uses: geekyeggo/delete-artifact@v4
+        with:
+          age: 0
+          skip-tags: true
+          keep-since: 0
+          keep-minimum: 5
+
+      # 🗑️ 2️⃣ Briši stare releaseove i tagove
+      - name: 🗑️ Delete old releases and tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📦 Fetching all releases..."
+          RELEASES=$(gh release list --limit 100 --json tagName --jq '.[].tagName')
+          COUNT=$(echo "$RELEASES" | wc -l)
+          echo "Found $COUNT releases total"
+
+          if [ "$COUNT" -gt 5 ]; then
+            echo "Keeping the 5 newest releases..."
+            KEEP=$(echo "$RELEASES" | head -n 5)
+            DELETE=$(echo "$RELEASES" | tail -n +6)
+            for tag in $DELETE; do
+              echo "❌ Deleting old release: $tag"
+              gh release delete "$tag" -y || true
+              git push --delete origin "$tag" || true
+            done
+          else
+            echo "✅ Nothing to delete — total releases ≤ 5."
+          fi
+
+      # 🌿 3️⃣ Briši grane koje su već mergane u main
+      - name: 🌿 Delete merged branches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🌿 Checking merged branches..."
+          MERGED_BRANCHES=$(gh api repos/${{ github.repository }}/branches --paginate --jq '.[] | select(.protected==false) | .name' | grep -v '^main$')
+          for branch in $MERGED_BRANCHES; do
+            if git fetch origin "$branch" &>/dev/null; then
+              if git branch -r --merged origin/main | grep -q "origin/$branch"; then
+                echo "🗑️ Deleting merged branch: $branch"
+                git push origin --delete "$branch" || true
+              fi
+            fi
+          done
+          echo "✅ Branch cleanup complete."
+
+  verify:
+    needs: cleanup
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧭 Checkout repo
+        uses: actions/checkout@v4
+
+      # 🏷️ 4️⃣ Označi zadnji release kao verified
+      - name: 🏷️ Mark latest release as ✅ Verified Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Finding latest release..."
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[].tagName')
+          if [ -z "$LATEST_TAG" ]; then
+            echo "⚠️ No release found, skipping verification."
+            exit 0
+          fi
+          echo "✅ Marking $LATEST_TAG as Verified Build..."
+          gh release edit "$LATEST_TAG" --notes "✅ Verified Build – Automatically validated and cleaned on $(date '+%Y-%m-%d %H:%M:%S UTC')."
