@@ -1,5 +1,14 @@
 name: 🤖 Android Build + Auto Repair (v6.0)
-
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Manual trigger reason (optional)"
+        required: false
+        default: "Manual build trigger"
 on:
   push:
     branches: [ main ]
