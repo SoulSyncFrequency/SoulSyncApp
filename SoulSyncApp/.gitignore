@@ -10,3 +10,23 @@ logs/
 *.gz
 
 .env.alert
+# Termux/Android lokalno
+storage/
+.ssh/
+.npm/
+.npmrc
+.npm/_cacache/
+.npm/_logs/
+.bashrc
+.lesshst
+
+# Build artefakti
+dist/
+build/
+android/app/build/
+*.aab
+*.apk
+
+# Editor/OS
+.DS_Store
+*.log
