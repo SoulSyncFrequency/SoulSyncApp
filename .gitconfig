@@ -3,3 +3,9 @@
 	email = soulsyncfrequency@gmail.com
 [safe]
 	directory = /storage/emulated/0/Download/soulsync
+[credential "https://github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
