@@ -43,6 +43,10 @@ if [[ "$1" == "release" || "$1" == "tag" ]]; then
   next="v$((num+1))"
 
   git tag "$next"
+# Ako tag već postoji, automatski ga briše i ponovno stvara
+git push origin ":refs/tags/$next" 2>/dev/null || true
+git tag -d "$next" 2>/dev/null || true
+git tag "$next"
   git push origin "$next"
 
   echo "📦 Creating GitHub release for $next..."
