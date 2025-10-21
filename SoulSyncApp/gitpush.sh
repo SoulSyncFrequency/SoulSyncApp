@@ -1,16 +1,15 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting intelligent Git push + auto-release sequence..."
+echo "🚀 Starting self-healing Git push + CI release pipeline..."
 
-# Detect active branch
 branch=$(git rev-parse --abbrev-ref HEAD)
 echo "🌐 Active branch: $branch"
 
-# Stage all changes
+# Stage changes
 git add -A
 
-# Commit only if there are changes
+# Commit if needed
 if ! git diff --cached --quiet; then
   msg="${1:-release}"
   git commit -m "$msg"
@@ -18,49 +17,49 @@ else
   echo "✅ No new changes to commit."
 fi
 
-# Verify SSH connection
+# SSH health check & fix
 if ! ssh -T git@github.com 2>/dev/null | grep -q "successfully authenticated"; then
-  echo "🔑 SSH connection not verified. Trying to auto-fix..."
+  echo "🔑 SSH not verified — auto-repairing..."
   eval "$(ssh-agent -s)"
   ssh-add ~/.ssh/id_ed25519 2>/dev/null || true
 fi
 
-# Push main branch
+# Push main
 git push origin "$branch"
-echo "✅ Push successful!"
+echo "✅ Branch pushed successfully!"
 
-# Auto-tagging logic
-echo "🏷️  Auto-tagging enabled — calculating next version..."
+# Tag logic
+echo "🏷️  Calculating next semantic version..."
 last=$(git describe --tags --abbrev=0 2>/dev/null || echo "v400")
 num=$(echo "$last" | tr -dc '0-9')
 [ -z "$num" ] && num=400
 next="v$((num+1))"
 
-# Delete tag if already exists
 git push origin ":refs/tags/$next" 2>/dev/null || true
 git tag -d "$next" 2>/dev/null || true
-
-# Create and push new tag
 git tag "$next"
 git push origin "$next"
-echo "📦 Created GitHub tag $next"
+echo "📦 Created and pushed tag: $next"
 
-# Create GitHub release (if gh CLI exists)
-if ! command -v gh &>/dev/null; then
-  echo "⚠️  GitHub CLI (gh) not found — skipping release upload."
-else
-  if ls android/app/build/outputs/bundle/release/*.aab >/dev/null 2>&1; then
-    gh release create "$next" android/app/build/outputs/bundle/release/*.aab \
-      --notes "Automated AAB build and release ($next)"
-  else
-    echo "⚠️  Release file not found, skipping upload."
-  fi
+# Local prebuild (optional)
+if [ -d "android" ] && [ -f "android/gradlew" ]; then
+  echo "🏗️ Local Gradle preflight (optional)..."
+  cd android && ./gradlew clean >/dev/null 2>&1 || true
+  cd ..
 fi
 
-# Clean npm cache (optional)
+# Trigger GitHub workflow (if GH CLI exists)
+if command -v gh &>/dev/null; then
+  echo "🛰️  Triggering remote GitHub workflow build-aab.yml..."
+  gh workflow run build-aab.yml -r "$branch" || echo "⚙️  Workflow will auto-trigger via tag."
+else
+  echo "⚙️  GitHub CLI not found — relying on auto-trigger via tag push."
+fi
+
+# Cleanup & optimization
 if [ -d "$HOME/.npm/_cacache" ]; then
-  echo "🧹 Cleaning local npm cache >50MB (if any)..."
+  echo "🧹 Cleaning npm cache..."
   npm cache clean --force >/dev/null 2>&1 || true
 fi
 
-echo "🎯 Done — repository is fully synced and optimized!"
+echo "🎯 Done — self-healing push + release pipeline v4.0 completed for $next."
