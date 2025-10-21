@@ -49,10 +49,36 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Evaluate release condition
-        id: check
+      - name: Skip if no release keyword
+        if: env.commit_msg == ''
+        run: echo "🟡 Skipping release – commit not marked as release."
+
+      - name: Download AAB artifact
+        if: env.commit_msg != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: SoulSyncApp-AAB
+          path: release/
+
+      - name: Auto-tag bump
+        if: env.commit_msg != ''
+        id: tag
         run: |
-          echo "commit_msg=$(git log -1 --pretty=%B | grep -i release || true)" >> $GITHUB_ENV
+          latest=$(git describe --tags --abbrev=0 || echo "v0")
+          num=${latest#v}
+          next="v$((num + 1))"
+          echo "next_tag=$next" >> $GITHUB_ENV
+          echo "Next tag: $next"
+
+      - name: Create GitHub Release
+        if: env.commit_msg != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.next_tag }}
+          name: "SoulSyncApp ${{ env.next_tag }}"
+          files: release/*.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Skip if no release keyword
         if: env.commit_msg == ''
