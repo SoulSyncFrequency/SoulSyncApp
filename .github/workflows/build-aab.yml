@@ -1,159 +1,81 @@
-name: Android Build AAB
+name: Android Build + Auto Release v4.0
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
-
-concurrency:
-  group: android-aab-${{ github.ref }}
-  cancel-in-progress: true
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
 
 jobs:
   build:
+    name: 🏗️ Build + Release AAB
     runs-on: ubuntu-latest
-    timeout-minutes: 45
 
     steps:
-      # --- 1. Checkout repo ---
-      - name: Checkout repository
+      - name: 🧠 Checkout code
         uses: actions/checkout@v4
-
-      # --- 2. Detect project structure ---
-      - name: Detect project structure
-        id: detect
-        run: |
-          echo "HAS_PACKAGE_JSON=$( [ -f package.json ] && echo true || echo false )" >> $GITHUB_ENV
-          echo "HAS_GRADLE=$( [ -d android ] && echo true || echo false )" >> $GITHUB_ENV
-          echo "Detected: package.json=$HAS_PACKAGE_JSON, android=$HAS_GRADLE"
-
-      # --- 3. Install Node.js (no cache first) ---
-      - name: Setup Node.js (bootstrap)
-        if: env.HAS_PACKAGE_JSON == 'true'
-        uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: false
+          fetch-depth: 0
 
-      # --- 4. Self-heal lockfile ---
-      - name: Self-heal npm/yarn/pnpm lockfile
-        if: env.HAS_PACKAGE_JSON == 'true'
-        run: |
-          if [ -f package.json ]; then
-            if [ ! -f package-lock.json ] && [ ! -f yarn.lock ] && [ ! -f pnpm-lock.yaml ]; then
-              echo "⚙️ No lockfile found — generating package-lock.json..."
-              npm install --package-lock-only --legacy-peer-deps || true
-            fi
-          fi
-
-      # --- 5. Re-enable Node.js with cache ---
-      - name: Setup Node.js (cached)
-        if: env.HAS_PACKAGE_JSON == 'true'
+      - name: 🧩 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      # --- 6. Install dependencies (self-healing) ---
-      - name: Install dependencies safely
-        if: env.HAS_PACKAGE_JSON == 'true'
-        run: |
-          echo "🧩 Installing dependencies..."
-          npm ci --legacy-peer-deps || npm install --legacy-peer-deps || echo "⚠️ Dependency install fallback successful."
-
-      # --- 7. Optional web build (if build script exists) ---
-      - name: Build web (Vite/React)
-        if: env.HAS_PACKAGE_JSON == 'true'
-        run: |
-          if jq -er '.scripts.build' package.json >/dev/null 2>&1; then
-            echo "🏗️ Running npm run build..."
-            npm run build || echo "⚠️ Web build skipped (non-critical)"
-          else
-            echo "ℹ️ No build script found — skipping web build"
-          fi
-
-      # --- 8. Install Capacitor CLI (if present) ---
-      - name: Install Capacitor CLI
-        if: env.HAS_GRADLE == 'true'
-        run: npm install -g @capacitor/cli || true
-
-      - name: Sync Capacitor Android
-        if: env.HAS_GRADLE == 'true'
-        run: |
-          npx cap sync android || echo "ℹ️ Capacitor sync skipped"
-
-      # --- 9. Setup Java + Gradle cache ---
-      - name: Setup Java 17
-        if: env.HAS_GRADLE == 'true'
+      - name: ☕ Setup Java + Gradle
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Cache Gradle
-        if: env.HAS_GRADLE == 'true'
-        uses: actions/cache@v4
+      - name: ⚙️ Gradle cache
+        uses: gradle/actions/setup-gradle@v3
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
+          cache-read-only: false
 
-      # --- 10. Ensure gradlew + bump versionCode ---
-      - name: Prepare Gradle & bump versionCode
-        if: env.HAS_GRADLE == 'true'
+      - name: 📦 Install dependencies
+        run: |
+          npm ci || npm install
+
+      - name: 🏗️ Build Android App Bundle (.aab)
         run: |
           cd android
-          chmod +x gradlew || true
-          FILE="app/build.gradle"
-          ALT="app/build.gradle.kts"
-          if [ -f "$FILE" ]; then
-            VC=$(grep -E 'versionCode ' $FILE | awk '{print $2}' | tr -d '\r')
-            if [ -z "$VC" ]; then VC=1; fi
-            NEW=$((VC+1))
-            sed -i "s/versionCode .*/versionCode ${NEW}/" $FILE
-            echo "✅ versionCode bumped to ${NEW}"
-          elif [ -f "$ALT" ]; then
-            VC=$(grep -E 'versionCode\s*=\s*[0-9]+' $ALT | sed -E 's/.*=\s*([0-9]+).*/\1/')
-            NEW=$((VC+1))
-            sed -i -E "s/versionCode\s*=\s*[0-9]+/versionCode = ${NEW}/" $ALT
-            echo "✅ versionCode bumped to ${NEW}"
+          ./gradlew clean bundleRelease
+          cd ..
+
+      - name: ✅ Verify AAB artifact
+        run: |
+          if [ ! -f android/app/build/outputs/bundle/release/app-release.aab ]; then
+            echo "❌ Build failed: .aab not found!"
+            exit 1
           fi
+          echo "✅ Build artifact verified."
 
-      # --- 11. Build AAB (auto fallback) ---
-      - name: Build AAB
-        if: env.HAS_GRADLE == 'true'
-        run: |
-          cd android
-          ./gradlew --no-daemon --stacktrace bundleRelease || ./gradlew assembleRelease || echo "⚠️ Build skipped"
-
-      # --- 12. Upload AAB artifact ---
-      - name: Upload AAB artifact
-        if: env.HAS_GRADLE == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: android/app/build/outputs/bundle/release/*.aab
-          retention-days: 30
-          if-no-files-found: ignore
-
-      # --- 13. Auto tag + release if message contains "release" ---
-      - name: Auto tag + release
-        if: contains(github.event.head_commit.message, 'release')
+      - name: 🚀 Upload to GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "SoulSyncFrequency"
-          git config user.email "soulsyncfrequency@gmail.com"
-          last=$(git describe --tags --abbrev=0 2>/dev/null || echo "v400")
-          num=${last//[!0-9]/}
-          [ -z "$num" ] && num=400
-          next="v$((num+1))"
-          git tag "$next"
-          git push origin "$next"
-          gh release create "$next" android/app/build/outputs/bundle/release/*.aab --notes "Automated AAB build and release ($next)"
-          echo "🚀 Created release $next"
+          tag="${GITHUB_REF_NAME}"
+          echo "📦 Uploading AAB for $tag..."
+          gh release create "$tag" android/app/build/outputs/bundle/release/*.aab \
+            --notes "Automated AAB build + release ($tag)" || echo "⚠️ Release already exists."
+
+      - name: 🧹 Clean up cache & temp files
+        run: |
+          echo "🧹 Cleaning Gradle & npm cache..."
+          rm -rf ~/.gradle/caches || true
+          npm cache clean --force || true
+
+      - name: 🕊️ Rollback if failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "⚠️ Build failed — performing safe rollback..."
+          tag="${GITHUB_REF_NAME}"
+          gh release delete "$tag" -y || true
+          git push origin ":refs/tags/$tag" || true
+          echo "🛑 Rollback complete for $tag."
