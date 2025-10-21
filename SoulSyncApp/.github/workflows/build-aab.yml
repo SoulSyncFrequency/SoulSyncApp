@@ -1,5 +1,9 @@
 name: 🤖 Android Build + Auto Repair (v6.0)
 on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main  on:
   push:
     branches:
       - main
