@@ -1,3 +1,0 @@
-git add .github/workflows/build-aab.yml
-git commit -m "ci: full auto-healing pipeline v5.0"
-git push origin main
