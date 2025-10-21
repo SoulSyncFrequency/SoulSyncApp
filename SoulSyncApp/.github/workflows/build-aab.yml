@@ -1,0 +1,76 @@
+name: Android • Build AAB (Smart Conditional Release)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: android-aab-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 🧩 Build AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Android App Bundle
+        run: |
+          npm run build
+          npx cap sync android
+          cd android
+          ./gradlew bundleRelease
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoulSyncApp-AAB
+          path: android/app/build/outputs/bundle/release/*.aab
+
+  conditional-release:
+    name: 🚀 Conditional GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Evaluate release condition
+        id: check
+        run: |
+          echo "commit_msg=$(echo '${{ toJson(github.event.commits.*.message) }}' | grep -i release || true)" >> $GITHUB_ENV
+
+      - name: Skip if no release keyword
+        if: env.commit_msg == ''
+        run: echo "🟡 Skipping release – commit not marked as release."
+
+      - name: Download AAB artifact
+        if: env.commit_msg != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: SoulSyncApp-AAB
+          path: release/
+
+      - name: Create GitHub Release
+        if: env.commit_msg != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: "SoulSyncApp v${{ github.run_number }}"
+          files: release/*.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
