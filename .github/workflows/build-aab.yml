@@ -10,182 +10,129 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
+    name: Build AAB
     runs-on: ubuntu-latest
-    env:
-      CI: true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
-      - name: Setup Node.js 20 (with npm cache)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
-      # --- Frontend build ---
-      - name: Install frontend deps
-        working-directory: ./SoulSyncApp/frontend
+      - name: Detect project directory
+        id: detect
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
+          if [ -d "app" ]; then echo "dir=app" >> $GITHUB_ENV
+          elif [ -d "frontend" ]; then echo "dir=frontend" >> $GITHUB_ENV
+          else echo "dir=." >> $GITHUB_ENV; fi
+
+      - name: Clean broken dependencies
+        run: |
+          cd $dir
+          rm -rf node_modules || true
+          npm uninstall openapitools/openapi-diff || true
+          npm cache clean --force
+
+      - name: Fix invalid dependency versions
+        run: |
+          cd $dir
+          sed -i 's/"apn": ".*"/"apn": "^2.2.0"/' package.json || true
+
+      - name: Verify and auto-repair lockfile
+        run: |
+          cd $dir
+          if ! npm ci --legacy-peer-deps; then
+            echo "Lockfile corrupted, repairing..."
+            rm -f package-lock.json
+            npm install --legacy-peer-deps
           fi
 
-      - name: Build frontend (Vite/React)
-        working-directory: ./SoulSyncApp/frontend
-        run: npm run build
-
-      # --- Mobile (Capacitor) sync ---
-      - name: Install mobile deps
-        working-directory: ./SoulSyncApp/mobile
+      - name: Build web (Vite/React)
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
-      - name: Sync Capacitor Android
-        working-directory: ./SoulSyncApp/mobile
-        run: npx cap sync android
-
-      # --- Java/Gradle ---
-      - name: Setup Java 17 + Gradle cache
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
-
-      - name: Ensure gradlew is executable
-        working-directory: ./SoulSyncApp/mobile/android
-        run: chmod +x gradlew
-
-      # --- (OPCIJSKO) potpisivanje putem GitHub Secrets ---
-      # Ako dodaš 4 secreta (vidi korak 6), build će biti potpisan upload keystore-om
-      - name: Prepare signing (if secrets present)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
-        working-directory: ./SoulSyncApp/mobile/android
-        run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > app/soulsync-upload-keystore.jks
-          cat > key.properties <<'EOF'
-          storeFile=app/soulsync-upload-keystore.jks
-          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          EOF
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-
-      - name: Build Android App Bundle (release)
-        working-directory: ./SoulSyncApp/mobile/android
-        run: ./gradlew clean bundleRelease --no-daemon --stacktrace
-
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-aab
-          path: SoulSyncApp/mobile/android/app/build/outputs/bundle/release/*.aab
-          retention-days: 14
-name: Android • Build AAB
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-# otkaži stare buildove na istoj grani da ne trošiš minute
-concurrency:
-  group: android-aab-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    env:
-      CI: true
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Setup Node.js 20 (with npm cache)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
-      - name: Build web (React)
-        run: npm run build
+          cd $dir
+          npm run build
 
       - name: Install Capacitor CLI
-        run: npm i -g @capacitor/cli
+        run: npm install -g @capacitor/cli
 
       - name: Sync Capacitor Android
-        run: npx cap sync android
+        run: |
+          cd $dir
+          npx cap sync android
 
-      - name: Setup Java 17 + Gradle cache
+      - name: Setup Java & Gradle
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
+          distribution: temurin
+          java-version: 17
 
       - name: Ensure gradlew is executable
-        run: chmod +x android/gradlew
+        run: chmod +x android/gradlew || true
 
-      # --- (OPCIJSKO) POTPISIVANJE: radi samo ako si dodao Secrets u GitHubu ---
-      # 1) ANDROID_KEYSTORE_BASE64  (base64 sadržaj .jks datoteke)
-      # 2) ANDROID_STORE_PASSWORD   (lozinka za store)
-      # 3) ANDROID_KEY_ALIAS        (alias)
-      # 4) ANDROID_KEY_PASSWORD     (lozinka za ključ)
-      - name: Prepare signing (if secrets present)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+      - name: Auto-bump Gradle version
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/soulsync-upload-keystore.jks
-          cat > android/key.properties <<'EOF'
-          storeFile=app/soulsync-upload-keystore.jks
-          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          EOF
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          cd $dir/android
+          VERSION_NAME=$(grep versionName app/build.gradle | awk '{print $2}' | tr -d '"')
+          VERSION_CODE=$(grep versionCode app/build.gradle | awk '{print $2}')
+          NEW_CODE=$((VERSION_CODE+1))
+          sed -i "s/versionCode .*/versionCode ${NEW_CODE}/" app/build.gradle
+          sed -i "s/versionName .*/versionName \"${VERSION_NAME%.*}.$((10#${VERSION_NAME##*.}+1))\"/" app/build.gradle
+          echo "Bumped versionCode=${NEW_CODE}, versionName updated"
 
-      - name: Build Android App Bundle (release)
+      - name: Build AAB
         run: |
-          cd android
-          ./gradlew clean bundleRelease --no-daemon --stacktrace
+          cd $dir/android
+          ./gradlew bundleRelease
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-aab
-          path: android/app/build/outputs/bundle/release/*.aab
-          retention-days: 14
+          name: app-release
+          path: ${{ env.dir }}/android/app/build/outputs/bundle/release/*.aab
 
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: contains(github.event.head_commit.message, 'release')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Git
+        run: |
+          git config user.name "SoulSyncFrequency"
+          git config user.email "soulsyncfrequency@gmail.com"
+
+      - name: Auto-tag
+        id: tag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v400")
+          NEXT_TAG="v$(( ${LATEST_TAG//[!0-9]/} + 1 ))"
+          echo "NEXT_TAG=$NEXT_TAG" >> $GITHUB_ENV
+          git tag "$NEXT_TAG"
+          git push origin "$NEXT_TAG"
+          echo "Created tag $NEXT_TAG"
+
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: release
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.NEXT_TAG }}
+          files: release/*.aab
+          name: "SoulSyncApp ${{ env.NEXT_TAG }}"
+          body: "Automated release generated by CI/CD"
