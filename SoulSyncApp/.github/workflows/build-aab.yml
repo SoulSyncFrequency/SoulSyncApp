@@ -13,6 +13,51 @@ permissions:
   contents: write
 
 jobs:
+preflight:
+    name: 🧠 JSON & Lockfile Self-Heal
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate and auto-fix package.json
+        run: |
+          echo "🔍 Validating JSON..."
+          if ! jq empty package.json >/dev/null 2>&1; then
+            echo "⚠️ Invalid JSON detected. Attempting auto-fix..."
+            sed -E 's/,\s*}/}/g; s/,\s*]/]/g' package.json > tmp.json
+            mv tmp.json package.json
+            if ! jq empty package.json >/dev/null 2>&1; then
+              echo "❌ JSON still invalid. Manual fix required."
+              exit 1
+            fi
+            echo "✅ JSON repaired."
+          else
+            echo "✅ JSON valid."
+          fi
+
+      - name: Ensure package-lock.json exists
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "⚙️ Generating missing package-lock.json..."
+            npm install --legacy-peer-deps --package-lock-only || true
+          fi
+          if [ ! -f package-lock.json ]; then
+            echo "❌ Could not generate lockfile. Build stopped."
+            exit 1
+          fi
+
+      - name: Commit & push self-heal (if needed)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json || true
+          git diff --cached --quiet || git commit -m "ci: auto-healed JSON/lockfile"
+          git push origin main || echo "ℹ️ Nothing to push"
+build:
+    name: 🏗️ Build + Release AAB
+    needs: preflight
+    runs-on: ubuntu-latest
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 45
