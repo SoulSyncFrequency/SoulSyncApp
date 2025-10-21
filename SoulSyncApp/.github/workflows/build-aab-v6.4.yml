@@ -91,3 +91,4 @@ jobs:
           name: repaired-app-${{ github.run_number }}
           path: app-release.aab
           retention-days: 3
+# force reindex
