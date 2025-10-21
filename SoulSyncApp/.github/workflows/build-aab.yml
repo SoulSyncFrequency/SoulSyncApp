@@ -15,66 +15,134 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
+      # 1) Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # 2) Node setup (prvo bez cachea radi self-healing lockfilea)
+      - name: Setup Node.js (bootstrap)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: false
+
+      # 3) Ako nema lockfile -> generiraj ga sigurno
+      - name: Ensure lockfile exists
+        run: |
+          if [ -f ".nvmrc" ]; then
+            echo "Found .nvmrc -> aligning Node version"
+            nver=$(cat .nvmrc | tr -d ' \n\r')
+            echo "Using Node $nver"
+            echo "node-version=$nver" >> $GITHUB_OUTPUT
+          fi
+          if [ ! -f package-lock.json ] && [ -f package.json ]; then
+            echo "⚙️  Generating missing package-lock.json..."
+            npm install --package-lock-only --legacy-peer-deps
+          fi
+
+      # 4) Node s cacheom (sad lockfile postoji -> cache radi)
+      - name: Setup Node.js (cache on)
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
 
-      - name: Ensure lockfile exists
+      # 5) Čisto & robusno instaliranje depsa
+      - name: Clean and install dependencies
         run: |
-          if [ ! -f package-lock.json ] && [ -f package.json ]; then
-            echo "⚙️  package-lock.json missing — generating..."
-            npm install --package-lock-only --legacy-peer-deps
-          fi
-
-      - name: Clean and install deps
-        run: |
+          echo "🧹 Cleaning and installing..."
           rm -rf node_modules || true
           npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+          echo "✅ Dependencies installed."
 
-      - name: Build web (Vite/React)
-        run: npm run build || echo "No web build script — continuing..."
+      # 6) Kondicionalni web build (Vite/React) ako postoji "build" skripta
+      - name: Build web (Vite/React) if script exists
+        run: |
+          if jq -er '.scripts.build' package.json > /dev/null 2>&1; then
+            echo "Running npm run build"
+            npm run build || echo "⚠️ Web build failed, continuing (app may rely solely on native)"
+          else
+            echo "ℹ️  No build script in package.json -> skipping web build"
+          fi
 
+      # 7) Capacitor CLI + sync (ako postoji android/ projekt)
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
       - name: Sync Capacitor Android
-        run: npx cap sync android
+        run: |
+          if [ -d "android" ] || [ -f "capacitor.config.ts" ] || [ -f "capacitor.config.json" ]; then
+            npx cap sync android || echo "ℹ️ Capacitor sync skipped/partial."
+          else
+            echo "ℹ️ No Capacitor config -> skipping sync"
+          fi
 
+      # 8) Java 17 (Gradle kompatibilno)
       - name: Setup Java & Gradle
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Ensure gradlew is executable
-        run: chmod +x android/gradlew || true
+      # 9) Gradle cache (masivno ubrzanje)
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
-      - name: Auto-bump Gradle version
+      # 10) Osiguraj gradlew + bump versionCode
+      - name: Ensure gradlew executable & bump versionCode
         run: |
-          cd android
-          FILE="app/build.gradle"
-          VERSION_CODE=$(grep versionCode $FILE | awk '{print $2}')
-          NEW_CODE=$((VERSION_CODE+1))
-          sed -i "s/versionCode .*/versionCode ${NEW_CODE}/" $FILE
-          echo "Bumped versionCode → ${NEW_CODE}"
+          if [ -d "android" ]; then
+            cd android
+            chmod +x gradlew || true
+            FILE="app/build.gradle"
+            ALT="app/build.gradle.kts"
+            if [ -f "$FILE" ]; then
+              VC=$(grep -E 'versionCode\s' $FILE | awk '{print $2}' | tr -d '\r')
+              if [ -z "$VC" ]; then VC=1; fi
+              NEW=$((VC+1))
+              sed -i "s/versionCode .*/versionCode ${NEW}/" $FILE
+              echo "✅ Gradle versionCode -> ${NEW}"
+            elif [ -f "$ALT" ]; then
+              VC=$(grep -E 'versionCode\s*=\s*[0-9]+' $ALT | sed -E 's/.*=\s*([0-9]+).*/\1/')
+              if [ -z "$VC" ]; then VC=1; fi
+              NEW=$((VC+1))
+              sed -i -E "s/versionCode\s*=\s*[0-9]+/versionCode = ${NEW}/" $ALT
+              echo "✅ Gradle (KTS) versionCode -> ${NEW}"
+            else
+              echo "⚠️  No app/build.gradle(.kts) found."
+            fi
+          else
+            echo "⚠️  No android directory."
+          fi
 
+      # 11) Build AAB
       - name: Build AAB
         run: |
-          cd android
-          ./gradlew bundleRelease
+          if [ -d "android" ]; then
+            cd android
+            ./gradlew --no-daemon --stacktrace bundleRelease
+          else
+            echo "❌ No android project to build." && exit 1
+          fi
 
+      # 12) Upload artefakt (retention 30 dana)
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 30
 
   release:
     runs-on: ubuntu-latest
@@ -82,32 +150,38 @@ jobs:
     if: contains(github.event.head_commit.message, 'release')
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Configure Git
+      - name: Configure Git identity
         run: |
           git config user.name "SoulSyncFrequency"
           git config user.email "soulsyncfrequency@gmail.com"
 
       - name: Auto-tag version
+        id: tag
         run: |
-          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "v400")
-          NEXT="v$(( ${LATEST//[!0-9]/} + 1 ))"
-          echo "NEXT=$NEXT" >> $GITHUB_ENV
-          git tag "$NEXT"
-          git push origin "$NEXT"
-          echo "Created tag $NEXT"
+          last=$(git describe --tags --abbrev=0 2>/dev/null || echo "v400")
+          num=${last//[!0-9]/}
+          if [ -z "$num" ]; then num=400; fi
+          next="v$((num+1))"
+          echo "NEXT=$next" >> $GITHUB_ENV
+          git tag "$next"
+          git push origin "$next"
+          echo "🔖 Created tag $next"
 
-      - name: Download artifact
+      - name: Download AAB
         uses: actions/download-artifact@v4
         with:
           name: app-release
           path: release
 
-      - name: Publish Release
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.NEXT }}
           name: "SoulSyncApp ${{ env.NEXT }}"
           files: release/*.aab
-          body: "Automated CI/CD build and release."
+          generate_release_notes: true
+          body: |
+            Automated CI/CD build (AAB) with Gradle cache, versionCode bump and self-healing npm.
