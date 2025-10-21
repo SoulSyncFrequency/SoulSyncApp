@@ -1,4 +1,4 @@
-name: Android • Build AAB (Smart Conditional Release)
+name: Android Build AAB
 
 on:
   push:
@@ -14,8 +14,10 @@ permissions:
 
 jobs:
   build:
-    name: 🧩 Build AAB
+    name: Build AAB
     runs-on: ubuntu-latest
+    env:
+      CI: true
 
     steps:
       - name: Checkout repository
@@ -25,78 +27,155 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Android App Bundle
+      - name: Detect project directory
+        id: proj
         run: |
-          npm run build
-          npx cap sync android
-          cd android
-          ./gradlew bundleRelease
+          # Ako je projekt u podmapi (npr. SoulSyncApp), prilagodi ovdje ako treba
+          echo "PROJ_DIR=." >> $GITHUB_ENV
+          echo "Using PROJ_DIR=."
+
+      - name: Clean broken deps (openapitools etc.)
+        working-directory: ${{ env.PROJ_DIR }}
+        run: |
+          set -e
+          # Ukloni deprecated problematične pakete ako postoje
+          npx -y json -I -f package.json -e "if(this.devDependencies && this.devDependencies['@openapitools/openapi-diff']) delete this.devDependencies['@openapitools/openapi-diff']" || true
+          npx -y json -I -f package.json -e "if(this.dependencies && this.dependencies['@openapitools/openapi-diff']) delete this.dependencies['@openapitools/openapi-diff']" || true
+          # Forsiraj apn na ^2.2.0 (3.x ne postoji na npm registryju koji runner koristi)
+          npx -y json -I -f package.json -e "this.dependencies=this.dependencies||{}; this.dependencies.apn='^2.2.0'" || true
+
+      - name: Fix invalid dependency versions
+        working-directory: ${{ env.PROJ_DIR }}
+        run: |
+          set -e
+          # Ako je lockfile kriv, regeneriraj ga
+          rm -f package-lock.json
+          # Ponekad npm ci strepa na peer deps — pripremi lockfile s legacy flagom
+          npm i --package-lock-only --legacy-peer-deps
+
+      - name: Verify and auto-repair lockfile
+        working-directory: ${{ env.PROJ_DIR }}
+        run: |
+          set -e
+          # Primarni pokušaj
+          if ! npm ci --legacy-peer-deps; then
+            echo "npm ci failed → pokušavam auto-repair"
+            rm -rf node_modules package-lock.json
+            npm i --legacy-peer-deps
+            npm ci --legacy-peer-deps
+          fi
+
+      - name: Validate build script presence
+        working-directory: ${{ env.PROJ_DIR }}
+        run: |
+          node -e "const p=require('./package.json'); if(!p.scripts||!p.scripts.build){ throw new Error('Nema npm run build skripte'); }"
+
+      - name: Build web (Vite/React)
+        working-directory: ${{ env.PROJ_DIR }}
+        run: npm run build
+
+      - name: Install Capacitor CLI
+        working-directory: ${{ env.PROJ_DIR }}
+        run: npm i -D @capacitor/cli
+
+      - name: Sync Capacitor Android
+        working-directory: ${{ env.PROJ_DIR }}
+        run: npx cap sync android
+
+      - name: Setup Java & Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Ensure gradlew is executable
+        working-directory: ${{ env.PROJ_DIR }}/android
+        run: chmod +x ./gradlew
+
+      - name: Determine NEXT_TAG and bump Android version
+        id: ver
+        working-directory: ${{ env.PROJ_DIR }}
+        run: |
+          # Odredi sljedeći semver tag vN (čisti integer)
+          latest=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0")
+          num=${latest#v}
+          next=$((num + 1))
+          echo "NEXT_TAG=v$next" >> $GITHUB_ENV
+          echo "NEXT_VERSION_CODE=$next" >> $GITHUB_ENV
+          echo "NEXT_VERSION_NAME=v$next" >> $GITHUB_ENV
+          echo "Next tag: v$next"
+
+          # Bumpaj versionCode / versionName u Gradle app modu
+          APP_GRADLE=$(git ls-files | grep -E '^android/.*app/build.gradle(.kts)?$' | head -n1 || true)
+          if [ -z "$APP_GRADLE" ]; then
+            echo "Nisam našao android/app/build.gradle(.kts) – preskačem bump"; exit 0
+          fi
+
+          if [[ "$APP_GRADLE" == *.kts ]]; then
+            # build.gradle.kts
+            sed -i "s/versionCode *[0-9][0-9]*/versionCode $next/" "$APP_GRADLE" || true
+            sed -i "s/versionName *\"[^\"]*\"/versionName \"v$next\"/" "$APP_GRADLE" || true
+          else
+            # build.gradle (Groovy)
+            sed -i "s/versionCode *[0-9][0-9]*/versionCode $next/" "$APP_GRADLE" || true
+            sed -i "s/versionName *\"[^\"]*\"/versionName \"v$next\"/" "$APP_GRADLE" || true
+          fi
+
+      - name: Build AAB (Release)
+        working-directory: ${{ env.PROJ_DIR }}/android
+        run: ./gradlew bundleRelease
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: SoulSyncApp-AAB
-          path: android/app/build/outputs/bundle/release/*.aab
+          path: ${{ env.PROJ_DIR }}/android/app/build/outputs/bundle/release/*.aab
 
-  conditional-release:
-    name: 🚀 Conditional GitHub Release
+  release:
+    name: Create Release (only if commit contains 'release')
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Skip if no release keyword
-        if: env.commit_msg == ''
-        run: echo "🟡 Skipping release – commit not marked as release."
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Download AAB artifact
-        if: env.commit_msg != ''
-        uses: actions/download-artifact@v4
-        with:
-          name: SoulSyncApp-AAB
-          path: release/
-
-      - name: Auto-tag bump
-        if: env.commit_msg != ''
-        id: tag
+      - name: Read last commit message
+        id: commit
         run: |
-          latest=$(git describe --tags --abbrev=0 || echo "v0")
+          msg=$(git log -1 --pretty=%B | tr -d '\n')
+          echo "commit_msg=$msg" >> $GITHUB_ENV
+          echo "Commit: $msg"
+
+      - name: Stop if not a release commit
+        if: "! contains(env.commit_msg, 'release')"
+        run: echo "Not a release commit → skipping release job."
+
+      - name: Determine tag from build job
+        if: "contains(env.commit_msg, 'release')"
+        run: |
+          # Dohvati NEXT_TAG iz prethodnog joba preko artifacts/env? Jednostavnije: preračunaj ponovno.
+          latest=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0")
           num=${latest#v}
           next="v$((num + 1))"
-          echo "next_tag=$next" >> $GITHUB_ENV
-          echo "Next tag: $next"
-
-      - name: Create GitHub Release
-        if: env.commit_msg != ''
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.next_tag }}
-          name: "SoulSyncApp ${{ env.next_tag }}"
-          files: release/*.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Skip if no release keyword
-        if: env.commit_msg == ''
-        run: echo "🟡 Skipping release – commit not marked as release."
+          echo "NEXT_TAG=$next" >> $GITHUB_ENV
+          echo "Release tag will be $next"
 
       - name: Download AAB artifact
-        if: env.commit_msg != ''
+        if: "contains(env.commit_msg, 'release')"
         uses: actions/download-artifact@v4
         with:
           name: SoulSyncApp-AAB
           path: release/
 
       - name: Create GitHub Release
-        if: env.commit_msg != ''
+        if: "contains(env.commit_msg, 'release')"
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.run_number }}
-          name: "SoulSyncApp v${{ github.run_number }}"
+          tag_name: ${{ env.NEXT_TAG }}
+          name: "SoulSyncApp ${{ env.NEXT_TAG }}"
+          body: "Automated release build: ${{ env.commit_msg }}"
           files: release/*.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
