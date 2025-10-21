@@ -1,61 +1,54 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting self-healing Git push + CI release pipeline v4.1..."
-
+echo "🚀 Starting self-healing Git push + CI release pipeline v5.1 ..."
 branch=$(git rev-parse --abbrev-ref HEAD)
-echo "🌐 Active branch: $branch"
+echo "🌿 Active branch: $branch"
 
-# Auto-sync with remote
-echo "🔄 Syncing with remote before push..."
-git fetch origin "$branch"
-git merge origin/"$branch" --no-edit || true
+# Sync first
+echo "🔄 Syncing with remote..."
+git fetch origin $branch
+git merge origin/$branch --strategy-option theirs --no-edit || true
 
-# Stage + commit
-git add -A
-if ! git diff --cached --quiet; then
-  msg="${1:-release}"
-  git commit -m "$msg"
+# Commit if there are local changes
+if ! git diff --quiet; then
+  git add .
+  git commit -m "auto: pre-push sync"
+fi
+
+# First push attempt
+echo "📤 Attempting push..."
+if git push origin $branch; then
+  echo "✅ Push successful!"
 else
-  echo "✅ No new changes to commit."
+  echo "⚠️  Push failed — initiating fallback recovery sequence..."
+  sleep 2
+
+  echo "🧠 Triggering CI preflight self-heal..."
+  gh workflow run build-aab.yml || echo "ℹ️ Local fallback: running fix-json.sh"
+  if [ -f "./fix-json.sh" ]; then
+    bash ./fix-json.sh || true
+  fi
+
+  echo "🔁 Re-syncing repository..."
+  git pull --rebase origin $branch || true
+
+  echo "📤 Retrying push..."
+  git push origin $branch && echo "✅ Push succeeded after self-heal!" || {
+    echo "❌ Push still failing. Checking connection..."
+    git fetch origin $branch && git status
+    echo "💤 Waiting 10 s before final retry..."
+    sleep 10
+    git push origin $branch && echo "✅ Final retry successful!" || echo "🚨 Manual intervention required."
+  }
 fi
 
-# SSH check
-if ! ssh -T git@github.com 2>/dev/null | grep -q "successfully authenticated"; then
-  echo "🔑 SSH not verified — auto-repairing..."
-  eval "$(ssh-agent -s)"
-  ssh-add ~/.ssh/id_ed25519 2>/dev/null || true
-fi
+# Optional release tagging
+echo "🏷️  Calculating next version tag..."
+latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+IFS='.' read -r v major minor patch <<< "${latest_tag//v/}"
+next_tag="v$((major)).$((minor)).$((patch+1))"
+git tag "$next_tag"
+git push origin "$next_tag"
 
-# Push branch
-git push origin "$branch"
-echo "✅ Branch pushed successfully!"
-
-# Tag auto-increment
-echo "🏷️  Calculating next tag..."
-last=$(git describe --tags --abbrev=0 2>/dev/null || echo "v400")
-num=$(echo "$last" | tr -dc '0-9')
-[ -z "$num" ] && num=400
-next="v$((num+1))"
-
-git push origin ":refs/tags/$next" 2>/dev/null || true
-git tag -d "$next" 2>/dev/null || true
-git tag "$next"
-git push origin "$next"
-echo "📦 Created and pushed tag: $next"
-
-# Trigger workflow
-if command -v gh &>/dev/null; then
-  echo "🛰️  Triggering remote workflow..."
-  gh workflow run build-aab.yml -r "$branch" || echo "⚙️ Auto-trigger via tag."
-else
-  echo "⚙️ GitHub CLI not found — workflow will auto-trigger."
-fi
-
-# Clean cache
-if [ -d "$HOME/.npm/_cacache" ]; then
-  echo "🧹 Cleaning npm cache..."
-  npm cache clean --force >/dev/null 2>&1 || true
-fi
-
-echo "🎯 Done — full sync + CI trigger complete for $next."
+echo "🎯 Done — full sync, fallback, and tag release complete for $next_tag."
