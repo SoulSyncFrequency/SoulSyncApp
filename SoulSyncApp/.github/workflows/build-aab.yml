@@ -1,106 +1,93 @@
-name: 🤖 Android Build + Auto Repair (v6.0)
+name: 🤖 Android Build + Auto-Repair v6.2
+
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main  on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      reason:
-        description: "Manual trigger reason (optional)"
-        required: false
-        default: "Manual build trigger"
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *' # noćni build u 03:00 UTC
+
+concurrency:
+  group: build-aab-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+
     steps:
-      - name: 🧩 Checkout code
+      - name: 🧹 Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: ⚙️ Setup Node.js
-        id: setup-node
+      - name: 🧠 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-        continue-on-error: true
+          cache: npm
 
-      - name: 🧠 Auto Repair package.json / lockfile
-        if: ${{ steps.setup-node.outcome == 'failure' }}
+      - name: ⚙️ Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: ☁️ Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: 🧩 Build Android App Bundle (.aab)
+        id: build
         run: |
-          echo "⚠️ Detected Setup Node.js failure — starting AI-Driven JSON Repair v4.0"
-          sudo apt-get update
-          sudo apt-get install -y jq python3 npm
-          # Attempt fast JSON repair
-          if jq empty package.json 2>/dev/null; then
-            echo "✅ package.json valid"
+          set -e
+          npm run build:aab || npm run build || echo "⚠️ fallback build triggered"
+
+      - name: 🔍 Verify artifact
+        run: |
+          if [ ! -f app-release.aab ]; then
+            echo "❌ Build failed — artifact not found"
+            exit 1
           else
-            echo "🔧 fixing package.json ..."
-            python3 - <<'PYCODE'
-import json, re
-text=open('package.json').read()
-# try to auto-balance braces and commas
-text=re.sub(r',\s*([\}\]])', r'\1', text)
-try:
-    json.loads(text)
-    open('package.json','w').write(text)
-    print("✅ repaired")
-except Exception as e:
-    print("❌ could not auto-repair:",e)
-PYCODE
+            echo "✅ Artifact app-release.aab ready"
           fi
-          # regenerate lockfile if missing or outdated
-          npm install --legacy-peer-deps --package-lock-only || npm install --legacy-peer-deps
-          echo "✅ Lockfile regenerated"
 
-      - name: ⚙️ Retry Node setup after repair
-        if: ${{ steps.setup-node.outcome == 'failure' }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: 📦 Install dependencies
-        run: |
-          npm ci || npm install --legacy-peer-deps
-
-      - name: 🏗️ Build Android App Bundle (.aab)
-        run: |
-          echo "Running Android build..."
-          npm run build:aab || npm run build || echo "⚠️ Fallback build path used."
-
-      - name: ✅ Verify AAB artifact
-        run: |
-          test -f android/app/build/outputs/**/*.aab && echo "✅ AAB found" || echo "⚠️ No AAB generated"
-
-      - name: 📤 Upload AAB to GitHub
+      - name: 📦 Upload artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: |
-            android/app/build/outputs/**/*.aab
-            dist/**/*.aab
-            build/**/*.aab
-          if-no-files-found: warn
+          name: app-release-${{ github.run_number }}
+          path: app-release.aab
+          retention-days: 7
 
-      - name: 🏷️ Auto tag + release
+  auto-repair:
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: 🧰 Attempt Auto-Repair
         run: |
-          git fetch --tags
-          latest=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          next=$(echo "$latest" | awk -F. -v OFS=. '{$NF+=1;print}')
-          git tag "$next"
-          git push origin "$next"
-          echo "🚀 Released $next"
+          echo "🔄 Build failed — initiating auto-repair..."
+          git fetch --all --prune
+          npm cache clean --force
+          npm ci || npm install
+          npm run build:aab || echo "⚠️ second-pass repair run"
+
+      - name: 🧩 Upload repaired artifact (if exists)
+        if: success() && exists('app-release.aab')
+        uses: actions/upload-artifact@v4
+        with:
+          name: repaired-app-${{ github.run_number }}
+          path: app-release.aab
+          retention-days: 3
