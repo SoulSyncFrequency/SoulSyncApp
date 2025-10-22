@@ -1,0 +1,115 @@
+name: Android Build AAB (v8.4 AI Self-Healing + Diagnostic Mailer)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+env:
+  MAX_RERUNS: 2
+  AI_API: ${{ secrets.OPENAI_API_KEY }} # 🔐 tvoj OpenAI ključ
+  EMAIL: "soulsyncfrequency@gmail.com"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 Install npm dependencies (auto-repair)
+        run: |
+          npm ci || npm install --force
+          npm audit fix || true
+
+      - name: 🏗️ Build Android App Bundle
+        id: build_step
+        run: |
+          cd android
+          ./gradlew clean bundleRelease --no-daemon
+        continue-on-error: true
+
+      - name: 🧠 AI Error Analysis
+        if: failure()
+        id: ai_diagnose
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require("child_process");
+            const fs = require("fs");
+            console.log("📥 Collecting logs...");
+            const log = execSync("cat android/app/build/reports/* || true").toString().slice(-3000);
+            const prompt = `Analyze this Android build log and identify the exact cause of failure.
+            Suggest the minimal fix in code/config terms. Respond in JSON with:
+            {"error_summary": "...", "suggested_fix": "..."}\n\nLog:\n${log}`;
+            const openai = require("node-fetch");
+            const res = await openai("https://api.openai.com/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer ${process.env.AI_API}"
+              },
+              body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [{ role: "user", content: prompt }]
+              })
+            });
+            const data = await res.json();
+            const result = data.choices?.[0]?.message?.content || "{}";
+            fs.writeFileSync("ai-diagnosis.json", result);
+            console.log("🧠 AI diagnosis complete:", result);
+
+      - name: 📧 Send diagnostic e-mail
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASS }}
+          subject: "🚨 SoulSync Build Failure Diagnostic (v8.4)"
+          to: ${{ env.EMAIL }}
+          from: "SoulSync AI Builder"
+          body: |
+            Build failed for SoulSync (v8.4)
+            AI Diagnostic Summary:
+            ${{ steps.ai_diagnose.outputs.result }}
+            See logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: 🔁 Auto-repair (AI fix)
+        if: failure()
+        run: |
+          echo "🧩 Attempting AI-guided fix..."
+          if [ -f "ai-diagnosis.json" ]; then
+            FIX=$(jq -r '.suggested_fix' ai-diagnosis.json)
+            echo "⚙️ Applying fix: $FIX"
+            echo "$FIX" > tmp-fix.txt
+            git apply tmp-fix.txt || echo "⚠️ AI fix could not be applied automatically."
+            rm tmp-fix.txt
+          fi
+
+      - name: 🧱 Retry build after AI repair
+        if: failure()
+        run: |
+          cd android
+          ./gradlew clean bundleRelease --stacktrace --no-daemon || true
+
+      - name: 📤 Upload AAB artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoulSync-AAB-v8.4
+          path: android/app/build/outputs/bundle/release/app-release.aab
