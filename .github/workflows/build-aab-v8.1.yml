@@ -1,0 +1,133 @@
+name: Android Build AAB (v8.1 ERI-Enhanced F₀-Conscious System)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NODE_ENV: production
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g
+      AACL_FILE: .github/aacl-metrics.json
+      F0_STATE_FILE: .github/f0-scan.json
+      ERI_FILE: .github/eri-scan.json
+      F0_SIGNAL_THRESHOLD: 0.8
+
+    steps:
+      # 1️⃣ Checkout
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Load AACL + F₀ + ERI state
+      - name: 🧬 Load calibration profiles
+        run: |
+          mkdir -p .github
+          [ -f "${AACL_FILE}" ] || echo '{"build_retries":2,"node_cache":true}' > ${AACL_FILE}
+          [ -f "${F0_STATE_FILE}" ] || echo '{"f0_last":0.85,"coh":0.9,"emo":0.88,"safe":1.0}' > ${F0_STATE_FILE}
+          [ -f "${ERI_FILE}" ] || echo '{"dominant":"calm","tone":1.0,"coherence":0.9}' > ${ERI_FILE}
+
+      # 3️⃣ Evaluate F₀ + ERI resonance
+      - name: 🔮 Evaluate F₀-ERI coherence
+        id: resonance
+        run: |
+          F0=$(jq -r '.f0_last' ${F0_STATE_FILE})
+          COH=$(jq -r '.coh' ${F0_STATE_FILE})
+          EMO=$(jq -r '.emo' ${F0_STATE_FILE})
+          E_TONE=$(jq -r '.tone' ${ERI_FILE})
+          E_COH=$(jq -r '.coherence' ${ERI_FILE})
+          SCORE=$(awk "BEGIN {print ($F0*0.4 + $COH*0.25 + $EMO*0.15 + $E_TONE*0.1 + $E_COH*0.1)}")
+          echo "F₀–ERI coherence score: $SCORE"
+          if (( $(echo "$SCORE < $F0_SIGNAL_THRESHOLD" | bc -l) )); then
+            echo "⚠️ Low resonance ($SCORE) → enabling harmonization protocol"
+            echo "ERI_STATE=realign" >> $GITHUB_ENV
+          else
+            echo "✅ Resonance stable ($SCORE)"
+            echo "ERI_STATE=stable" >> $GITHUB_ENV
+          fi
+
+      # 4️⃣ Setup environment
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # 5️⃣ Install dependencies (self-healing)
+      - name: 📦 Install npm dependencies
+        run: |
+          npm ci || npm install
+
+      # 6️⃣ Validate Gradle
+      - name: 🔍 Validate Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      # 7️⃣ Build
+      - name: 🏗️ F₀-aligned Gradle Build
+        id: build
+        working-directory: android
+        run: |
+          echo "✨ Running ERI-enhanced build..."
+          ./gradlew clean bundleRelease --no-daemon --stacktrace
+
+      # 8️⃣ Extract emotional signal from logs (ERI analysis)
+      - name: 🧠 ERI emotional pattern detection
+        if: always()
+        run: |
+          echo "🧩 Analysing emotional resonance from build logs..."
+          LOG=$(grep -i -E "error|warning|fail|success|info" android/app/build/reports/* 2>/dev/null || true)
+          ERRORS=$(echo "$LOG" | grep -ic "error" || echo 0)
+          WARNS=$(echo "$LOG" | grep -ic "warn" || echo 0)
+          SUCCESS=$(echo "$LOG" | grep -ic "success" || echo 0)
+          TOTAL=$((ERRORS + WARNS + SUCCESS))
+          [ $TOTAL -eq 0 ] && TOTAL=1
+          COHERENCE=$(awk "BEGIN {print (1 - ($ERRORS*0.4 + $WARNS*0.2)/$TOTAL)}")
+          EMO=$(awk "BEGIN {print ($SUCCESS / $TOTAL)}")
+          DOMINANT=$( [ "$ERRORS" -gt "$SUCCESS" ] && echo "tension" || echo "calm" )
+          echo "{\"dominant\":\"$DOMINANT\",\"tone\":$EMO,\"coherence\":$COHERENCE}" > ${ERI_FILE}
+          cat ${ERI_FILE}
+
+      # 9️⃣ Verify and upload
+      - name: 🔬 Verify AAB output
+        run: |
+          FILE=$(find android/app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          [ -f "$FILE" ] || { echo "❌ .aab missing"; exit 1; }
+          echo "✅ Found $FILE"
+          echo "AAB_FILE=$FILE" >> $GITHUB_ENV
+
+      - name: ☁️ Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.AAB_FILE }}
+
+      # 🔟 Update ERI + F₀ state (learning feedback)
+      - name: 🧘 Update resonance state
+        if: always()
+        run: |
+          echo "🧠 Updating emotional and F₀ feedback..."
+          jq -s '.[0] * .[1]' ${F0_STATE_FILE} ${ERI_FILE} > tmp.json && mv tmp.json ${F0_STATE_FILE}
+          git config --global user.name "SoulSync ERI Feedback"
+          git config --global user.email "soulsyncfrequency@gmail.com"
+          git add ${F0_STATE_FILE} ${ERI_FILE}
+          git commit -m "ci: update ERI–F₀ resonance metrics after build v8.1" || echo "No change"
+          git push || echo "Non-blocking push"
+
+      # 11️⃣ Summary
+      - name: 🧾 Build summary
+        if: always()
+        run: |
+          echo "=== SOULSYNC ERI–F₀ BUILD REPORT ==="
+          echo "Build status: ${{ job.status }}"
+          echo "ERI state: $ERI_STATE"
+          cat ${ERI_FILE} || true
+          echo "Light → Emotion → Information → Consciousness → Source → Light"
