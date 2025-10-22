@@ -1,0 +1,50 @@
+name: Auto Publish Release (v7.4)
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build Android artifacts
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew clean bundleRelease assembleRelease --stacktrace --no-daemon
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p dist
+          cp -r android/app/build/outputs/**/*.aab dist/ 2>/dev/null || true
+          cp -r android/app/build/outputs/**/*.apk dist/ 2>/dev/null || true
+          cp -r android/app/build/outputs/mapping/release/mapping.txt dist/ 2>/dev/null || true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**
+          generate_release_notes: true

@@ -1,0 +1,30 @@
+name: Release Please (v7.4)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-please
+        uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: simple
+          package-name: soulsync-app
+          changelog-types: |
+            feat: Features
+            fix: Bug Fixes
+            chore: Maintenance
+            docs: Documentation
+            ci: Continuous Integration
+            refactor: Refactoring
+            perf: Performance
+            test: Testing
