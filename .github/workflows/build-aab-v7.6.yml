@@ -1,0 +1,51 @@
+name: Android Build AAB (v7.6 Stable)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: ⚙️ Setup Node.js 20 (with smart cache fallback)
+        id: node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+        continue-on-error: true
+
+      - name: 🧠 Install npm dependencies (safe fallback)
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "✅ Lockfile found → using npm ci"
+            npm ci
+          else
+            echo "⚠️ No lockfile found → running npm install"
+            npm install
+          fi
+
+      - name: 🔍 Validate Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      - name: 🏗️ Clean and build Android App Bundle
+        working-directory: android
+        run: ./gradlew clean bundleRelease --no-daemon
+
+      - name: 📦 Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/bundle/release/*.aab
