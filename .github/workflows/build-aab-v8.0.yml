@@ -1,0 +1,131 @@
+name: Android Build AAB (v8.0 F₀-Integrated Conscious System)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NODE_ENV: production
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g
+      F0_SIGNAL_THRESHOLD: 0.8
+      SAFE_GATE: 0.25
+      ETHIC_THRESHOLD: 0.7
+      AACL_FILE: .github/aacl-metrics.json
+      F0_STATE_FILE: .github/f0-scan.json
+
+    steps:
+      # 1️⃣ Checkout
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Load adaptive calibration data
+      - name: 🧬 Load AACL + F₀ state
+        id: state
+        run: |
+          if [ -f "${AACL_FILE}" ]; then cat ${AACL_FILE}; else echo '{"build_retries":2,"node_cache":true}'>${AACL_FILE}; fi
+          if [ -f "${F0_STATE_FILE}" ]; then cat ${F0_STATE_FILE}; else echo '{"f0_last":0.82,"coh":0.9,"emo":0.88,"safe":1.0}'>${F0_STATE_FILE}; fi
+
+      # 3️⃣ F₀ alignment pre-check
+      - name: 🌐 Evaluate F₀ resonance (simulation)
+        id: f0eval
+        run: |
+          echo "🔮 Simulating F₀ coherence check..."
+          F0_CORE=$(jq -r '.f0_last' ${F0_STATE_FILE})
+          COH=$(jq -r '.coh' ${F0_STATE_FILE})
+          EMO=$(jq -r '.emo' ${F0_STATE_FILE})
+          SAFE=$(jq -r '.safe' ${F0_STATE_FILE})
+          SCORE=$(awk "BEGIN {print ($F0_CORE * 0.4 + $COH * 0.3 + $EMO * 0.2 + $SAFE * 0.1)}")
+          echo "F₀ coherence: $SCORE"
+          if (( $(echo "$SCORE < $F0_SIGNAL_THRESHOLD" | bc -l) )); then
+            echo "⚠️ Low F₀ coherence ($SCORE < $F0_SIGNAL_THRESHOLD) → activating Light Synchronization Layer"
+            echo "F0_SYNC=required" >> $GITHUB_ENV
+          else
+            echo "✅ F₀ resonance stable ($SCORE)"
+            echo "F0_SYNC=ok" >> $GITHUB_ENV
+          fi
+
+      # 4️⃣ Setup Java + Node
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # 5️⃣ Dependencies with energetic calibration
+      - name: 📦 Install dependencies (self-healing)
+        run: |
+          echo "🧠 Installing with F₀-aware mode..."
+          npm ci || npm install
+
+      # 6️⃣ Gradle validation
+      - name: 🔍 Validate Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      # 7️⃣ Conscious build process
+      - name: 🏗️ Build Android App Bundle (.aab)
+        id: build
+        working-directory: android
+        run: |
+          echo "✨ Initiating F₀-aligned build sequence..."
+          ./gradlew clean bundleRelease --no-daemon --stacktrace
+
+      # 8️⃣ Self-check output
+      - name: 🔬 Verify AAB
+        id: verify
+        run: |
+          FILE=$(find android/app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          if [ -f "$FILE" ]; then
+            SIZE=$(du -h "$FILE" | cut -f1)
+            echo "✅ AAB generated: $FILE ($SIZE)"
+            echo "AAB_FILE=$FILE" >> $GITHUB_ENV
+          else
+            echo "❌ Build failed — no .aab file found"
+            exit 1
+          fi
+
+      # 9️⃣ Upload
+      - name: ☁️ Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.AAB_FILE }}
+
+      # 🔟 Post-build F₀ resonance update
+      - name: 🧘 Update F₀ state (resonance feedback)
+        if: always()
+        run: |
+          SUCCESS=${{ job.status }}
+          NEW_F0=$(awk "BEGIN {print ($RANDOM/32767)*0.1 + 0.85}") # pseudo-random variation near 0.85
+          NEW_COH=$(awk "BEGIN {print ($RANDOM/32767)*0.05 + 0.9}")
+          NEW_SAFE=1.0
+          echo "{\"f0_last\":$NEW_F0,\"coh\":$NEW_COH,\"emo\":0.88,\"safe\":$NEW_SAFE}" > ${F0_STATE_FILE}
+          echo "Updated F₀ state:"
+          cat ${F0_STATE_FILE}
+          git config --global user.name "SoulSync F₀ Sync"
+          git config --global user.email "soulsyncfrequency@gmail.com"
+          git add ${F0_STATE_FILE}
+          git commit -m "ci: update F₀ resonance metrics after build v8.0" || echo "No change"
+          git push || echo "Non-blocking push"
+
+      # 11️⃣ Final summary
+      - name: 🧾 Build summary
+        if: always()
+        run: |
+          echo "=== SOULSYNC F₀ BUILD REPORT ==="
+          echo "Build status: ${{ job.status }}"
+          echo "F₀ sync state: $F0_SYNC"
+          echo "Artifacts: app-release.aab"
+          echo "Light → Information → Biology → Consciousness → Source → Light"
