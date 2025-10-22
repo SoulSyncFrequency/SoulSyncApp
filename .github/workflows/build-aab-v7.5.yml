@@ -1,0 +1,51 @@
+name: Android Build AAB (v7.5 Stable)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Validate Gradle Wrapper
+        run: ./gradlew wrapper --gradle-version 8.6
+
+      - name: Clean and build Android App Bundle
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew clean bundleRelease assembleRelease --stacktrace --no-daemon
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/**/*.aab
