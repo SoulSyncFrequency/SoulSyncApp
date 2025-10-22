@@ -1,0 +1,88 @@
+name: Export Audit Log
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Ensure GPG
+        run: sudo apt-get update && sudo apt-get install -y gnupg
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: pip install psycopg2-binary boto3 google-api-python-client google-auth-httplib2 google-auth-oauthlib dropbox msal requests pgpy paramiko google-cloud-storage azure-storage-blob cryptography google-cloud-kms azure-identity azure-keyvault-keys google-cloud-secret-manager azure-keyvault-secrets
+      - name: Run export
+        env:
+          AIOPS_DATABASE_URL: ${{ secrets.AIOPS_DATABASE_URL }}
+          EXPORT_DAYS: "7"
+          # S3
+          AUDIT_S3_BUCKET: ${{ secrets.AUDIT_S3_BUCKET }}
+          AUDIT_S3_PREFIX: ${{ secrets.AUDIT_S3_PREFIX }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AUDIT_S3_RETENTION_DAYS: ${{ secrets.AUDIT_S3_RETENTION_DAYS }}
+          # GCS
+          GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+          GCS_PREFIX: ${{ secrets.GCS_PREFIX }}
+          GCS_RETENTION_DAYS: ${{ secrets.GCS_RETENTION_DAYS }}
+          # Azure
+          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+          AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+          AZURE_CONTAINER: ${{ secrets.AZURE_CONTAINER }}
+          AZURE_PREFIX: ${{ secrets.AZURE_PREFIX }}
+          AZURE_RETENTION_DAYS: ${{ secrets.AZURE_RETENTION_DAYS }}
+          # Google Drive
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_CREDENTIALS_JSON: ${{ secrets.GDRIVE_CREDENTIALS_JSON }}
+          GDRIVE_RETENTION_DAYS: ${{ secrets.GDRIVE_RETENTION_DAYS }}
+          # Dropbox
+          DROPBOX_TOKEN: ${{ secrets.DROPBOX_TOKEN }}
+          DROPBOX_FOLDER: ${{ secrets.DROPBOX_FOLDER }}
+          DROPBOX_RETENTION_DAYS: ${{ secrets.DROPBOX_RETENTION_DAYS }}
+          # OneDrive/SharePoint MSAL
+          MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+          MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+          ONEDRIVE_ACCESS_TOKEN: ${{ secrets.ONEDRIVE_ACCESS_TOKEN }}
+          ONEDRIVE_FOLDER: ${{ secrets.ONEDRIVE_FOLDER }}
+          ONEDRIVE_RETENTION_DAYS: ${{ secrets.ONEDRIVE_RETENTION_DAYS }}
+          SHAREPOINT_ACCESS_TOKEN: ${{ secrets.SHAREPOINT_ACCESS_TOKEN }}
+          SHAREPOINT_SITE_ID: ${{ secrets.SHAREPOINT_SITE_ID }}
+          SHAREPOINT_DRIVE_ID: ${{ secrets.SHAREPOINT_DRIVE_ID }}
+          SHAREPOINT_FOLDER: ${{ secrets.SHAREPOINT_FOLDER }}
+          SHAREPOINT_RETENTION_DAYS: ${{ secrets.SHAREPOINT_RETENTION_DAYS }}
+          # SFTP
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_PRIVATE_KEY: ${{ secrets.SFTP_PRIVATE_KEY }}
+          SFTP_PASSPHRASE: ${{ secrets.SFTP_PASSPHRASE }}
+          SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
+          SFTP_RETENTION_DAYS: ${{ secrets.SFTP_RETENTION_DAYS }}
+          SFTP_VERIFY: ${{ secrets.SFTP_VERIFY }}
+          # PGP
+          AUDIT_ENCRYPTION: ${{ secrets.AUDIT_ENCRYPTION }}
+          AUDIT_PGP_PUBLIC_KEY: ${{ secrets.AUDIT_PGP_PUBLIC_KEY }}
+          AUDIT_PGP_PUBLIC_KEY_FILE: ${{ secrets.AUDIT_PGP_PUBLIC_KEY_FILE }}
+          AUDIT_PGP_PUBLIC_KEYS: ${{ secrets.AUDIT_PGP_PUBLIC_KEYS }}
+          AUDIT_PGP_PUBLIC_KEY_FILES: ${{ secrets.AUDIT_PGP_PUBLIC_KEY_FILES }}
+          AUDIT_PGP_COMMENT: ${{ secrets.AUDIT_PGP_COMMENT }}
+          AUDIT_GPG_CLI: ${{ secrets.AUDIT_GPG_CLI }}
+          AUDIT_PGP_DELETE_PLAINTEXT: ${{ secrets.AUDIT_PGP_DELETE_PLAINTEXT }}
+          # Privacy
+          AUDIT_FILENAME_MODE: ${{ secrets.AUDIT_FILENAME_MODE }}
+          AUDIT_FILENAME_SALT: ${{ secrets.AUDIT_FILENAME_SALT }}
+        run: python ops/runbooks/export_audit.py
+      - uses: actions/upload-artifact@v3
+        with:
+          name: audit-log
+          path: |
+            audit-*.csv
+            audit-*.csv.gpg

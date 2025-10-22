@@ -1,0 +1,18 @@
+name: AIOps Retrain
+on:
+  schedule: [{ cron: "0 2 * * 1" }]
+  workflow_dispatch: {}
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with: { python-version: "3.11" }
+      - run: pip install scikit-learn==1.5.1 psycopg2-binary
+      - env:
+          AIOPS_DATABASE_URL: ${{ secrets.AIOPS_DATABASE_URL }}
+          AIOPS_TRAIN_METRICS: ${{ secrets.AIOPS_TRAIN_METRICS || '' }}
+          AIOPS_TRAIN_DAYS: "30"
+          AIOPS_MIN_POINTS: "200"
+        run: python ops/aiops/train.py
