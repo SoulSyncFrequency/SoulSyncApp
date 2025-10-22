@@ -832,3 +832,4 @@ Set `OTEL_ENABLE=on` and `OTEL_EXPORTER_OTLP_ENDPOINT`.
 - Enable with `FEATURE_CSP_NONCE=true` (default). When `FEATURE_CSP_STRICT=true`, `script-src`/`style-src` require a matching nonce.
 - If imaš inline `<script>` ili `<style>`, dodaj `nonce={res.locals.cspNonce}` na tag (SSR/template).  
   React/Vite bundlovi tipično koriste vanjske fajlove pa nonce nije potreban.
+# reindex trigger Wed Oct 22 15:29:09 CEST 2025
