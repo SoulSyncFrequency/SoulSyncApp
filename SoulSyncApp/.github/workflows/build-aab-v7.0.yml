@@ -1,4 +1,4 @@
-name: Android Build (v7.0 – self-healing)
+name: Android Build (v7.0 clean)
 
 on:
   workflow_dispatch:
@@ -8,29 +8,11 @@ on:
 
 jobs:
   build:
-    name: Build AAB
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Android AAB
-        run: |
-          npm run build
-          npx cap sync android
-          cd android && ./gradlew bundleRelease
-
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release.aab
-          path: android/app/build/outputs/bundle/release/app-release.aab
+      - run: npm ci
+      - run: npm run build
