@@ -1,0 +1,198 @@
+name: Android Build AAB (v8.2 Adaptive-BQF)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NODE_ENV: production
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g
+      BQF_FILE: .github/bqf-metrics.json
+      AAB_OUT: android/app/build/outputs/bundle/release
+
+    steps:
+      # 1) Checkout
+      - name: 🧩 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2) Učitaj prethodne BQF metrike (ako postoje) i izračunaj adaptivne postavke
+      - name: 🧠 Load BQF profile & derive settings
+        id: bqf
+        run: |
+          set -e
+          mkdir -p .github
+          # defaults
+          CPU=$(nproc)
+          LOAD=$(awk '{print $1}' /proc/loadavg)
+          MAXW_DEF=$((CPU>2?CPU-1:1))
+          RETRIES_DEF=2
+
+          if [ -f "$BQF_FILE" ]; then
+            echo "Found previous BQF profile:"
+            cat "$BQF_FILE"
+            MAXW=$(jq -r '.max_workers // empty' "$BQF_FILE"); MAXW=${MAXW:-$MAXW_DEF}
+            RETRIES=$(jq -r '.retries // empty' "$BQF_FILE"); RETRIES=${RETRIES:-$RETRIES_DEF}
+            AVG_DUR=$(jq -r '.avg_duration_sec // 0' "$BQF_FILE")
+            LAST_OK=$(jq -r '.last_success // false' "$BQF_FILE")
+          else
+            echo '{"note":"initialized by v8.2"}' > "$BQF_FILE"
+            MAXW=$MAXW_DEF
+            RETRIES=$RETRIES_DEF
+            AVG_DUR=0
+            LAST_OK=false
+          fi
+
+          # Adaptive tweak: ako je load > CPU ili zadnji build fail → smanji workers
+          awk "BEGIN{exit !($LOAD>$CPU)}" && MAXW=$(( MAXW>1 ? MAXW-1 : 1 ))
+          [ "$LAST_OK" = "false" ] && MAXW=$(( MAXW>1 ? MAXW-1 : 1 ))
+
+          echo "CPU=$CPU  LOAD=$LOAD  MAX_WORKERS=$MAXW  RETRIES=$RETRIES  AVG_DUR=$AVG_DUR"
+          echo "CPU=$CPU" >> $GITHUB_ENV
+          echo "LOAD_START=$LOAD" >> $GITHUB_ENV
+          echo "BQF_MAX_WORKERS=$MAXW" >> $GITHUB_ENV
+          echo "BQF_RETRIES=$RETRIES" >> $GITHUB_ENV
+          echo "BQF_AVG_DUR=$AVG_DUR" >> $GITHUB_ENV
+
+      # 3) Java + Node
+      - name: ☕ Setup Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # cache samo ako postoji lockfile (izbjegne 404 warning)
+          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
+
+      # 4) Instalacija ovisnosti s fallbackom i retry
+      - name: 📦 Install npm dependencies (adaptive retries)
+        run: |
+          set -e
+          start=$(date +%s)
+          tries=0
+          until [ $tries -ge $BQF_RETRIES ]; do
+            if [ -f package-lock.json ]; then
+              npm ci && break || true
+            else
+              npm install && break || true
+            fi
+            tries=$((tries+1))
+            echo "⚠️ npm attempt $tries failed → clearing cache & retrying..."
+            rm -rf node_modules ~/.npm
+            sleep 3
+          done
+          end=$(date +%s); echo "NPM_ELAPSED=$((end-start))" >> $GITHUB_ENV
+
+      # 5) Gradle priprema
+      - name: 🔍 Validate Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      # 6) Build (mjeri trajanje, koristi adaptivni --max-workers)
+      - name: 🏗️ Build AAB (with --max-workers)
+        id: build
+        working-directory: android
+        run: |
+          set -e
+          echo "Using max workers: $BQF_MAX_WORKERS"
+          build_start=$(date +%s)
+          ./gradlew clean bundleRelease --no-daemon --stacktrace --max-workers $BQF_MAX_WORKERS
+          build_end=$(date +%s)
+          echo "BUILD_ELAPSED=$((build_end-build_start))" >> $GITHUB_ENV
+
+      # 7) Samoprovjera rezultata i metrika
+      - name: 🔬 Verify artifact & collect metrics
+        id: verify
+        run: |
+          set -e
+          FILE=$(find "$AAB_OUT" -name "*.aab" | head -n 1)
+          if [ -f "$FILE" ]; then
+            SIZE=$(du -h "$FILE" | cut -f1)
+            echo "✅ AAB: $FILE ($SIZE)"
+            echo "AAB_FILE=$FILE" >> $GITHUB_ENV
+            echo "BUILD_SUCCESS=true" >> $GITHUB_ENV
+          else
+            echo "❌ No .aab found"
+            echo "BUILD_SUCCESS=false" >> $GITHUB_ENV
+            exit 1
+          fi
+          LOAD_END=$(awk '{print $1}' /proc/loadavg)
+          echo "LOAD_END=$LOAD_END" >> $GITHUB_ENV
+
+      # 8) Uploadaj artefakt
+      - name: ☁️ Upload AAB artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.AAB_FILE }}
+
+      # 9) BQF feedback (uči iz trenutnog run-a i snima profil)
+      - name: 🧬 Update BQF profile (feedback learning)
+        if: always()
+        run: |
+          SUCCESS=${{ env.BUILD_SUCCESS }}
+          MAXW=${{ env.BQF_MAX_WORKERS }}
+          RETRIES=${{ env.BQF_RETRIES }}
+          NPM_T=${{ env.NPM_ELAPSED }}
+          BUILD_T=${{ env.BUILD_ELAPSED }}
+          LOAD_S=${{ env.LOAD_START }}
+          LOAD_E=${{ env.LOAD_END }}
+
+          TOTAL_T=$(( ${BUILD_T:-0} + ${NPM_T:-0} ))
+          LAST_OK=false; [ "$SUCCESS" = "true" ] && LAST_OK=true
+
+          # Adaptivno povećaj/smanji max-workers za idući put
+          if [ "$LAST_OK" = "true" ] && awk "BEGIN{exit !($LOAD_E<$(nproc))}"; then
+            MAXW_NEXT=$((MAXW+1))
+          else
+            MAXW_NEXT=$((MAXW>1?MAXW-1:1))
+          fi
+
+          # Eksponencijalni klizni prosjek trajanja
+          AVG=${{ env.BQF_AVG_DUR }}
+          if [ -z "$AVG" ] || [ "$AVG" = "0" ]; then
+            AVG_NEXT=$TOTAL_T
+          else
+            AVG_NEXT=$(awk -v a=$AVG -v x=$TOTAL_T 'BEGIN{print int(0.7*a + 0.3*x)}')
+          fi
+
+          jq -n --argjson maxw $MAXW_NEXT \
+                --argjson ret $RETRIES \
+                --argjson last $LAST_OK \
+                --argjson npm $NPM_T \
+                --argjson build $BUILD_T \
+                --argjson total $TOTAL_T \
+                --argjson loadS $LOAD_S \
+                --argjson loadE $LOAD_E \
+                --argjson avg $AVG_NEXT \
+          '{
+            max_workers: $maxw,
+            retries: $ret,
+            last_success: $last,
+            npm_time_sec: $npm,
+            build_time_sec: $build,
+            total_time_sec: $total,
+            loadavg_start: $loadS,
+            loadavg_end: $loadE,
+            avg_duration_sec: $avg,
+            updated_at: (now|tojson)
+          }' > "$BQF_FILE"
+
+          echo "Updated BQF profile:"
+          cat "$BQF_FILE"
+
+          git config --global user.name "SoulSync BQF Auto-Tuner"
+          git config --global user.email "soulsyncfrequency@gmail.com"
+          git add "$BQF_FILE"
+          git commit -m "ci: update BQF metrics after v8.2 build" || echo "No changes"
+          git push || echo "Non-blocking push"
