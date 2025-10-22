@@ -1,0 +1,102 @@
+name: Android Build AAB (v7.7 Self-Sustaining)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NODE_ENV: production
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2048m
+
+    steps:
+      # 1️⃣ Repozitorij i meta-informacije
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🧠 Log build context
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Commit: $GITHUB_SHA"
+          echo "Actor: $GITHUB_ACTOR"
+
+      # 2️⃣ Okruženje (Java + Node)
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: ⚙️ Setup Node.js 20 (Auto-cache if lockfile)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
+
+      # 3️⃣ Instalacija ovisnosti s fallbackom
+      - name: 📦 Install npm dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "✅ Using npm ci"
+            npm ci
+          else
+            echo "⚠️ No lockfile → using npm install"
+            npm install
+          fi
+
+      # 4️⃣ Gradle validacija
+      - name: 🔍 Validate Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      # 5️⃣ Build
+      - name: 🏗️ Build Android App Bundle (.aab)
+        working-directory: android
+        run: ./gradlew clean bundleRelease --stacktrace
+
+      # 6️⃣ Samoprovjera build artefakta
+      - name: 🔬 Self-check build output
+        id: check
+        run: |
+          FILE=$(find android/app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          if [ -f "$FILE" ]; then
+            SIZE=$(du -h "$FILE" | cut -f1)
+            echo "✅ Found AAB: $FILE ($SIZE)"
+            echo "AAB_FILE=$FILE" >> $GITHUB_ENV
+          else
+            echo "❌ No .aab file found!"
+            exit 1
+          fi
+
+      # 7️⃣ Upload rezultata
+      - name: ☁️ Upload AAB artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.AAB_FILE }}
+
+      # 8️⃣ Auto-notification / self-report
+      - name: 📡 Self-report summary
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" = "success" ]; then
+            echo "✅ Build OK — Self-check passed."
+          else
+            echo "❌ Build failed — please check logs."
+          fi
+
+      # 9️⃣ Auto-recovery: ponovni pokušaj ako je problem mreža/cache
+      - name: 🔁 Auto-retry (1x)
+        if: failure()
+        run: |
+          echo "⚠️ Retry triggered..."
+          sleep 5
+          ./android/gradlew bundleRelease || echo "Retry failed, manual check needed"
