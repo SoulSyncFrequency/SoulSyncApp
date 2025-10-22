@@ -1,14 +1,4 @@
-# Handle line endings automatically for cross-platform
-* text=auto
-
-# Lock files
-*.lock binary
-
-# Ensure consistent EOL in scripts
+*.yml text eol=lf working-tree-encoding=UTF-8
+*.yaml text eol=lf working-tree-encoding=UTF-8
+*.json text eol=lf working-tree-encoding=UTF-8
 *.sh text eol=lf
-*.ts text eol=lf
-*.js text eol=lf
-*.json text eol=lf
-*.yml text eol=lf
-*.yaml text eol=lf
-
