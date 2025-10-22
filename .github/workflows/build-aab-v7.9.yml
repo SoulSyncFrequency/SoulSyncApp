@@ -1,0 +1,160 @@
+name: Android Build AAB (v7.9 Adaptive Intelligence)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NODE_ENV: production
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx3g
+      MAX_RETRIES: 2
+      AACL_FILE: .github/aacl-metrics.json
+
+    steps:
+      # 1️⃣ Checkout
+      - name: 🧩 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Load AACL calibration data (if exists)
+      - name: 🧠 Load Adaptive Calibration Profile
+        id: aacl
+        run: |
+          if [ -f "${AACL_FILE}" ]; then
+            echo "✅ Found previous calibration:"
+            cat ${AACL_FILE}
+            BUILD_RETRIES=$(jq -r '.build_retries // 2' ${AACL_FILE})
+            NODE_CACHE=$(jq -r '.node_cache // true' ${AACL_FILE})
+          else
+            echo "⚙️ No AACL file found, using defaults."
+            BUILD_RETRIES=2
+            NODE_CACHE=true
+          fi
+          echo "BUILD_RETRIES=$BUILD_RETRIES" >> $GITHUB_ENV
+          echo "NODE_CACHE=$NODE_CACHE" >> $GITHUB_ENV
+
+      # 3️⃣ Setup environment
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: ${{ env.NODE_CACHE == 'true' && 'npm' || '' }}
+
+      # 4️⃣ Smart dependency installation
+      - name: 📦 Install dependencies (adaptive)
+        run: |
+          echo "Adaptive retry limit: $BUILD_RETRIES"
+          attempt=0
+          until [ $attempt -ge $BUILD_RETRIES ]
+          do
+            if [ -f package-lock.json ]; then
+              npm ci && break
+            else
+              npm install && break
+            fi
+            attempt=$((attempt+1))
+            echo "⚠️ Install failed, clearing cache..."
+            rm -rf node_modules ~/.npm
+            sleep 3
+          done
+
+      # 5️⃣ Validate Gradle Wrapper
+      - name: 🔍 Validate Gradle Wrapper
+        run: chmod +x android/gradlew
+
+      # 6️⃣ Intelligent Build
+      - name: 🏗️ Adaptive Gradle Build (.aab)
+        id: build
+        working-directory: android
+        run: |
+          echo "Using retry limit: $BUILD_RETRIES"
+          attempt=0
+          until [ $attempt -ge $BUILD_RETRIES ]
+          do
+            ./gradlew clean bundleRelease --stacktrace && break
+            attempt=$((attempt+1))
+            echo "⚠️ Build attempt $attempt failed — clearing caches..."
+            rm -rf ~/.gradle/caches
+            sleep 4
+          done
+
+      # 7️⃣ Verify AAB Output
+      - name: 🔬 Verify Output
+        id: verify
+        run: |
+          FILE=$(find android/app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          if [ -f "$FILE" ]; then
+            SIZE=$(du -h "$FILE" | cut -f1)
+            echo "✅ Found AAB: $FILE ($SIZE)"
+            echo "AAB_FILE=$FILE" >> $GITHUB_ENV
+            echo "BUILD_SUCCESS=true" >> $GITHUB_ENV
+          else
+            echo "❌ Build failed"
+            echo "BUILD_SUCCESS=false" >> $GITHUB_ENV
+            exit 1
+          fi
+
+      # 8️⃣ Upload AAB artifact
+      - name: ☁️ Upload AAB artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.AAB_FILE }}
+
+      # 9️⃣ AACL feedback learning
+      - name: 🧬 Adaptive Intelligence Feedback (AACL)
+        if: always()
+        run: |
+          echo "🧠 Updating AACL metrics..."
+          SUCCESS=${{ env.BUILD_SUCCESS }}
+          RETRIES=${{ env.BUILD_RETRIES }}
+
+          if [ "$SUCCESS" = "true" ]; then
+            echo "✅ Build success → fine-tuning down retry threshold"
+            RETRIES=$((RETRIES>1 ? RETRIES-1 : 1))
+          else
+            echo "❌ Build failed → increasing retry threshold"
+            RETRIES=$((RETRIES+1))
+          fi
+
+          CACHE=true
+          if [ "$RETRIES" -gt 3 ]; then
+            echo "⚠️ Too many retries → disabling cache temporarily"
+            CACHE=false
+          fi
+
+          mkdir -p .github
+          cat <<EOF > ${AACL_FILE}
+{
+  "build_retries": ${RETRIES},
+  "node_cache": ${CACHE},
+  "last_run": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "status": "${{ job.status }}"
+}
+EOF
+
+          echo "Updated AACL profile:"
+          cat ${AACL_FILE}
+
+      # 🔟 Commit calibration data back to repo (self-learning memory)
+      - name: 💾 Commit AACL profile
+        if: always()
+        run: |
+          git config --global user.name "SoulSync Auto-Calibrator"
+          git config --global user.email "soulsyncfrequency@gmail.com"
+          git add ${AACL_FILE}
+          git commit -m "ci: update AACL metrics after build v7.9" || echo "No changes to commit"
+          git push || echo "Non-blocking: unable to push calibration data"
