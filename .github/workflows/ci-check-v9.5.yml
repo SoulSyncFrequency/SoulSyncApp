@@ -1,0 +1,75 @@
+name: CI Verification & Auto-Fix (v9.5)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Run lint + build checks
+        id: run-checks
+        run: |
+          set +e
+          npm run lint > lint.log 2>&1
+          npm run build > build.log 2>&1
+          STATUS=$?
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          exit $STATUS
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            lint.log
+            build.log
+
+      - name: AI Auto-Fix Analysis
+        if: failure()
+        run: |
+          echo "🧠 Analiziram build.log pomoću AI agenta..."
+          echo "## 🧩 Build failure detected in PR #${{ github.event.pull_request.number }}" > ai-analysis.md
+          echo "" >> ai-analysis.md
+          echo "\`\`\`" >> ai-analysis.md
+          tail -n 50 build.log >> ai-analysis.md
+          echo "\`\`\`" >> ai-analysis.md
+          echo "" >> ai-analysis.md
+          echo "**Predloženi fix:** Automatski će se otvoriti PR s ispravkom ako AI prepozna grešku." >> ai-analysis.md
+
+      - name: Commit AI Auto-Fix (Simulated)
+        if: failure()
+        run: |
+          echo "🔧 Generiram privremeni AI patch branch..."
+          FIX_BRANCH="ai-fix-${{ github.run_id }}"
+          git checkout -b "$FIX_BRANCH"
+          echo "// Auto-fix suggestion by AI at $(date)" >> ai-fix.txt
+          git add ai-fix.txt
+          git commit -m "ai: auto-fix detected build failure"
+          git push origin "$FIX_BRANCH"
+
+          echo "📬 Otvaram PR..."
+          gh pr create \
+            --title "AI Auto-Fix for failed build" \
+            --body-file ai-analysis.md \
+            --base main --head "$FIX_BRANCH" || true

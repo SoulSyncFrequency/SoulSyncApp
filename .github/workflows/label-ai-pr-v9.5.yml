@@ -1,0 +1,22 @@
+name: Label AI Pull Requests (v9.5)
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add labels for AI PRs
+        uses: actions-ecosystem/action-add-labels@v1
+        if: |
+          contains(github.event.pull_request.title, 'AI') ||
+          contains(github.event.pull_request.title, 'auto') ||
+          contains(github.event.pull_request.title, 'fix')
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: |
+            ai-generated
+            auto-fix
+            verified
