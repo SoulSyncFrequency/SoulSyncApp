@@ -1,0 +1,94 @@
+name: Android Build AAB (v9.2 Predictive Preflight AI)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "android/**"
+      - "app/**"
+      - "gradle/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/build-aab-v9.2.yml"
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+jobs:
+  predictive_preflight:
+    name: 🔮 AI Predictive Preflight
+    runs-on: ubuntu-latest
+    outputs:
+      risk: ${{ steps.analysis.outputs.risk }}
+    steps:
+      - name: 🧩 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🧠 Collect recent build metadata
+        id: gather
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run list --limit 10 --json conclusion,createdAt,runNumber,name > preflight_runs.json
+          echo "✅ Collected last 10 builds."
+          cat preflight_runs.json | jq -r '.[].conclusion' | sort | uniq -c
+
+      - name: 🔍 Analyze trends with AI
+        id: analysis
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "🧠 Sending metadata to AI predictor..."
+          curl -sS https://api.openai.com/v1/chat/completions \
+            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @<(jq -n --argjson data "$(cat preflight_runs.json)" \
+              '{model:"gpt-4o-mini",
+                temperature:0.2,
+                messages:[
+                  {role:"system",content:"You are a CI/CD risk predictor."},
+                  {role:"user",content:"Analyze the following build outcomes. Estimate risk for next build (low|medium|high) and list 3 likely causes of failure in bullet points.\n\n" + ($data|tostring)}
+                ]}') \
+            | jq -r '.choices[0].message.content' > ai_preflight.txt
+
+          echo "Result:"
+          cat ai_preflight.txt
+          RISK=$(grep -ioE 'risk[: ]*(low|medium|high)' ai_preflight.txt | head -1 | awk '{print tolower($2)}')
+          echo "risk=${RISK:-unknown}" >> $GITHUB_OUTPUT
+
+      - name: 📤 Upload Preflight Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-preflight-report
+          path: ai_preflight.txt
+          retention-days: 7
+
+      - name: 📋 Post Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const risk = process.env.RISK || '${{ steps.analysis.outputs.risk }}';
+            const body = fs.existsSync('ai_preflight.txt')
+              ? fs.readFileSync('ai_preflight.txt','utf8')
+              : 'No AI output.';
+            const md = `### 🔮 Predictive Preflight (v9.2)\n**Risk:** ${risk}\n\n**AI Summary:**\n\n${body}`;
+            core.summary.addRaw(md).write();
+
+  build_chain:
+    name: Build AAB with Preflight Context
+    needs: predictive_preflight
+    runs-on: ubuntu-latest
+    if: ${{ needs.predictive_preflight.outputs.risk != 'high' }}
+    steps:
+      - name: Trigger v9.0.1 Intelligent Build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🧠 Risk acceptable (${{ needs.predictive_preflight.outputs.risk }}). Launching v9.0.1 build..."
+          gh workflow run "Android Build AAB (v9.0.1 Intelligent Pipeline + AI Context Hints)" \
+            -f build_type=release -f clean=true -f rerun_limit=2 -f sdk_guard=true
