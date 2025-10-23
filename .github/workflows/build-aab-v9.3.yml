@@ -1,0 +1,243 @@
+name: Android Build AAB (v9.3 AIM – Adaptive Intelligence Memory)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "android/**"
+      - "app/**"
+      - "gradle/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/build-aab-v9.3.yml"
+      - ".github/aim-memory.json"
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: android-build-aab
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      JAVA_VERSION: "17"
+      NODE_VERSION: "20"
+      AIM_FILE: .github/aim-memory.json
+      AAB_OUT: app/build/outputs/bundle
+
+    steps:
+      - name: 🧩 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 1) Učitaj AIM profil ili inicijaliziraj
+      - name: 🧠 Load AIM profile
+        id: aim
+        shell: bash
+        run: |
+          mkdir -p .github
+          if [ -f "${AIM_FILE}" ]; then
+            echo "Found AIM profile:"
+            cat "${AIM_FILE}"
+          else
+            cat > "${AIM_FILE}" <<EOF
+{"max_workers":3,"rerun_limit":2,"npm_strategy":"lock-aware","clean_default":true,"avg_total_sec":0,"success_streak":0,"fail_streak":0}
+EOF
+            echo "Initialized AIM profile."
+          fi
+
+          CPU=$(nproc)
+          LOAD=$(awk '{print $1}' /proc/loadavg)
+
+          MAXW=$(jq -r '.max_workers' ${AIM_FILE})
+          RERUN=$(jq -r '.rerun_limit' ${AIM_FILE})
+          NPMSTRAT=$(jq -r '.npm_strategy' ${AIM_FILE})
+          CLEAN=$(jq -r '.clean_default' ${AIM_FILE})
+
+          # Sigurnosne granice
+          [ "$MAXW" -lt 1 ] && MAXW=1
+          [ "$MAXW" -gt "$CPU" ] && MAXW=$CPU
+          [ "$RERUN" -lt 1 ] && RERUN=1
+          [ "$RERUN" -gt 3 ] && RERUN=3
+
+          # Ako je load > CPU, smanji workers za 1
+          awk "BEGIN{exit !($LOAD>$CPU)}" && MAXW=$(( MAXW>1 ? MAXW-1 : 1 ))
+
+          echo "AIM → CPU=$CPU LOAD=$LOAD max_workers=$MAXW rerun_limit=$RERUN npm_strategy=$NPMSTRAT clean_default=$CLEAN"
+          echo "AIM_MAXW=$MAXW" >> $GITHUB_ENV
+          echo "AIM_RERUN=$RERUN" >> $GITHUB_ENV
+          echo "AIM_NPM=$NPMSTRAT" >> $GITHUB_ENV
+          echo "AIM_CLEAN=$CLEAN" >> $GITHUB_ENV
+
+      # 2) Okruženje
+      - name: ☕ Setup Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: ⚙️ Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: ${{ hashFiles('package-lock.json') != '' && 'npm' || '' }}
+
+      # 3) Install (AIM strategija)
+      - name: 📦 Install dependencies (AIM)
+        shell: bash
+        run: |
+          set -e
+          case "${AIM_NPM}" in
+            "lock-aware")
+              if [ -f package-lock.json ]; then npm ci || npm i; else npm i; fi
+              ;;
+            "always-ci")
+              npm ci || npm i
+              ;;
+            "always-install")
+              npm i
+              ;;
+            *)
+              if [ -f package-lock.json ]; then npm ci || npm i; else npm i; fi
+              ;;
+          esac
+          npm dedupe || true
+          npm audit fix || true
+
+      # 4) Gradle priprema
+      - name: 🔍 Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v2
+
+      - name: 🧹 Clean (AIM)
+        if: ${{ env.AIM_CLEAN == 'true' }}
+        run: ./gradlew clean --no-daemon || true
+
+      # 5) Build (AIM max-workers + mjerenje)
+      - name: 🏗️ Build AAB (AIM tuned)
+        id: build
+        shell: bash
+        run: |
+          set -e
+          echo "Using --max-workers ${AIM_MAXW}"
+          START=$(date +%s)
+          ./gradlew :app:bundleRelease --no-daemon --stacktrace --max-workers ${AIM_MAXW}
+          END=$(date +%s)
+          ELAPSED=$((END-START))
+          echo "TOTAL_SEC=$ELAPSED" >> $GITHUB_ENV
+          echo "Elapsed (s): $ELAPSED"
+
+      # 6) Verifikacija + upload
+      - name: 🔬 Verify & Upload
+        run: |
+          FILE=$(find "${AAB_OUT}/release" -name "*.aab" | head -n 1)
+          [ -f "$FILE" ] || { echo "❌ No AAB"; exit 1; }
+          echo "✅ $FILE"
+        # upload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aab-release
+          path: app/build/outputs/bundle/release/*.aab
+          retention-days: 7
+
+      # 7) AIM feedback (učenje)
+      - name: 🧬 AIM feedback update
+        if: always()
+        shell: bash
+        run: |
+          SUCCESS="${{ job.status }}"
+          TOTAL=${{ env.TOTAL_SEC }}
+
+          # pročitaj stare vrijednosti
+          MAXW=$(jq -r '.max_workers' ${AIM_FILE})
+          RERUN=$(jq -r '.rerun_limit' ${AIM_FILE})
+          AVG=$(jq -r '.avg_total_sec' ${AIM_FILE})
+          SOK=$(jq -r '.success_streak' ${AIM_FILE})
+          SF=$(jq -r '.fail_streak' ${AIM_FILE})
+          NPMSTRAT=$(jq -r '.npm_strategy' ${AIM_FILE})
+          CLEAN=$(jq -r '.clean_default' ${AIM_FILE})
+
+          # eksponencijalni prosjek vremena (ako imamo metrik)
+          if [ -n "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
+            if [ "$AVG" -eq 0 ]; then
+              AVG_NEXT=$TOTAL
+            else
+              AVG_NEXT=$(awk -v a=$AVG -v x=$TOTAL 'BEGIN{print int(0.7*a + 0.3*x)}')
+            fi
+          else
+            AVG_NEXT=$AVG
+          fi
+
+          if [ "$SUCCESS" = "success" ]; then
+            SOK=$((SOK+1)); SF=0
+            # Ako smo uspješni i prosjek se poboljšava → povećaj workers (do CPU)
+            CPU=$(nproc)
+            [ "$MAXW" -lt "$CPU" ] && MAXW=$((MAXW+1))
+            # Ako uspješnost > 2 zaredom → smanji rerun_limit (min 1)
+            [ "$SOK" -ge 2 ] && [ "$RERUN" -gt 1 ] && RERUN=$((RERUN-1))
+            # Ako prosjek < 180s → pređi na "always-ci" (brži, stroži)
+            [ "$AVG_NEXT" -gt 0 ] && [ "$AVG_NEXT" -lt 180 ] && NPMSTRAT="always-ci"
+            # Clean rjeđe ako build stabilan
+            [ "$SOK" -ge 3 ] && CLEAN=false
+          else
+            SF=$((SF+1)); SOK=0
+            # Ako padamo → smanji workers (min 1), povisi rerun_limit (max 3)
+            [ "$MAXW" -gt 1 ] && MAXW=$((MAXW-1))
+            [ "$RERUN" -lt 3 ] && RERUN=$((RERUN+1))
+            # Ako pada bez lockfile-a → forsiraj always-install
+            [ ! -f package-lock.json ] && NPMSTRAT="always-install"
+            # (Re)enable clean na idućem buildu
+            CLEAN=true
+          fi
+
+          jq -n \
+            --argjson maxw "$MAXW" \
+            --argjson rerun "$RERUN" \
+            --arg npm "$NPMSTRAT" \
+            --argjson clean "$CLEAN" \
+            --argjson avg "$AVG_NEXT" \
+            --argjson sok "$SOK" \
+            --argjson sf "$SF" \
+            '{
+              max_workers: $maxw,
+              rerun_limit: $rerun,
+              npm_strategy: $npm,
+              clean_default: $clean,
+              avg_total_sec: $avg,
+              success_streak: $sok,
+              fail_streak: $sf
+            }' > ${AIM_FILE}
+
+          echo "AIM updated:"
+          cat ${AIM_FILE}
+
+          git config user.name "SoulSync-AIM"
+          git config user.email "ai@soulsync"
+          git add ${AIM_FILE}
+          git commit -m "ci(aim): update AIM profile after v9.3 build" || true
+          git push || true
+
+  # Jednostavan self-heal rerun prema AIM ograničenju
+  self_heal:
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read AIM for rerun limit
+        id: read
+        run: |
+          echo "RERUN_LIMIT=$(jq -r '.rerun_limit' .github/aim-memory.json 2>/dev/null || echo 2)" >> $GITHUB_ENV
+      - name: Rerun (failed only)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LIMIT=${{ env.RERUN_LIMIT }}
+          echo "AIM rerun limit: $LIMIT"
+          gh run rerun $GITHUB_RUN_ID --failed || true
