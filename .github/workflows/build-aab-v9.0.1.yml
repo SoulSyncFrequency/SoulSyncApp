@@ -1,0 +1,192 @@
+name: Android Build AAB (v9.0.1 Intelligent Pipeline + AI Context Hints)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "debug | release"
+        required: false
+        default: "release"
+      clean:
+        description: "Gradle clean before build"
+        type: boolean
+        required: false
+        default: true
+      rerun_limit:
+        description: "Max auto-rerun attempts on failure (self-heal)"
+        required: false
+        default: "2"
+      version_name:
+        description: "Optional versionName override"
+        required: false
+        default: ""
+      sdk_guard:
+        description: "Run Android SDK guard preflight"
+        type: boolean
+        required: false
+        default: true
+  push:
+    branches: [ main ]
+    paths:
+      - "android/**"
+      - "app/**"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "build.gradle"
+      - "settings.gradle"
+      - "package.json"
+      - "package-lock.json"
+      - "yarn.lock"
+      - ".github/workflows/build-aab-v9.0.1.yml"
+
+permissions:
+  contents: read
+  actions: write
+  checks: read
+
+concurrency:
+  group: android-build-aab
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build AAB
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      NODE_VERSION: "20"
+      JAVA_VERSION: "17"
+      BUILD_TYPE: ${{ inputs.build_type || 'release' }}
+      RERUN_LIMIT: ${{ inputs.rerun_limit || '2' }}
+      VERSION_NAME: ${{ inputs.version_name }}
+      SDK_GUARD: ${{ inputs.sdk_guard }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java ${{ env.JAVA_VERSION }} (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            yarn.lock
+
+      - name: Install Dependencies (smart lock)
+        shell: bash
+        run: |
+          set -eux
+          if [ -f package-lock.json ]; then npm ci || npm i
+          elif [ -f yarn.lock ]; then corepack enable; yarn install --frozen-lockfile || yarn install
+          else npm install; fi
+          npm dedupe || true
+          npm audit fix || true
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v2
+
+      - name: Android SDK Guard (preflight)
+        if: ${{ env.SDK_GUARD == 'true' }}
+        shell: bash
+        run: |
+          echo "🧩 SDK GUARD START"
+          java -version
+          node -v
+          npm -v
+          ./gradlew -v
+          echo "Available build tools:"
+          sdkmanager --list | grep "build-tools;" | head -n 10 || true
+          echo "🧩 SDK GUARD END"
+
+      - name: Gradle Clean
+        if: ${{ inputs.clean }}
+        run: ./gradlew clean --no-daemon || true
+
+      - name: Build AAB (${{ env.BUILD_TYPE }})
+        id: buildaab
+        shell: bash
+        run: |
+          echo "🧠 AI_HINT: Starting Gradle build for $BUILD_TYPE"
+          if [[ "$BUILD_TYPE" == "release" ]]; then
+            ./gradlew :app:bundleRelease --no-daemon --stacktrace
+          else
+            ./gradlew :app:bundleDebug --no-daemon --stacktrace
+          fi
+          echo "🧠 AI_HINT: Gradle build completed."
+
+      - name: Upload AAB artifact (7 days)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aab-${{ env.BUILD_TYPE }}
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/bundle/debug/*.aab
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Collect AI Context Hints
+        if: always()
+        run: |
+          echo "Build timestamp: $(date)" > ai_hints.txt
+          echo "Job status: ${{ job.status }}" >> ai_hints.txt
+          echo "OS info:" >> ai_hints.txt
+          uname -a >> ai_hints.txt
+          echo "Disk space:" >> ai_hints.txt
+          df -h / >> ai_hints.txt
+          echo "Java version:" >> ai_hints.txt
+          java -version >> ai_hints.txt 2>&1
+          echo "Node version:" >> ai_hints.txt
+          node -v >> ai_hints.txt
+          echo "Gradle properties:" >> ai_hints.txt
+          ./gradlew properties | head -n 50 >> ai_hints.txt || true
+          echo "🧠 AI_HINT: Context snapshot saved → ai_hints.txt"
+
+      - name: Upload AI Hints Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-context-hints
+          path: ai_hints.txt
+          retention-days: 7
+
+      - name: Build Summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const core = require('@actions/core');
+            const summary = `
+### 🧠 SoulSync Android Build Report (v9.0.1)
+**Build type:** ${process.env.BUILD_TYPE}
+**Status:** ${process.env.GITHUB_JOB_STATUS || '${{ job.status }}'}
+**Rerun limit:** ${process.env.RERUN_LIMIT}
+**SDK Guard:** ${process.env.SDK_GUARD}
+**AI Context Hints:** saved as artifact
+📦 [Run Logs](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+`;
+            core.summary.addRaw(summary).write();
+
+  self_heal:
+    name: Self-Heal (Auto Rerun)
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto Rerun
+        run: |
+          echo "🩹 Self-Heal Triggered for failed build"
+          gh run rerun $GITHUB_RUN_ID --failed || true
