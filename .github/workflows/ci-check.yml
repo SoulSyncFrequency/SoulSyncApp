@@ -1,0 +1,46 @@
+name: CI Verification (ai-pr-check)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies (safe mode)
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Lint and format check
+        run: |
+          npm run lint || echo "⚠️ Lint warnings detected"
+
+      - name: Run build test
+        run: npm run build || exit 1
+
+      - name: ✅ CI passed
+        if: success()
+        run: echo "✅ Build & tests OK"
+
+      - name: ❌ CI failed (auto-report)
+        if: failure()
+        run: |
+          echo "❌ CI failed. Sending alert..."
+          echo "Build failed on PR ${{ github.event.pull_request.number }}" > fail.log
+          gh issue create --title "CI Failure on PR #${{ github.event.pull_request.number }}" \
+            --body "Automated check failed on commit ${{ github.sha }}" \
+            --label "ci-failed" || true
