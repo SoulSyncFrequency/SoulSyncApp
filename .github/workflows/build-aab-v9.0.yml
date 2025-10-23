@@ -1,0 +1,220 @@
+name: Android Build AAB (v9.0 Intelligent Pipeline)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "debug | release"
+        required: false
+        default: "release"
+      clean:
+        description: "Gradle clean before build"
+        type: boolean
+        required: false
+        default: true
+      rerun_limit:
+        description: "Max auto-rerun attempts on failure (self-heal)"
+        required: false
+        default: "2"
+      version_name:
+        description: "Optional versionName override"
+        required: false
+        default: ""
+      sdk_guard:
+        description: "Run Android SDK guard preflight"
+        type: boolean
+        required: false
+        default: true
+  push:
+    branches: [ main ]
+    paths:
+      - "android/**"
+      - "app/**"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "build.gradle"
+      - "settings.gradle"
+      - "package.json"
+      - "package-lock.json"
+      - "yarn.lock"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/build-aab-v9.0.yml"
+
+permissions:
+  contents: read
+  actions: write   # za self-heal rerun
+  checks: read
+
+concurrency:
+  group: android-build-aab
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build AAB
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      NODE_VERSION: "20"
+      JAVA_VERSION: "17"
+      BUILD_TYPE: ${{ inputs.build_type || 'release' }}
+      RERUN_LIMIT: ${{ inputs.rerun_limit || '2' }}
+      VERSION_NAME: ${{ inputs.version_name }}
+      SDK_GUARD: ${{ inputs.sdk_guard }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Java ${{ env.JAVA_VERSION }} (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        id: node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            npm-shrinkwrap.json
+            yarn.lock
+            pnpm-lock.yaml
+
+      - name: Resolve dependency manager + lockfile
+        id: pkgmgr
+        shell: bash
+        run: |
+          if [ -f pnpm-lock.yaml ]; then echo "manager=pnpm" >> $GITHUB_OUTPUT
+          elif [ -f yarn.lock ]; then echo "manager=yarn" >> $GITHUB_OUTPUT
+          else echo "manager=npm" >> $GITHUB_OUTPUT; fi
+
+          # determine lock presence
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ] || [ -f yarn.lock ] || [ -f pnpm-lock.yaml ]; then
+            echo "has_lock=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_lock=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Node deps (honour lock if present)
+        shell: bash
+        run: |
+          set -eux
+          case "${{ steps.pkgmgr.outputs.manager }}" in
+            pnpm)
+              corepack enable
+              pnpm --version
+              if [[ "${{ steps.pkgmgr.outputs.has_lock }}" == "true" ]]; then pnpm install --frozen-lockfile
+              else pnpm install; pnpm dedupe; pnpm prune --prod; fi
+              ;;
+            yarn)
+              corepack enable
+              yarn --version
+              if [[ "${{ steps.pkgmgr.outputs.has_lock }}" == "true" ]]; then yarn install --frozen-lockfile
+              else yarn install --no-immutable; yarn dedupe; fi
+              ;;
+            npm|*)
+              npm --version
+              if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
+                npm ci
+              else
+                npm i
+                npm dedupe
+              fi
+              ;;
+          esac
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v2
+
+      - name: Android SDK Guard (preflight)
+        if: ${{ env.SDK_GUARD == 'true' }}
+        shell: bash
+        run: |
+          set -e
+          echo "Listing installed SDKs…"
+          sdkmanager --list | sed -n '1,200p' || true
+          echo "Java:"
+          java -version
+          echo "Node:"
+          node -v
+          echo "OK"
+
+      - name: Gradle Prepare
+        shell: bash
+        run: |
+          if [[ "${{ inputs.clean }}" == "true" ]]; then ./gradlew clean --no-daemon; fi
+
+      - name: (Optional) Override versionName
+        if: ${{ env.VERSION_NAME != '' }}
+        shell: bash
+        run: |
+          echo "Overriding versionName to $VERSION_NAME"
+          sed -i 's/versionName "[^"]*"/versionName "'"$VERSION_NAME"'"/' app/build.gradle || true
+
+      - name: Build AAB (${{ env.BUILD_TYPE }})
+        shell: bash
+        run: |
+          set -eux
+          if [[ "$BUILD_TYPE" == "release" ]]; then
+            ./gradlew :app:bundleRelease --no-daemon --stacktrace
+          else
+            ./gradlew :app:bundleDebug --no-daemon --stacktrace
+          fi
+
+      - name: Upload AAB artifact (7 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: aab-${{ env.BUILD_TYPE }}
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/bundle/debug/*.aab
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Summarize build
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const core = require('@actions/core');
+            const buildType = process.env.BUILD_TYPE;
+            const url = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const status = core.getInput('job-status') || '${{ job.status }}';
+            let md = `### Android Build AAB (v9.0)\n- **Build type:** ${buildType}\n- **Status:** ${status}\n- **Run:** ${url}\n`;
+            core.summary.addRaw(md).write();
+
+  self_heal:
+    name: Self-Heal (Auto Rerun up to limit)
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Attempt rerun (limit)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RERUN_LIMIT: ${{ inputs.rerun_limit || '2' }}
+        shell: bash
+        run: |
+          set -eux
+          ATTEMPTS=0
+          RUN_ID=${GITHUB_RUN_ID}
+
+          while [ $ATTEMPTS -lt $RERUN_LIMIT ]; do
+            ATTEMPTS=$((ATTEMPTS+1))
+            echo "🩹 Self-Heal: rerun attempt $ATTEMPTS/$RERUN_LIMIT for run $RUN_ID"
+            # Rerun only failed jobs (faster)
+            gh run rerun "$RUN_ID" --failed || gh run rerun "$RUN_ID" || true
+            echo "Triggered rerun. Exiting this job so new run can take over."
+            exit 0
+          done
+
+          echo "❌ Self-Heal exhausted ($RERUN_LIMIT attempts). Please check logs."
