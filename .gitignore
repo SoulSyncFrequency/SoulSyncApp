@@ -61,3 +61,17 @@ logs
 .DS_Store
 Thumbs.db
 
+
+# ==================================
+# Sensitive and personal files
+.bash_history
+.bashrc
+.gitconfig
+.lesshst
+
+# Exclude SSH keys directory
+.ssh/
+
+# Local storage and logs
+storage/
+.npm/_logs/
