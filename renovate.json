@@ -1,0 +1,37 @@
+{
+  // Use Renovate's default preset configuration as a baseline. See
+  // https://docs.renovatebot.com/presets-config/ for more info.
+  "extends": ["config:base"],
+
+  // Assign yourself as the default assignee for dependency update PRs.
+  "assignees": ["SoulSyncFrequency"],
+
+  // Label all dependency update PRs consistently.
+  "labels": ["dependencies", "renovate"],
+
+  // Enable the dependency dashboard issue which tracks all open Renovate PRs
+  // and allows you to trigger updates manually.
+  "dependencyDashboard": true,
+
+  // Opt out of automerging updates. You can set this to true or to an
+  // object matching specific conditions (e.g. only minor/patch) if you
+  // prefer Renovate to merge safe updates automatically.
+  "automerge": false,
+
+  // Allow grouping updates to reduce the number of PRs. Grouping by
+  // dependency type helps keep PRs focused and easier to review.
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "Minor and patch dependencies"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "groupName": "Major dependencies"
+    }
+  ],
+
+  // Schedule Renovate to create PRs during working hours in your timezone
+  // (Europe/Zagreb) so notifications arrive at convenient times.
+  "schedule": ["after 9am and before 5pm on working days"]
+}
