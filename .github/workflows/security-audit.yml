@@ -1,0 +1,30 @@
+name: "Security Audit"
+
+# This workflow performs an automated security scan of the Node.js
+# dependencies using `npm audit`. It is scheduled to run daily and can also be
+# triggered manually or on pull requests. You can extend this job with
+# additional scanners (e.g. Snyk, CodeQL) if your project grows beyond Node.
+
+on:
+  schedule:
+    # Run every day at 04:00 UTC to catch new vulnerabilities quickly
+    - cron: '0 4 * * *'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run npm audit
+        # Fail the job only on high or critical vulnerabilities. You can
+        # adjust --audit-level to 'moderate' if you want to catch more.
+        run: npm audit --production --audit-level=high
