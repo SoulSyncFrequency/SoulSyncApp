@@ -1,0 +1,27 @@
+name: "Draft Release"
+
+# This workflow automatically updates a draft release whenever pull requests
+# are merged into the main branch. It relies on a separate configuration file
+# (`.github/release-drafter.yml`) which defines the versioning strategy and
+# categorises changes based on labels. Adjust the config to fit your project.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  update_release_draft:
+    # Only run when a PR is merged or code is pushed directly to main
+    if: (github.event_name == 'push') || (github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Draft next release
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
