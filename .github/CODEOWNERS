@@ -1,0 +1,13 @@
+# CODEOWNERS file for SoulSync App
+#
+# This file defines who reviews and approves changes to different parts of
+# the repository. Code owners are automatically requested for review on
+# pull requests that modify files they own. Lines take precedence from
+# bottom to top; put more specific paths later. See GitHub docs for details.
+
+* @SoulSyncFrequency
+
+# Example future assignments (uncomment and adjust as your team grows):
+# backend/ @backend-team
+# frontend/ @frontend-team
+# ops/ @devops-team
